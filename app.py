@@ -50,7 +50,7 @@ agencies=["TheRide","Detroit","Rapid"]
 
 
 # Streamlit UI to select file and input parameters
-st.title("**Bus System Electrification Analysis [Under construction]**")
+st.title("**Bus System Electrification Analysis** [Internal Testing Release]")
 
 # Allow user to select a ZIP file from the allowed files
 selected_agency = st.selectbox("Select the agency", agencies)
