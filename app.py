@@ -249,7 +249,7 @@ if st.button("Run Analysis"):
         lambda lst: [round(x, 1) for x in lst] if isinstance(lst, list) else lst
     )
 
-    block_general.to_csv('block_general.csv', index=False)
+    min_range_without_charging=int(np.ceil(block_general["total_distance_miles"].iloc[-1]))
 
     # Identify infiseable block_ids where any range_tracking value is negative
     infiseable_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -303,6 +303,7 @@ if st.button("Run Analysis"):
     st.session_state["blocks_count"] = len(block_general)
     st.session_state["infeasible_blocks_count"] = len(infiseable_blocks)
     st.session_state["critical_blocks_count"] = len(blocks_below_critical)
+    st.session_state["minimum_range_without_charger"]=min_range_without_charging
 
 if "map" in st.session_state:
     st_folium(st.session_state["map"], width=800, height=500)
@@ -311,4 +312,5 @@ if "map" in st.session_state:
     st.write(f"Number of blocks: {st.session_state['blocks_count']}")
     st.write(f"Number of infeasible blocks: {st.session_state['infeasible_blocks_count']}")
     st.write(f"Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
+    st.write(f"Minimum bus range without charging to cover all blocks is {st.session_state['miminimum_range_without_charger']} miles.")
     
