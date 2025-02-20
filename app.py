@@ -339,6 +339,7 @@ if st.button("Run Analysis"):
     st.session_state["infeasible_blocks_count"] = len(infiseable_blocks)
     st.session_state["critical_blocks_count"] = len(blocks_below_critical)
     st.session_state["minimum_range_without_charger"] = min_range_without_charging
+    st.session_state["num_locs"]=len(proposed_locations)
 
 if "map" in st.session_state:
     st_folium(st.session_state["map"], width=800, height=500)
@@ -348,4 +349,5 @@ if "map" in st.session_state:
     st.write(f"Number of infeasible blocks: {st.session_state['infeasible_blocks_count']}")
     st.write(f"Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
     st.write(f"Minimum bus range to cover all blocks without en-route charging is {st.session_state['minimum_range_without_charger']} miles.")
+    st.write(f"Number of charger locations is {st.session_state["num_locs"]}.")
     
