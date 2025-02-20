@@ -170,7 +170,7 @@ if st.button("Run Analysis"):
     block_distances['total_distance_miles'] = block_distances['shape_distance_km'] * 0.621371
 
     # Rename and reorder columns for clarity
-    block_distances = block_distances[['block_id', 'total_distance_miles', 'route_id', 'route_short_name']]
+    block_distances = block_distances[['block_id', 'total_distance_miles', 'route_id', 'shape_id']]
     block_distances.columns = ['block_id', 'total_distance_miles', 'routes_in_block_id', 'routes_in_block_shapes']
 
     # Ensure departure_time is treated as a string
