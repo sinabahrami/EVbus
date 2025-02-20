@@ -312,5 +312,5 @@ if "map" in st.session_state:
     st.write(f"Number of blocks: {st.session_state['blocks_count']}")
     st.write(f"Number of infeasible blocks: {st.session_state['infeasible_blocks_count']}")
     st.write(f"Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
-    st.write(f"Minimum bus range without charging to cover all blocks is {st.session_state['miminimum_range_without_charger']} miles.")
+    st.write(f"Minimum bus range without charging to cover all blocks is {st.session_state['minimum_range_without_charger']} miles.")
     
