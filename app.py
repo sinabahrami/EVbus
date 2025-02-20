@@ -57,7 +57,7 @@ selected_agency = st.selectbox("Select the agency", agencies)
 
 # Request Bus range and charging power inputs
 Bus_range = st.number_input("Enter bus range (miles)", min_value=0, value=150, step=10)
-charging_power = st.number_input("Enter wireless charging power (kW)", min_value=0, value=0, step=50)
+charging_power = st.number_input("Enter wireless charging power (kW)", min_value=0, value=250, step=50)
 
 
 # Define parameters
