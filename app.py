@@ -159,19 +159,19 @@ if st.button("Run Analysis"):
     block_distances = trip_distances.groupby('block_id').agg({
         'shape_distance_km': 'sum',  # Sum distances for all trips in a block
         'route_id': 'unique',  # Collect unique route IDs (this will create an array, you can change to use only the first if needed)
-        'route_short_name': 'unique'  # Collect unique route names (same as above)
+        'shape_id': 'unique'  # Collect unique shape names (same as above)
     }).reset_index()
 
     # If you want to flatten the unique route IDs and names into single values or strings:
     block_distances['routes_in_block_id'] = block_distances['route_id'].apply(lambda x: x[0] if len(x) == 1 else x)  # Use first element if only one, else keep all
-    block_distances['routes_in_block_name'] = block_distances['route_short_name'].apply(lambda x: x[0] if len(x) == 1 else x)  # Same for route names
+    block_distances['routes_in_block_shapes'] = block_distances['shape_id'].apply(lambda x: x[0] if len(x) == 1 else x)  # Same for route names
 
     # Convert distances from km to miles
     block_distances['total_distance_miles'] = block_distances['shape_distance_km'] * 0.621371
 
     # Rename and reorder columns for clarity
     block_distances = block_distances[['block_id', 'total_distance_miles', 'route_id', 'route_short_name']]
-    block_distances.columns = ['block_id', 'total_distance_miles', 'routes_in_block_id', 'routes_in_block_name']
+    block_distances.columns = ['block_id', 'total_distance_miles', 'routes_in_block_id', 'routes_in_block_shapes']
 
     # Ensure departure_time is treated as a string
     stop_times['departure_time'] = stop_times['departure_time'].astype(str)
@@ -206,28 +206,41 @@ if st.button("Run Analysis"):
     weekday_trips = trips_with_times[trips_with_times['service_id'] == weekday_service_id].copy()
     weekday_trips = weekday_trips.merge(trip_distances[["trip_id", "shape_distance_miles"]], on="trip_id", how="left")
 
-    # Sort by block_id and trip start time
-    weekday_trips = weekday_trips.sort_values(by=['block_id', 'trip_start_time'])
 
-    # Sort the trips by block_id and trip_start_time
+    # Find start point (where shape_pt_sequence is 1)
+    start_points = shapes[shapes["shape_pt_sequence"] == 1][["shape_id", "shape_pt_lat", "shape_pt_lon"]]
+    start_points = start_points.rename(columns={"shape_pt_lat": "start_lat", "shape_pt_lon": "start_lon"})
+    
+    # Find end point (where shape_pt_sequence is the max for each shape_id)
+    end_points = shapes.loc[shapes.groupby("shape_id")["shape_pt_sequence"].idxmax(), ["shape_id", "shape_pt_lat", "shape_pt_lon"]]
+    end_points = end_points.rename(columns={"shape_pt_lat": "end_lat", "shape_pt_lon": "end_lon"})
+    
+    # Merge start and end points into weekday_trips
+    weekday_trips = weekday_trips.merge(start_points, on="shape_id", how="left")
+    weekday_trips = weekday_trips.merge(end_points, on="shape_id", how="left")
+    
+    # Sort by block_id and trip start time
     weekday_trips = weekday_trips.sort_values(by=['block_id', 'trip_start_time'])
 
     # Calculate the time gap between the current trip's trip_end_time and the next trip's trip_start_time in the same block
     weekday_trips['next_trip_start_time'] = weekday_trips.groupby('block_id')['trip_start_time'].shift(-1)
     weekday_trips['time_gap'] = (weekday_trips['next_trip_start_time'] - weekday_trips['trip_end_time']).dt.total_seconds() / 60  # Convert time gap to minutes
 
-    # List trips by their route_id for each block
     block_trip_routes = weekday_trips.groupby('block_id').agg(
         trips_by_route=('route_id', lambda x: list(x)),
         time_gaps=('time_gap', lambda x: list(x)),
-        distances_list=('shape_distance_miles', lambda x:list(x))
+        distances_list=('shape_distance_miles', lambda x:list(x)),
+        start_lat_list=('start_lat', lambda x: list(x)),  # Store unique latitudes
+        end_lat_list=('end_lat', lambda x: list(x)),  # Store unique end latitudes
+        start_lon_list=('start_lon', lambda x: list(x)),  # Store unique longitudes
+        end_lon_list=('end_lon', lambda x: list(x))  # Store unique end longitudes
     ).reset_index()
 
     block_general = pd.merge(block_distances, block_trip_routes, on='block_id', how='outer')
 
     # Calculate the sum of the time_gaps list, ignoring NaN values, and add it as a new column
     block_general['time_gaps_sum'] = block_general['time_gaps'].apply(lambda x: np.nansum(x) if isinstance(x, list) else np.nan)
-    del block_general["routes_in_block_name"]
+    #del block_general["routes_in_block_name"]
     block_general["time_gaps"] = block_general["time_gaps"].apply(lambda lst: [x for x in lst if not pd.isna(x)])
     block_general=block_general.sort_values(by=['total_distance_miles','time_gaps_sum'])
 
@@ -263,6 +276,26 @@ if st.button("Run Analysis"):
     center_lat = shapes['shape_pt_lat'].mean()
     center_lon = shapes['shape_pt_lon'].mean()
 
+    # Step 1: Filter blocks where total_distance_miles > Bus_range
+    filtered_blocks = block_general[block_general["total_distance_miles"] > Bus_range]
+    
+    # Step 2: Extract all lat/lon values into a new dataset (as separate rows)
+    lat_lon_pairs = []
+    
+    for _, row in filtered_blocks.iterrows():
+        # Ensure time_gaps and end_lat_list/end_lon_list have the same length
+        valid_end_lats = row["end_lat_list"][:-1]  # Disregard last value
+        valid_end_lons = row["end_lon_list"][:-1]
+        
+        # Add end lat/lon pairs only if the corresponding time_gaps value is > 0
+        lat_lon_pairs.extend(
+            (lat, lon) for lat, lon, gap in zip(valid_end_lats, valid_end_lons, row["time_gaps"]) if gap > 0
+        )
+    
+    # Step 3: Create proposed_locations DataFrame (ensuring unique locations)
+    proposed_locations = pd.DataFrame(lat_lon_pairs, columns=["lat", "lon"]).drop_duplicates().reset_index(drop=True)
+
+
     # # Create the map
     m = folium.Map(location=[center_lat, center_lon], zoom_start=11, tiles=None)
 
@@ -295,7 +328,9 @@ if st.button("Run Analysis"):
             shape_data = shapes[shapes['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
             folium.PolyLine(shape_coords, color=color, weight=3).add_to(m)
-    
+
+    for _, row in proposed_locations.iterrows():
+        folium.Marker(location=[row["lat"], row["lon"]], icon=folium.Icon(color="blue")).add_to(m)
 
     st.session_state["map"] = m
     st.session_state["routes_count"] = Total_number_routes
