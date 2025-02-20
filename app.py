@@ -56,8 +56,8 @@ st.title("Bus System Electrification Analysis")
 selected_agency = st.selectbox("Select the agency", agencies)
 
 # Request Bus range and charging power inputs
-Bus_range = st.number_input("Enter bus range (miles)", min_value=0, value=120, step=10)
-charging_power = st.number_input("Enter charging power (kW)", min_value=0, value=500, step=50)
+Bus_range = st.number_input("Enter bus range (miles)", min_value=0, value=150, step=10)
+charging_power = st.number_input("Enter wireless charging power (kW)", min_value=0, value=0, step=50)
 
 
 # Define parameters
