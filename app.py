@@ -50,7 +50,7 @@ agencies=["TheRide","Detroit","Rapid"]
 
 
 # Streamlit UI to select file and input parameters
-st.title("Bus System Electrification Analysis")
+st.title("**Bus System Electrification Analysis [Under construction]**")
 
 # Allow user to select a ZIP file from the allowed files
 selected_agency = st.selectbox("Select the agency", agencies)
@@ -312,5 +312,5 @@ if "map" in st.session_state:
     st.write(f"Number of blocks: {st.session_state['blocks_count']}")
     st.write(f"Number of infeasible blocks: {st.session_state['infeasible_blocks_count']}")
     st.write(f"Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
-    st.write(f"Minimum bus range without charging to cover all blocks is {st.session_state['minimum_range_without_charger']} miles.")
+    st.write(f"Minimum bus range to cover all blocks without en-route charging is {st.session_state['minimum_range_without_charger']} miles.")
     
