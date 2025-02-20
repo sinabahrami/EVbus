@@ -46,7 +46,7 @@ def convert_to_datetime_over_24(time_str):
 
 
 # List of allowed agency zip files
-agencies=["TheRide","Detroit","Rapid"]
+agencies=["TheRide","CATA","Detroit","Rapid"]
 
 
 # Streamlit UI to select file and input parameters
