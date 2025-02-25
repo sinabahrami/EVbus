@@ -51,15 +51,6 @@ agencies=["TheRide","Detroit"]
 
 # Streamlit UI to select file and input parameters
 #st.title("**Bus System Electrification Analysis** [Internal Testing Release]")
-st.markdown(
-    "<h1 style='text-align: center;'>Bus System Electrification Analysis</h1>", 
-    unsafe_allow_html=True
-)
-st.markdown(
-    "<h3 style='text-align: center; font-size: 14px; color: gray;'>[Internal Testing Release]</h3>", 
-    unsafe_allow_html=True
-)
-
 
 # Allow user to select a ZIP file from the allowed files
 selected_agency = st.selectbox("Select the agency", agencies)
