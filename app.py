@@ -52,12 +52,11 @@ agencies=["TheRide","Detroit"]
 # Streamlit UI to select file and input parameters
 #st.title("**Bus System Electrification Analysis** [Internal Testing Release]")
 st.markdown(
-    """
-    <div style="text-align: center;">
-        <h1><b>Bus System Electrification Analysis</b></h1>
-        <h3 style="font-size: 16px; color: gray;">[Internal Testing Release]</h3>
-    </div>
-    """,
+    "<h1 style='text-align: center;'>Bus System Electrification Analysis</h1>", 
+    unsafe_allow_html=True
+)
+st.markdown(
+    "<h3 style='text-align: center; font-size: 14px; color: gray;'>[Internal Testing Release]</h3>", 
     unsafe_allow_html=True
 )
 
@@ -405,4 +404,4 @@ if "map" in st.session_state:
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of charger locations is {st.session_state['num_locs']}.")
     st.write(f"See below the map of the routes and the selected charging points:")
-    st_folium(st.session_state["map"], width=800, height=500)
+    st_folium(st.session_state["map"], width=screen_width, height=screen_width)
