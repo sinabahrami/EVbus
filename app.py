@@ -255,9 +255,9 @@ if st.button("Run Analysis"):
     block_general["time_gaps"] = block_general["time_gaps"].apply(lambda lst: [x for x in lst if not pd.isna(x)])
     block_general=block_general.sort_values(by=['total_distance_miles','time_gaps_sum'])
 
-    # Count appearances in end_stop_id
-    end_counts = weekday_trips['end_stop_id'].value_counts()
-    top_end_stop_ids = end_counts.nlargest(2).index.tolist()
+    
+    
+    top_end_stop_ids = []
 
     # Apply function to blocks with total_distance_miles > Bus_range
     block_general["range_tracking"] = block_general.apply(
