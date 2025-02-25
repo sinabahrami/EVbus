@@ -371,8 +371,8 @@ if st.button("Run Analysis"):
         for shape_id in shape_ids:
             shape_data = shapes[shapes['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
-            folium.PolyLine(shape_coords, color=color, weight=2).add_to(route_group)
-            route_group.add_to(m)
+            folium.PolyLine(shape_coords, color=color, weight=2).add_to(m)
+            #route_group.add_to(m)
     
     #folium.LayerControl().add_to(m)
     
