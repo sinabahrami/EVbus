@@ -50,7 +50,7 @@ def convert_to_datetime_over_24(time_str):
 agencies=["TheRide","Detroit"]
 
 # Streamlit UI to select file and input parameters
-#st.title("**Bus System Electrification Analysis** [Internal Testing Release]")
+st.title("**Bus System Electrification Analysis** [Internal Testing Release]")
 
 # Allow user to select a ZIP file from the allowed files
 selected_agency = st.selectbox("Select the agency", agencies)
@@ -395,4 +395,4 @@ if "map" in st.session_state:
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of charger locations is {st.session_state['num_locs']}.")
     st.write(f"See below the map of the routes and the selected charging points:")
-    st_folium(st.session_state["map"], width=screen_width, height=screen_width)
+    st_folium(st.session_state["map"], width=1200, height=1000)
