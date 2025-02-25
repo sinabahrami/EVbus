@@ -47,7 +47,7 @@ def convert_to_datetime_over_24(time_str):
     return pd.to_timedelta(time_str)
 
 # List of allowed agency zip files
-agencies=["TheRide","Detroit Department of Transportation"]
+agencies=["The Ride","Detroit Department of Transportation"]
 
 # Streamlit UI to select file and input parameters
 st.title("**Bus System Electrification Analysis** [Internal Testing Release]")
