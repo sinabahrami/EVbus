@@ -85,7 +85,7 @@ if st.button("Run Analysis"):
     shape_route = trips[['route_id', 'shape_id']].drop_duplicates()
     shape_route = shape_route.merge(routes[['route_id','route_type','route_color']], on='route_id', how='left')
 
-    Total_number_routes = len(routes)
+    #Total_number_routes = len(routes)
     Num_stop = stops['stop_id'].nunique()
 
     # Define a mapping for the route_type values to their corresponding transportation modes
@@ -351,20 +351,20 @@ if st.button("Run Analysis"):
         opacity=0.6  # Set the desired opacity
     ).add_to(m)
 
-    # # Sort by modes for consistency
-    # ax = shape_route.sort_values(by='modes')
+    ax = shape_route.sort_values(by='modes')
 
-    # # Generate colors for routes
+    # Generate colors for routes
+    num_routes = len(ax['route_id'].unique())  
     colors = plt.colormaps.get_cmap('Dark2')  
-
-    # # Convert colors to hex format
-    color_list = [mcolors.to_hex(colors(i / Total_number_routes)) for i in range(Total_number_routes)]
-
-    # # Assign unique colors to each route_id
-    route_colors = {route_id: color_list[i] for i, route_id in enumerate(routes['route_id'].unique())}
-
+    
+    # Convert colors to hex format
+    color_list = [mcolors.to_hex(colors(i / num_routes)) for i in range(num_routes)]
+    
+    # Assign unique colors to each route_id
+    route_colors = {route_id: color_list[i] for i, route_id in enumerate(ax['route_id'].unique())}
+    
     # # Loop through each route_id and plot correctly
-    for route_id in routes['route_id'].unique():
+    for route_id in ax['route_id'].unique():
         color = route_colors[route_id]
         route_group = folium.FeatureGroup(name=f"Route: {route_id}")
         shape_ids = trips[trips['route_id'] == route_id]['shape_id'].unique()
@@ -377,7 +377,7 @@ if st.button("Run Analysis"):
         folium.Marker(location=[row["stop_lat"], row["stop_lon"]], icon=folium.Icon(color="blue")).add_to(m) 
 
     st.session_state["map"] = m
-    st.session_state["routes_count"] = Total_number_routes
+    st.session_state["routes_count"] = num_routes
     st.session_state["stops_count"] = Num_stop
     st.session_state["blocks_count"] = len(block_general)
     st.session_state["infeasible_blocks_count"] = len(infiseable_blocks)
