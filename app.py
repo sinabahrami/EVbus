@@ -371,7 +371,7 @@ if st.button("Run Analysis"):
         for shape_id in shape_ids:
             shape_data = shapes[shapes['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
-            folium.PolyLine(shape_coords, color=color, weight=3).add_to(m)
+            folium.PolyLine(shape_coords, color=color, weight=2).add_to(m)
 
     for _, row in proposed_locations.iterrows():
         folium.Marker(location=[row["stop_lat"], row["stop_lon"]], icon=folium.Icon(color="blue")).add_to(m) 
@@ -395,4 +395,4 @@ if "map" in st.session_state:
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of charger locations is {st.session_state['num_locs']}.")
     st.write(f"See below the map of the routes and the selected charging points:")
-    st_folium(st.session_state["map"], width=1200, height=700)
+    st_folium(st.session_state["map"], width=1000, height=700)
