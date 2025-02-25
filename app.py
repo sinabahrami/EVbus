@@ -395,4 +395,4 @@ if "map" in st.session_state:
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of blocks with range goes below {critical_range} miles: {st.session_state['critical_blocks_count']}")
     st.write(f"&nbsp;&nbsp;&nbsp;&nbsp; -Number of charger locations is {st.session_state['num_locs']}.")
     st.write(f"See below the map of the routes and the selected charging points:")
-    st_folium(st.session_state["map"], width=1200, height=600)
+    st_folium(st.session_state["map"])
