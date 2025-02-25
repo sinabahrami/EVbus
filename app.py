@@ -53,11 +53,14 @@ agencies=["TheRide","Detroit"]
 #st.title("**Bus System Electrification Analysis** [Internal Testing Release]")
 st.markdown(
     """
-    <h1 style="text-align: center;">Bus System Electrification Analysis</h1>
-    <h3 style="text-align: center; font-size: 16px; color: gray;">[Internal Testing Release]</h3>
+    <div style="text-align: center;">
+        <h1><b>Bus System Electrification Analysis</b></h1>
+        <h3 style="font-size: 16px; color: gray;">[Internal Testing Release]</h3>
+    </div>
     """,
     unsafe_allow_html=True
 )
+
 
 # Allow user to select a ZIP file from the allowed files
 selected_agency = st.selectbox("Select the agency", agencies)
