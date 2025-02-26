@@ -374,7 +374,7 @@ if st.button("Run Analysis"):
             folium.PolyLine(shape_coords, color=color, weight=2).add_to(m)
             #route_group.add_to(m)
     
-    #folium.LayerControl().add_to(m)
+    folium.LayerControl().add_to(m)
     
     for _, row in proposed_locations.iterrows():
         folium.Marker(location=[row["stop_lat"], row["stop_lon"]], icon=folium.Icon(color="blue")).add_to(m) 
