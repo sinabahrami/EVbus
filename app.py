@@ -52,7 +52,7 @@ def compute_range_tracking(distances, time_gaps, end_id_lists, bus_range, chargi
         # Increase range based on charging time
         if i < len(time_gaps):  # Ensure time_gaps is available
             if time_gaps[i] > min_stoppage_time and end_id_lists[i] in top_end_stop_ids:
-                charge_added = (charging_power * time_gaps[i]) / energy_usage
+                charge_added = (charging_power * (time_gaps[i]-min_stoppage_time)) / energy_usage
             else:
                 charge_added = 0
             current_range = min(bus_range, current_range + charge_added)
