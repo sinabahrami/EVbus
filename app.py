@@ -352,7 +352,7 @@ def main():
                 iteration_count = 0
                 max_iterations = 50  # Prevent infinite loops
                 
-                while infeasible_blocks and iteration_count < max_iterations:
+                while infeasible_blocks and iteration_count < stops['stop_id'].nunique(): #max_iterations:
                     previous_infeasible_count = len(infeasible_blocks)
                     
                     # Filter blocks
@@ -379,7 +379,8 @@ def main():
                     
                     # Select new charging locations
                     added_ids = set()
-                    added_ids.add(sorted_missing_ids[0])
+                    if len(sorted_missing_ids) > 0:
+                        added_ids.add(sorted_missing_ids[0])
                     
                     # for idx, row in enumerate(missing_ids_per_row):
                     #     if not any(eid in top_end_stop_ids or eid in added_ids for eid in row if pd.notna(eid)):
