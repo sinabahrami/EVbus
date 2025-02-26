@@ -433,7 +433,7 @@ def main():
                 
                 # Store results
                 st.session_state["map"] = bus_map
-                st.session_state["routes_count"] = len(routes)
+                st.session_state["routes_count"] = len(unique_routes)
                 st.session_state["stops_count"] = stops['stop_id'].nunique()
                 st.session_state["blocks_count"] = len(block_general)
                 st.session_state["infeasible_blocks_count"] = len(infeasible_blocks)
