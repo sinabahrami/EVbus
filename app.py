@@ -203,7 +203,7 @@ def main():
                 
                 if not all([stops, trips, routes, shapes, stop_times]):
                     st.error("Missing required GTFS files. Please check the ZIP file.")
-                    return
+                    #return
                 
                 # Clean and prepare data
                 stop_times = stop_times.sort_values(by=['trip_id', 'stop_sequence']).reset_index(drop=True)
@@ -440,7 +440,7 @@ def main():
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
-                return
+                #return
     
     # Display results if available
     if "map" in st.session_state:
