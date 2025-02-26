@@ -28,6 +28,8 @@ def load_gtfs_data(zip_file_path):
     return dataframes
 
 def convert_to_datetime_over_24(time_str):
+    if pd.isna(time_str) or time_str.lower() == "nan":
+        return np.nan  # Return NaN instead of processing
     """Convert GTFS time strings (including those over 24 hours) to timedelta."""
     hours, minutes, seconds = map(int, time_str.split(":"))
     if hours >= 24:
@@ -156,7 +158,7 @@ def main():
     )
     
     # List of allowed agency zip files
-    agencies = ["The Ride", "BATA", "Detroit Department of Transportation", "Smart", "UMich"]
+    agencies = ["The Ride", "BATA", "Detroit Department of Transportation", "JATA", "MAX", "Smart", "UMich"]
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
