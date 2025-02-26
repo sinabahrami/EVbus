@@ -82,7 +82,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     num_routes = len(unique_routes)
     
     # Generate colors for routes using a colormap
-    colormap = plt.cm.get_cmap('dark', num_routes)
+    colormap = plt.cm.get_cmap('Dark2', num_routes)
     colors = [mcolors.to_hex(colormap(i)) for i in range(num_routes)]
     route_colors = dict(zip(unique_routes, colors))
     
