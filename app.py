@@ -379,12 +379,14 @@ def main():
                     
                     # Select new charging locations
                     added_ids = set()
-                    for idx, row in enumerate(missing_ids_per_row):
-                        if not any(eid in top_end_stop_ids or eid in added_ids for eid in row if pd.notna(eid)):
-                            for new_id in sorted_missing_ids:
-                                if new_id in row:
-                                    added_ids.add(new_id)
-                                    break
+                    added_ids.add(sorted_missing_ids[0])
+                    
+                    # for idx, row in enumerate(missing_ids_per_row):
+                    #     if not any(eid in top_end_stop_ids or eid in added_ids for eid in row if pd.notna(eid)):
+                    #         for new_id in sorted_missing_ids:
+                    #             if new_id in row:
+                    #                 added_ids.add(new_id)
+                    #                 break
                     
                     # Update charging locations
                     top_end_stop_ids = list(set(top_end_stop_ids).union(added_ids))
