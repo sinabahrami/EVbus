@@ -161,7 +161,7 @@ def main():
     )
     
     # List of allowed agency zip files
-    agencies = ["TheRide (Ann Arbor-Ypsilanti)", "BATA", "Detroit Department of Transportation", "JATA", "MAX", "Smart", "UMich"]
+    agencies = ["TheRide (Ann Arbor-Ypsilanti)", "BATA", "DDOT (Detroit)", "MAX", "Smart", "UMich"]
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
@@ -175,15 +175,15 @@ def main():
         selected_agency = st.selectbox("Select the agency", agencies)
         
         # Energy and range parameters
-        st.subheader("Electric Bus Parameters")
-        bus_range = st.number_input("Bus range (miles)", min_value=0, value=150, step=10)
+        #st.subheader("Electric Bus Parameters")
+        bus_range = st.number_input("Electric bus range (miles)", min_value=0, value=150, step=10)
         charging_power = st.number_input("Charging power (kW)", min_value=0, value=250, step=50)
         
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
             energy_usage = st.number_input("Energy usage (kWmin/mile)", min_value=50, value=150, step=10)
             critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
-            min_stoppage_time = st.number_input("Minimum stoppage time for charging (min)", min_value=0, value=5, step=1)
+            min_stoppage_time = st.number_input("Charging setup time (min)", min_value=0, value=5, step=1)
         
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
