@@ -373,12 +373,12 @@ if st.button("Run Analysis"):
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
             folium.PolyLine(shape_coords, color=color, weight=2).add_to(route_group)
         route_group.add_to(m)
-    
-    folium.LayerControl().add_to(m)
-    
+        
     for _, row in proposed_locations.iterrows():
         folium.Marker(location=[row["stop_lat"], row["stop_lon"]], icon=folium.Icon(color="blue")).add_to(m) 
-
+  
+    folium.LayerControl().add_to(m)
+    
     st.session_state["map"] = m
     st.session_state["routes_count"] = num_routes
     st.session_state["stops_count"] = Num_stop
