@@ -177,7 +177,7 @@ def main():
         # Energy and range parameters
         st.subheader("Electric Bus Parameters")
         bus_range = st.number_input("Bus range (miles)", min_value=0, value=150, step=10)
-        charging_power = st.number_input("Wireless charging power (kW)", min_value=0, value=250, step=50)
+        charging_power = st.number_input("Charging power (kW)", min_value=0, value=250, step=50)
         
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
