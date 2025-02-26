@@ -83,7 +83,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     num_routes = len(unique_routes)
     
     # Generate colors for routes using a colormap
-    colormap = plt.cm.get_cmap('Dark2', num_routes)
+    colormap = plt.cm.get_cmap('Dark2_r', num_routes)
     colors = [mcolors.to_hex(colormap(i)) for i in range(num_routes)]
     route_colors = dict(zip(unique_routes, colors))
     
@@ -97,8 +97,9 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
         
         # Get the route color if available, otherwise use the generated color
         try:
-            route_color_info = routes_df[routes_df['route_id'] == route_id]['route_color'].iloc[0]
-            route_color = f"#{route_color_info}" if not pd.isna(route_color_info) else route_colors[route_id]
+            #route_color_info = routes_df[routes_df['route_id'] == route_id]['route_color'].iloc[0]
+            #route_color = f"#{route_color_info}" if not pd.isna(route_color_info) else route_colors[route_id]
+            route_color = route_colors[route_id]
         except (IndexError, KeyError):
             route_color = route_colors[route_id]
         
