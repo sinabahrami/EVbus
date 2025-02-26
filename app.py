@@ -28,15 +28,16 @@ def load_gtfs_data(zip_file_path):
     return dataframes
 
 def convert_to_datetime_over_24(time_str):
+    """Convert GTFS time strings (including those over 24 hours) to timedelta."""
     if pd.isna(time_str) or time_str.lower() == "nan":
         return np.nan  # Return NaN instead of processing
-    """Convert GTFS time strings (including those over 24 hours) to timedelta."""
-    hours, minutes, seconds = map(int, time_str.split(":"))
-    if hours >= 24:
-        days = hours // 24
-        hours = hours % 24
-        time_str = f"{days} days {hours:02}:{minutes:02}:{seconds:02}"
-    return pd.to_timedelta(time_str)
+    else:
+        hours, minutes, seconds = map(int, time_str.split(":"))
+        if hours >= 24:
+            days = hours // 24
+            hours = hours % 24
+            time_str = f"{days} days {hours:02}:{minutes:02}:{seconds:02}"
+        return pd.to_timedelta(time_str)
 
 def compute_range_tracking(distances, time_gaps, end_id_lists, bus_range, charging_power, energy_usage, min_stoppage_time, top_end_stop_ids):
     """Compute the range tracking for a bus over a sequence of trips."""
