@@ -412,7 +412,9 @@ def main():
                     blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
                     
                     # Break if no improvement
-                    if len(infeasible_blocks) >= previous_infeasible_count and len(infeasible_blocks) > 0:
+                    if len(infeasible_blocks) == previous_infeasible_count:
+                        top_end_stop_ids = list(set(top_end_stop_ids)-added_ids)
+                    elif len(infeasible_blocks) >= previous_infeasible_count and len(infeasible_blocks) > 0:
                         break
                     
                     iteration_count += 1
