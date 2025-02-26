@@ -448,18 +448,18 @@ def main():
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Total Routes", st.session_state['routes_count'])
-            st.metric("Total Stops", st.session_state['stops_count'])
-        
+            
         with col2:
-            st.metric("Total Blocks", st.session_state['blocks_count'])
-            st.metric("Min Range Required", f"{st.session_state['minimum_range_without_charger']} miles")
-        
+            st.metric("Total Stops", st.session_state['stops_count'])
+
         with col3:
-            st.metric("Infeasible Blocks", st.session_state['infeasible_blocks_count'])
-            st.metric("Proposed Charging Locations", st.session_state['num_locs'])
+            st.metric("Total Blocks", st.session_state['blocks_count'])
+            #st.metric("Infeasible Blocks", st.session_state['infeasible_blocks_count'])
+            #st.metric("Proposed Charging Locations", st.session_state['num_locs'])
         
         # Display additional information
         st.subheader("Analysis Results")
+        st.metric("Min Range Required to cover all blocks without charging", f"{st.session_state['minimum_range_without_charger']} miles")
         st.write(f"With the selected bus range of {bus_range} miles and charging power of {charging_power} kW:")
         
         if st.session_state['infeasible_blocks_count'] > 0:
