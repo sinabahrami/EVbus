@@ -111,8 +111,8 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
                 folium.PolyLine(
                     coordinates,
                     color=route_color,
-                    weight=3,
-                    opacity=0.8,
+                    weight=4,
+                    opacity=1,
                     tooltip=f"Route {route_id} - Shape {shape_id}"
                 ).add_to(route_group)
                 
@@ -120,8 +120,8 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
                 folium.PolyLine(
                     coordinates,
                     color=route_color,
-                    weight=3,
-                    opacity=0.8
+                    weight=4,
+                    opacity=1
                 ).add_to(all_routes)
         
         # Add the route group to the map
