@@ -156,7 +156,7 @@ def main():
     )
     
     # List of allowed agency zip files
-    agencies = ["The Ride", "Detroit Department of Transportation", "Smart", "UMich"]
+    agencies = ["The Ride", "BATA", "Detroit Department of Transportation", "Smart", "UMich"]
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
@@ -217,8 +217,8 @@ def main():
                         (calendar["monday"] == 1) &
                         (calendar["tuesday"] == 1) &
                         (calendar["wednesday"] == 1) &
-                        (calendar["thursday"] == 1) &
-                        (calendar["friday"] == 1)
+                        (calendar["thursday"] == 1) #&
+                        #(calendar["friday"] == 1)
                     ]["service_id"].iloc[0]
                 else:
                     # If no calendar.txt, use a default service_id
