@@ -71,6 +71,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
         attr='OpenStreetMap',
         name='OpenStreetMap',
         overlay=False,
+        opacity=0.6,
         control=True
     ).add_to(m)
     
@@ -112,7 +113,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
                     coordinates,
                     color=route_color,
                     weight=4,
-                    opacity=0.6,
+                    opacity=1,
                     tooltip=f"Route {route_id} - Shape {shape_id}"
                 ).add_to(route_group)
                 
@@ -121,7 +122,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
                     coordinates,
                     color=route_color,
                     weight=4,
-                    opacity=0.6
+                    opacity=1
                 ).add_to(all_routes)
         
         # Add the route group to the map
