@@ -352,7 +352,7 @@ def main():
                 iteration_count = 0
                 max_iterations = 50  # Prevent infinite loops
                 
-                while infeasible_blocks and iteration_count < stops['stop_id'].nunique(): #max_iterations:
+                while infeasible_blocks and iteration_count < stops['stop_id'].nunique(): 
                     previous_infeasible_count = len(infeasible_blocks)
                     
                     # Filter blocks
@@ -379,15 +379,13 @@ def main():
                     
                     # Select new charging locations
                     added_ids = set()
-                    if len(sorted_missing_ids) > 0:
-                        added_ids.add(sorted_missing_ids[0])
                     
-                    # for idx, row in enumerate(missing_ids_per_row):
-                    #     if not any(eid in top_end_stop_ids or eid in added_ids for eid in row if pd.notna(eid)):
-                    #         for new_id in sorted_missing_ids:
-                    #             if new_id in row:
-                    #                 added_ids.add(new_id)
-                    #                 break
+                    for idx, row in enumerate(missing_ids_per_row):
+                        if not any(eid in top_end_stop_ids or eid in added_ids for eid in row if pd.notna(eid)):
+                            for new_id in sorted_missing_ids:
+                                if new_id in row:
+                                    added_ids.add(new_id)
+                                    break
                     
                     # Update charging locations
                     top_end_stop_ids = list(set(top_end_stop_ids).union(added_ids))
@@ -412,12 +410,48 @@ def main():
                     blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
                     
                     # Break if no improvement
-                    if len(infeasible_blocks) == previous_infeasible_count:
-                        top_end_stop_ids = list(set(top_end_stop_ids)-added_ids)
-                    elif len(infeasible_blocks) >= previous_infeasible_count and len(infeasible_blocks) > 0:
+                    if len(infeasible_blocks) >= previous_infeasible_count and len(infeasible_blocks) > 0:
                         break
                     
                     iteration_count += 1
+
+                
+                for id in top_end_stop_ids:
+                    top_end_stop_ids.remove(id)
+                    block_general["range_tracking"] = block_general.apply(
+                        lambda row: compute_range_tracking(
+                            row["distances_list"], 
+                            row["time_gaps"], 
+                            row["end_id_list"],
+                            bus_range,
+                            charging_power,
+                            energy_usage,
+                            min_stoppage_time,
+                            top_end_stop_ids
+                        ),
+                        axis=1
+                    )
+                    infiseable_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
+                    if len(infiseable_blocks_copy)>len(infiseable_blocks):
+                        top_end_stop_ids.append(id)
+
+
+                block_general["range_tracking"] = block_general.apply(
+                        lambda row: compute_range_tracking(
+                            row["distances_list"], 
+                            row["time_gaps"], 
+                            row["end_id_list"],
+                            bus_range,
+                            charging_power,
+                            energy_usage,
+                            min_stoppage_time,
+                            top_end_stop_ids
+                        ),
+                        axis=1
+                    )
+                # Update infeasible blocks
+                infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
+                blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
                 
                 # Get proposed charging locations
                 selected_stops = pd.DataFrame(top_end_stop_ids, columns=["stop_id"])
