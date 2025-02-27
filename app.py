@@ -416,7 +416,7 @@ def main():
                     iteration_count += 1
 
                 
-                for id in top_end_stop_ids:
+                for id in top_end_stop_ids[:]:
                     top_end_stop_ids.remove(id)
                     block_general["range_tracking"] = block_general.apply(
                         lambda row: compute_range_tracking(
