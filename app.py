@@ -152,6 +152,26 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     
     return m
 
+def compute_shape_distances(df):
+    df = df.sort_values(by=["shape_id", "shape_pt_sequence"]).reset_index(drop=True)
+
+    df.loc[df["shape_pt_sequence"] == 1, "shape_dist_traveled"] = 0  # First point is 0
+
+    # Iterate over rows and calculate distance
+    for i in range(1, len(df)):  # Start from the second row
+        prev_row = df.iloc[i - 1]
+        current_row = df.iloc[i]
+
+        if pd.isna(current_row["shape_dist_traveled"]):  # Only calculate if missing
+            prev_coords = (prev_row["shape_pt_lat"], prev_row["shape_pt_lon"])
+            current_coords = (current_row["shape_pt_lat"], current_row["shape_pt_lon"])
+            distance = geodesic(prev_coords, current_coords).meters  # Distance in meters
+
+            df.loc[i, "shape_dist_traveled"] = prev_row["shape_dist_traveled"] + distance  # Cumulative sum
+
+    return df
+
+
 def main():
     # Set page config for a cleaner interface
     st.set_page_config(
@@ -209,6 +229,10 @@ def main():
                 if any(df is None or df.empty for df in [stops, trips, routes, shapes, stop_times]):
                     st.error("Missing required GTFS files. Please check the ZIP file.")
                     return
+
+                missing_rows = shapes.loc[pd.isna(shapes["shape_dist_traveled"])]
+                if not missing_rows.empty:
+                    shapes = compute_shape_distances(shapes)
                 
                 # Clean and prepare data
                 stop_times = stop_times.sort_values(by=['trip_id', 'stop_sequence']).reset_index(drop=True)
