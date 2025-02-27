@@ -431,8 +431,8 @@ def main():
                         ),
                         axis=1
                     )
-                    infiseable_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
-                    if len(infiseable_blocks_copy)>len(infiseable_blocks):
+                    infeasible_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
+                    if len(infeasible_blocks_copy)>len(infeasible_blocks):
                         top_end_stop_ids.append(id)
 
 
