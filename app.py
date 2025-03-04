@@ -60,7 +60,7 @@ def compute_range_tracking(distances, time_gaps, end_id_lists, bus_range, chargi
     
     return range_tracking
 
-def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_locations_df, center_lat, center_lon):
+def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
     """Create a folium map with routes and charging locations."""
     # Create the map with a specific location and zoom level
     m = folium.Map(location=[center_lat, center_lon], zoom_start=11)
@@ -132,6 +132,15 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     # Add the "All Routes" group to the map
     all_routes.add_to(m)
     
+    counter=1
+    for shape_id in wireless_track_shape_df['shape_id'].unique():
+        wireless_track_group = folium.FeatureGroup(name=f"Wireless track {counter}")
+        shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
+        shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
+        folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
+        counter+=1
+        wireless_track_group.add_to(m)
+
     # Create a feature group for charging locations
     charging_locations = folium.FeatureGroup(name="Proposed Charging Locations", show=True)
     
@@ -171,6 +180,42 @@ def compute_shape_distances(df):
 
     return df
 
+def compute_range_tracking_lane(distances, time_gaps,end_id_lists,shapeids,speeds):
+    range_tracking = [Bus_range]  # Initialize list with Bus_range
+    current_range = Bus_range  # Initialize range tracking variable
+    
+    for i in range(len(distances)):
+        # Decrease range by traveled distance
+        current_range -= distances[i]
+        if shapeids[i] in wireless_track_shapeids:
+            charge_added = float((((wireless_track_length/speeds[i])*60)*dynamic_wireless_charging_power)/energy_usage)
+        else:
+            charge_added =0
+        current_range = min(Bus_range, current_range + charge_added)
+        range_tracking.append(current_range)
+        
+        # Increase range based on charging time
+        if i < len(time_gaps):  # Ensure time_gaps is available
+            if time_gaps[i]>min_stoppage_time and end_id_lists[i] in top_end_stop_ids:
+                charge_added = (charging_power * time_gaps[i]) / energy_usage
+            else:
+                charge_added =0
+            current_range = min(Bus_range, current_range + charge_added)
+            range_tracking.append(current_range)
+    
+    return range_tracking
+
+def compute_group_counts(row):
+    shape_counts = row['shape_counts']
+    return {tuple(group): sum(shape_counts.get(shape, 0) for shape in group) for group in row['shape_id_groups']}
+
+def extract_shape_counts(row):
+    shape_counts = {}
+    for group, count in row.items():
+        for shape in group:
+            shape_counts[shape] = shape_counts.get(shape, 0) + count
+    return shape_counts
+
 
 def main():
     # Set page config for a cleaner interface
@@ -197,8 +242,9 @@ def main():
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
         bus_range = st.number_input("Electric bus range (miles)", min_value=0, value=150, step=10)
-        charging_power = st.number_input("Charging power (kW)", min_value=0, value=250, step=50)
-        
+        charging_power = st.number_input("Stationary Charging power (kW)", min_value=0, value=250, step=50)
+        dynamic_wireless_charging_power = st.number_input("Dyanmic Charging power (kW)", min_value=0, value=50, step=10)
+
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
             energy_usage = st.number_input("Energy usage (kWmin/mile)", min_value=50, value=150, step=10)
@@ -374,7 +420,6 @@ def main():
                 
                 # Iteratively select charging locations
                 iteration_count = 0
-                max_iterations = 50  # Prevent infinite loops
                 
                 while infeasible_blocks and iteration_count < stops['stop_id'].nunique(): 
                     previous_infeasible_count = len(infeasible_blocks)
@@ -439,44 +484,152 @@ def main():
                     
                     iteration_count += 1
 
+                wireless_track_shapeids=set()
+                wireless_track_length=0
+                wireless_track_shape = pd.DataFrame()
+
+                while len(infeasible_blocks)>0:
+                    # Filter block_general to keep only rows where block_id is in infeasible_blocks
+                    filtered_blocks = block_general[block_general["block_id"].isin(infeasible_blocks)].copy()
+                    
+                    filtered_blocks["estimate_required_length"]=-(
+                        filtered_blocks["range_tracking"].apply(min) * energy_usage * filtered_blocks["avg_speed_list"].apply(max)
+                    ) / (dynamic_wireless_charging_power * 60)
+
+                    # Count occurrences
+                    filtered_blocks["shape_counts"] = filtered_blocks["trips_by_route"].apply(Counter) 
+                    filtered_blocks["shape_id_groups"] = None  # Initialize column
+                    filtered_blocks = filtered_blocks.astype({"shape_id_groups": "object"})  # Force dtype to object
+
+                    for index, ids in filtered_blocks["routes_in_block_shapes"].items():
+                        groups=[]
+                        for shape_id in ids:
+                            direction_id = trips.loc[trips["shape_id"] == shape_id, "direction_id"].iloc[0]
+                            route_id = trips.loc[trips["shape_id"] == shape_id, "route_id"].iloc[0]
+                            found_group = False
+                            for group in groups:
+                                # Get the first shape_id in the group
+                                first_shape_id = group[0]
+                                # Get its direction_id and route_id
+                                first_direction_id = trips.loc[trips["shape_id"] == first_shape_id, "direction_id"].iloc[0]
+                                first_route_id = trips.loc[trips["shape_id"] == first_shape_id, "route_id"].iloc[0]
+                        
+                                # If both direction_id and route_id match, add the shape_id to this group
+                                if direction_id == first_direction_id and route_id == first_route_id:
+                                    group.append(shape_id)
+                                    found_group = True
+                                    break
+                    
+                            # If no group was found, create a new group for this shape_id
+                            if not found_group:
+                                groups.append([shape_id])       
+                        filtered_blocks.at[index, "shape_id_groups"] = groups
+                    
+                    filtered_blocks['group_counts'] = filtered_blocks.apply(compute_group_counts, axis=1)
+
+                    filtered_blocks['flattened_counts'] = filtered_blocks['group_counts'].apply(extract_shape_counts)
+
+                    # Step 2: Find common shape IDs across all rows
+                    common_shapes = set(filtered_blocks['flattened_counts'].iloc[0].keys()-wireless_track_shapeids)
+                    
+                    for i in range(1, len(filtered_blocks)):
+                        common_shapes.intersection_update(filtered_blocks['flattened_counts'].iloc[i].keys()-wireless_track_shapeids)
+
+                    # Step 3: If common shape IDs exist, find the one with the highest count sum
+                    if common_shapes:
+                        best_shape = max(common_shapes, key=lambda shape: sum(filtered_blocks['flattened_counts'].iloc[i][shape] for i in range(len(filtered_blocks))))
+                        track_shape_id = {best_shape}
+                    else:
+                        # If no common shape ID, return the highest count shape from each row
+                        highest_shapes = {max(row, key=row.get) for row in filtered_blocks['flattened_counts']}
+                        track_shape_id = highest_shapes
+                        
+                    # Compute the sum of counts for the selected shape IDs in each row
+                    filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(lambda row: sum(row[shape] for shape in track_shape_id if shape in row))
+
+                    filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
+
+
+                    overlap_data=[]
+                    for id in track_shape_id:
+                    # Filter for the target shape_id and other shape_ids
+                        target_shape_id = id
+                        target_route_id=trips.loc[trips["shape_id"] == target_shape_id, "route_id"].iloc[0]
+                        target_direction=trips.loc[trips["shape_id"] == target_shape_id, "direction_id"].iloc[0]
+                        target_shape=shapes[shapes["shape_id"] == target_shape_id]
+                        # Loop through each other shape_id
+                        for shape_id in set(shape_route["shape_id"].explode()):
+                            overlap=list()
+                            if target_direction==trips.loc[trips["shape_id"] == shape_id, "direction_id"].iloc[0] and target_route_id==trips.loc[trips["shape_id"] == shape_id, "route_id"].iloc[0]:
+                                overlapshapes=shapes[shapes["shape_id"] == shape_id]
+                                # Merge the target shape with each group based on matching lat-lon
+                                overlap = pd.merge(target_shape[["shape_pt_lat", "shape_pt_lon"]],
+                                                overlapshapes[["shape_pt_lat", "shape_pt_lon", "shape_pt_sequence","shape_dist_traveled"]],
+                                                on=["shape_pt_lat", "shape_pt_lon"],
+                                                how="inner")
+                                # Sort by shape_pt_sequence of the target shape
+                                overlap = overlap.sort_values(by="shape_pt_sequence")
+
+                                # Keep only unique shape_pt_sequence values (optional)
+                                overlap = overlap.drop_duplicates(subset=["shape_pt_sequence"])
+
+                                # Reset index (optional for clean output)
+                                overlap = overlap.reset_index(drop=True)
+
+                            # Calculate the overlap distance
+                            if len(overlap)>0:
+                                overlap.loc[0, "overlap_dist_traveled"]=0
+                                for i in range(1, len(overlap)):  # Start from the second row
+                                    if overlap.iloc[i]["shape_pt_sequence"]-overlap.iloc[i-1]["shape_pt_sequence"]==1:
+                                        distance = overlap.iloc[i]["shape_dist_traveled"]-overlap.iloc[i-1]["shape_dist_traveled"]  # Distance in meters
+                                    else:
+                                        distance = 0
+                                    
+                                    overlap.loc[i, "overlap_dist_traveled"] = overlap.loc[i-1, "overlap_dist_traveled"] + distance  # Cumulative sum
+                                overlap_data.append({"target_shape_id": target_shape_id,"overlap_shape_id": shape_id, "overlap_distance_mile": overlap.loc[i, "overlap_dist_traveled"]/1609})
+                    overlap_data=pd.DataFrame(overlap_data)
+
+                    wireless_track_length= wireless_track_length+min(max(filtered_blocks['estimate_length-per_shape']),min(overlap_data['overlap_distance_mile']))
+                    if target_direction==1: 
+                        filtered_shapes = target_shape[target_shape['shape_dist_traveled'] <= min(max(filtered_blocks['estimate_length-per_shape']), min(overlap_data['overlap_distance_mile'])) * 1609]
+                    else:
+                        filtered_shapes = target_shape[target_shape['shape_dist_traveled'] >= max(target_shape['shape_dist_traveled'])-min(max(filtered_blocks['estimate_length-per_shape']), min(overlap_data['overlap_distance_mile'])) * 1609]
+                    wireless_track_shape = pd.concat([wireless_track_shape, filtered_shapes], ignore_index=True)
+                    wireless_track_shapeids.update(set(overlap_data['overlap_shape_id'].explode()))
+                    
+                    if len(infeasible_blocks)>0:    
+                        filtered_blocks["new_range_tracking"] = filtered_blocks.apply(
+                            lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"]),
+                            axis=1
+                        )
+                        infeasible_blocks = filtered_blocks[filtered_blocks["new_range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
                 
-                for id in top_end_stop_ids[:]:
-                    top_end_stop_ids.remove(id)
+                for id in top_end_stop_ids[:]:  # Iterate over a copy
+                    top_end_stop_ids.remove(id)  # Remove safely
+
                     block_general["range_tracking"] = block_general.apply(
-                        lambda row: compute_range_tracking(
-                            row["distances_list"], 
-                            row["time_gaps"], 
-                            row["end_id_list"],
-                            bus_range,
-                            charging_power,
-                            energy_usage,
-                            min_stoppage_time,
-                            top_end_stop_ids
-                        ),
+                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"]),
                         axis=1
                     )
                     infeasible_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
-                    if len(infeasible_blocks_copy)>len(infeasible_blocks):
-                        top_end_stop_ids.append(id)
+                    
+                    if len(infeasible_blocks_copy) > len(infeasible_blocks):
+                        top_end_stop_ids.append(id)  # Add back if necessary
 
-
+                # Apply function to blocks with total_distance_miles > Bus_range
                 block_general["range_tracking"] = block_general.apply(
-                        lambda row: compute_range_tracking(
-                            row["distances_list"], 
-                            row["time_gaps"], 
-                            row["end_id_list"],
-                            bus_range,
-                            charging_power,
-                            energy_usage,
-                            min_stoppage_time,
-                            top_end_stop_ids
-                        ),
-                        axis=1
-                    )
-                # Update infeasible blocks
-                infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
-                blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
+                    lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"]),
+                    axis=1
+                )
+
                 
+                # Identify infeasible block_ids where any range_tracking value is negative
+                infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
+
+                # Identify block_ids where any range_tracking value is below critical_range
+                blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist() 
+
+                                
                 # Get proposed charging locations
                 selected_stops = pd.DataFrame(top_end_stop_ids, columns=["stop_id"])
                 proposed_locations = selected_stops.merge(stops[["stop_id", "stop_lat", "stop_lon"]], on="stop_id", how="left")
@@ -492,6 +645,7 @@ def main():
                     routes,
                     trips,
                     proposed_locations,
+                    wireless_track_shape,
                     center_lat,
                     center_lon
                 )
