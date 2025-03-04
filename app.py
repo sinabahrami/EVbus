@@ -83,8 +83,8 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     num_routes = len(unique_routes)
     
     # Generate colors for routes using a colormap
-    colormap = plt.cm.get_cmap('tab20b', num_routes)
-    colors = [mcolors.to_hex(colormap(i)) for i in range(num_routes)]
+    colormap = matplotlib.colormaps.get_cmap('tab20b')  # Only pass the colormap name
+    colors = [mcolors.to_hex(colormap(i / (num_routes - 1))) for i in range(num_routes)]  # Normalize indices
     route_colors = dict(zip(unique_routes, colors))
     
     # Add route lines to the map
@@ -131,15 +131,16 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     
     # Add the "All Routes" group to the map
     all_routes.add_to(m)
-    
-    counter=1
-    for shape_id in wireless_track_shape_df['shape_id'].unique():
-        wireless_track_group = folium.FeatureGroup(name=f"Wireless track {counter}")
-        shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
-        shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
-        folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
-        counter+=1
-        wireless_track_group.add_to(m)
+
+    if not wireless_track_shape_df.empty:
+        counter=1
+        for shape_id in wireless_track_shape_df['shape_id'].unique():
+            wireless_track_group = folium.FeatureGroup(name=f"Wireless track {counter}")
+            shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
+            shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
+            folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
+            counter+=1
+            wireless_track_group.add_to(m)
 
     # Create a feature group for charging locations
     charging_locations = folium.FeatureGroup(name="Proposed Charging Locations", show=True)
