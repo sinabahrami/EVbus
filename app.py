@@ -380,6 +380,7 @@ def main():
                     trips_by_route=('route_id', lambda x: list(x)),
                     time_gaps=('time_gap', lambda x: list(x)),
                     distances_list=('shape_distance_miles', lambda x: list(x)),
+                    avg_speed_list=('trip_speed', lambda x:list(x)),
                     start_lat_list=('start_lat', lambda x: list(x)),
                     end_lat_list=('end_lat', lambda x: list(x)),
                     start_lon_list=('start_lon', lambda x: list(x)),
