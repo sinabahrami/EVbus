@@ -10,6 +10,7 @@ from geopy.distance import geodesic
 from collections import Counter
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
