@@ -701,7 +701,7 @@ def main():
         
         st.write(f"- {st.session_state['critical_blocks_count']} blocks have range dropping below the critical threshold of {critical_range} miles.")
         st.write(f"- {st.session_state['num_locs']} charging locations are needed.")
-        st.write(f"- Wireless track length is {st.session_state["wireless_track"]} miles.")
+        st.write(f"- Wireless track length is {st.session_state['wireless_track']} miles.")
         
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
