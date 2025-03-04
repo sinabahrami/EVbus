@@ -346,6 +346,7 @@ def main():
                 weekday_trips = weekday_trips.sort_values(by=['block_id', 'trip_start_time'])
                 weekday_trips['next_trip_start_time'] = weekday_trips.groupby('block_id')['trip_start_time'].shift(-1)
                 weekday_trips['time_gap'] = (weekday_trips['next_trip_start_time'] - weekday_trips['trip_end_time']).dt.total_seconds() / 60
+                weekday_trips["trip_speed"] = weekday_trips['shape_distance_miles']/((weekday_trips['trip_end_time'] - weekday_trips['trip_start_time']).dt.total_seconds() / 3600) #mile per hour
                 
                 # Get start and end stop IDs
                 weekday_trips = weekday_trips.merge(
