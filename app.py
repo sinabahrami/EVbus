@@ -181,8 +181,8 @@ def compute_shape_distances(df):
     return df
 
 def compute_range_tracking_lane(distances, time_gaps,end_id_lists,shapeids,speeds):
-    range_tracking = [Bus_range]  # Initialize list with Bus_range
-    current_range = Bus_range  # Initialize range tracking variable
+    range_tracking = [bus_range]  # Initialize list with Bus_range
+    current_range = bus_range  # Initialize range tracking variable
     
     for i in range(len(distances)):
         # Decrease range by traveled distance
@@ -191,7 +191,7 @@ def compute_range_tracking_lane(distances, time_gaps,end_id_lists,shapeids,speed
             charge_added = float((((wireless_track_length/speeds[i])*60)*dynamic_wireless_charging_power)/energy_usage)
         else:
             charge_added =0
-        current_range = min(Bus_range, current_range + charge_added)
+        current_range = min(bus_range, current_range + charge_added)
         range_tracking.append(current_range)
         
         # Increase range based on charging time
@@ -200,7 +200,7 @@ def compute_range_tracking_lane(distances, time_gaps,end_id_lists,shapeids,speed
                 charge_added = (charging_power * time_gaps[i]) / energy_usage
             else:
                 charge_added =0
-            current_range = min(Bus_range, current_range + charge_added)
+            current_range = min(bus_range, current_range + charge_added)
             range_tracking.append(current_range)
     
     return range_tracking
