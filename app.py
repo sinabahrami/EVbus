@@ -668,7 +668,7 @@ def main():
                 st.session_state["critical_blocks_count"] = len(blocks_below_critical)
                 st.session_state["minimum_range_without_charger"] = min_range_without_charging
                 st.session_state["num_locs"] = len(proposed_locations)
-                st.session_state["wireless_track]= wireless_track_length
+                st.session_state["wireless_track"]= wireless_track_length
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
@@ -701,7 +701,7 @@ def main():
         
         st.write(f"- {st.session_state['critical_blocks_count']} blocks have range dropping below the critical threshold of {critical_range} miles.")
         st.write(f"- {st.session_state['num_locs']} charging locations are needed.")
-        st.write(f"- Wireless track length is {st.session_state["wireless_track]} miles.")
+        st.write(f"- Wireless track length is {st.session_state["wireless_track"]} miles.")
         
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
