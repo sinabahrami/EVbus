@@ -132,14 +132,14 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     # Add the "All Routes" group to the map
     all_routes.add_to(m)
     
-    counter=1
-    for shape_id in wireless_track_shape_df['shape_id'].unique():
-        wireless_track_group = folium.FeatureGroup(name=f"Wireless track {counter}")
-        shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
-        shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
-        folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
-        counter+=1
-        wireless_track_group.add_to(m)
+    # counter=1
+    # for shape_id in wireless_track_shape_df['shape_id'].unique():
+    #     wireless_track_group = folium.FeatureGroup(name=f"Wireless track {counter}")
+    #     shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
+    #     shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
+    #     folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
+    #     counter+=1
+    #     wireless_track_group.add_to(m)
 
     # Create a feature group for charging locations
     charging_locations = folium.FeatureGroup(name="Proposed Charging Locations", show=True)
