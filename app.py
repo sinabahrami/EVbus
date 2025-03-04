@@ -381,7 +381,7 @@ def main():
                 
                 # Group trips by block
                 block_trip_routes = weekday_trips.groupby('block_id').agg(
-                    trips_by_route=('route_id', lambda x: list(x)),
+                    trips_by_route=('shape_id', lambda x: list(x)),
                     time_gaps=('time_gap', lambda x: list(x)),
                     distances_list=('shape_distance_miles', lambda x: list(x)),
                     avg_speed_list=('trip_speed', lambda x:list(x)),
@@ -668,7 +668,7 @@ def main():
                 st.session_state["critical_blocks_count"] = len(blocks_below_critical)
                 st.session_state["minimum_range_without_charger"] = min_range_without_charging
                 st.session_state["num_locs"] = len(proposed_locations)
-                st.session_state["lengthlength"]= wireless_track_length
+                st.session_state["wirelesslength"]= wireless_track_length
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
@@ -701,7 +701,7 @@ def main():
         
         st.write(f"- {st.session_state['critical_blocks_count']} blocks have range dropping below the critical threshold of {critical_range} miles.")
         st.write(f"- {st.session_state['num_locs']} charging locations are needed.")
-        st.write(f"- {st.session_state['lengthlength']} miles.")
+        st.write(f"- Wireless track length is {st.session_state['wirelesslength']} miles.")
         
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
