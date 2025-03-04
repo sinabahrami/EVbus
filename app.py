@@ -493,9 +493,8 @@ def main():
                 wireless_track_length=0
                 wireless_track_shape = pd.DataFrame()
 
-                iteration_count=1
-                while len(infeasible_blocks)>0 and iteration_count<=5:
-                    iteration_count +=1
+                
+                while len(infeasible_blocks)>0:
                     # Filter block_general to keep only rows where block_id is in infeasible_blocks
                     filtered_blocks = block_general[block_general["block_id"].isin(infeasible_blocks)].copy()
                     
