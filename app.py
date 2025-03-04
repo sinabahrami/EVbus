@@ -180,7 +180,7 @@ def compute_shape_distances(df):
 
     return df
 
-def compute_range_tracking_lane(distances, time_gaps,end_id_lists,shapeids,speeds, bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids):
+def compute_range_tracking_lane(distances, time_gaps,end_id_lists,shapeids,speeds, bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids):
     range_tracking = [bus_range]  # Initialize list with Bus_range
     current_range = bus_range  # Initialize range tracking variable
     
@@ -604,7 +604,7 @@ def main():
                     
                     if len(infeasible_blocks)>0:    
                         filtered_blocks["new_range_tracking"] = filtered_blocks.apply(
-                            lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"], bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids),
+                            lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"], bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids),
                             axis=1
                         )
                         infeasible_blocks = filtered_blocks[filtered_blocks["new_range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -613,7 +613,7 @@ def main():
                     top_end_stop_ids.remove(id)  # Remove safely
 
                     block_general["range_tracking"] = block_general.apply(
-                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"], bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids),
+                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"], bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids),
                         axis=1
                     )
                     infeasible_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -623,7 +623,7 @@ def main():
 
                 # Apply function to blocks with total_distance_miles > Bus_range
                 block_general["range_tracking"] = block_general.apply(
-                    lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"], bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids),
+                    lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"], bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids),
                     axis=1
                 )
 
