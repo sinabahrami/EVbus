@@ -285,6 +285,9 @@ def main():
                 stop_times['stop_sequence'] = stop_times.groupby('trip_id').cumcount() + 1
                 shapes = shapes.sort_values(by=['shape_id', 'shape_pt_sequence']).reset_index(drop=True)
                 shapes['shape_pt_sequence'] = shapes.groupby('shape_id').cumcount() + 1
+
+                shape_route = trips[['route_id', 'shape_id']].drop_duplicates()
+                shape_route = shape_route.merge(routes[['route_id','route_type','route_color']], on='route_id', how='left')
                 
                 # Get service ID for weekdays
                 if calendar is not None:
