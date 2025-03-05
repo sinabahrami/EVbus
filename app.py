@@ -67,14 +67,14 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     m = folium.Map(location=[center_lat, center_lon], zoom_start=11)
     
     # Add OpenStreetMap tile layer
-    folium.TileLayer(
-        tiles='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attr='OpenStreetMap',
-        name='OpenStreetMap',
-        overlay=False,
-        opacity=0.6,
-        control=True
-    ).add_to(m)
+    # folium.TileLayer(
+    #     tiles='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    #     attr='OpenStreetMap',
+    #     name='OpenStreetMap',
+    #     overlay=False,
+    #     opacity=0.6,
+    #     control=True
+    # ).add_to(m)
     
     # Create a feature group for all routes
     all_routes = folium.FeatureGroup(name="All Routes", show=True)
