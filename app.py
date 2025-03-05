@@ -251,8 +251,9 @@ def main():
         with st.expander("Advanced Parameters"):
             min_stoppage_time = st.number_input("Stationary charging setup time (min)", min_value=0, value=5, step=1)
             energy_usage = st.number_input("Bus energy usage (kWmin/mile)", min_value=50, value=150, step=10)
-            critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
+            #critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             
+        critical_range=20
         
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
@@ -704,12 +705,12 @@ def main():
         else:
             st.success("✅ All blocks can be served.")
             
-        if st.session_state['critical_blocks_count'] > 1:
-            st.write(f"- For {st.session_state['critical_blocks_count']} blocks, the bus range falls below the crucial threshold of {critical_range} miles.")
-        elif st.session_state['critical_blocks_count'] ==1:
-            st.write(f"- For {st.session_state['critical_blocks_count']} block, the bus range falls below the crucial threshold of {critical_range} miles.")
-        else:
-            st.write(f"- No blocks have a range that drops below the critical threshold of {critical_range} miles.")
+        # if st.session_state['critical_blocks_count'] > 1:
+        #     st.write(f"- For {st.session_state['critical_blocks_count']} blocks, the bus range falls below the crucial threshold of {critical_range} miles.")
+        # elif st.session_state['critical_blocks_count'] ==1:
+        #     st.write(f"- For {st.session_state['critical_blocks_count']} block, the bus range falls below the crucial threshold of {critical_range} miles.")
+        # else:
+        #     st.write(f"- No blocks have a range that drops below the critical threshold of {critical_range} miles.")
         
         if st.session_state['num_locs'] >1: 
             st.write(f"- {st.session_state['num_locs']} stationary charging locations are needed.")
