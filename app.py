@@ -245,13 +245,14 @@ def main():
         #st.subheader("Electric Bus Parameters")
         bus_range = st.number_input("Electric bus range (miles)", min_value=0, value=150, step=10)
         charging_power = st.number_input("Stationary Charging power (kW)", min_value=0, value=250, step=50)
-        dynamic_wireless_charging_power = st.number_input("Dyanmic Charging power (kW)", min_value=0, value=50, step=10)
+        dynamic_wireless_charging_power = st.number_input("Dynamic Charging power (kW)", min_value=0, value=50, step=10)
 
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
-            energy_usage = st.number_input("Energy usage (kWmin/mile)", min_value=50, value=150, step=10)
-            critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             min_stoppage_time = st.number_input("Stationary charging setup time (min)", min_value=0, value=5, step=1)
+            energy_usage = st.number_input("Bus energy usage (kWmin/mile)", min_value=50, value=150, step=10)
+            critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
+            
         
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
@@ -694,16 +695,29 @@ def main():
         # Display additional information
         st.subheader("Analysis Results")
         st.metric("Min Range Required to cover all blocks without charging", f"{st.session_state['minimum_range_without_charger']} miles")
-        st.write(f"With the selected bus range of {bus_range} miles and charging power of {charging_power} kW:")
+        st.write(f"With the selected configurations:")
         
-        if st.session_state['infeasible_blocks_count'] > 0:
-            st.warning(f"⚠️ {st.session_state['infeasible_blocks_count']} blocks cannot be served with the current configuration.")
+        if st.session_state['infeasible_blocks_count'] > 1:
+            st.warning(f"⚠️ {st.session_state['infeasible_blocks_count']} blocks cannot be served.")
+        elif st.session_state['infeasible_blocks_count'] == 1:
+            st.warning(f"⚠️ {st.session_state['infeasible_blocks_count']} block cannot be served.") 
         else:
-            st.success("✅ All blocks can be served with the current configuration.")
-        
-        st.write(f"- {st.session_state['critical_blocks_count']} blocks have range dropping below the critical threshold of {critical_range} miles.")
-        st.write(f"- {st.session_state['num_locs']} charging locations are needed.")
-        st.write(f"- Wireless track length is {st.session_state['wirelesslength']} miles.")
+            st.success("✅ All blocks can be served.")
+            
+        if {st.session_state['critical_blocks_count']} > 1:
+            st.write(f"- For {st.session_state['critical_blocks_count']} blocks, the bus range falls below the crucial threshold of {critical_range} miles.")
+        elif {st.session_state['critical_blocks_count']} ==1:
+            st.write(f"- For {st.session_state['critical_blocks_count']} block, the bus range falls below the crucial threshold of {critical_range} miles.")
+        else:
+            st.write(f"- No blocks have a range that drops below the critical threshold of {critical_range} miles.")
+        if {st.session_state['num_locs']} >1: 
+            st.write(f"- {st.session_state['num_locs']} stationary charging locations are needed.")
+        elif {st.session_state['num_locs']} ==1: 
+            st.write(f"- {st.session_state['num_locs']} stationary charging location is needed.")
+        else:
+            st.write(f"- No stationary charging location is needed.")
+            
+        st.write(f"- The total length of the dynamic wireless track is {st.session_state['wirelesslength']} miles.")
         
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
