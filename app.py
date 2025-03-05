@@ -64,15 +64,15 @@ def compute_range_tracking(distances, time_gaps, end_id_lists, bus_range, chargi
 def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
     """Create a folium map with routes and charging locations."""
     # Create the map with a specific location and zoom level
-    m = folium.Map(location=[center_lat, center_lon], zoom_start=11)
+    m = folium.Map(location=[center_lat, center_lon], zoom_start=11, tiles=None)
     
     # Add OpenStreetMap tile layer
     folium.TileLayer(
         tiles='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         attr='OpenStreetMap',
-        name='OpenStreetMap',
+        name='Open Street Map',
         overlay=False,
-        opacity=0.6,
+        opacity=0.5,
         control=True
     ).add_to(m)
     
