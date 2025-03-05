@@ -243,14 +243,14 @@ def main():
         
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
-        bus_range = st.number_input("Electric bus range (miles)", min_value=0, value=150, step=10)
+        bus_range = st.number_input("Electric bus range (miles)", min_value=5, value=150, step=10)
         charging_power = st.number_input("Stationary Charging power (kW)", min_value=0, value=250, step=50)
-        dynamic_wireless_charging_power = st.number_input("Dynamic Charging power (kW)", min_value=0, value=50, step=10)
+        dynamic_wireless_charging_power = st.number_input("Dynamic Charging power (kW)", min_value=0, value=0, step=10)
 
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
-            min_stoppage_time = st.number_input("Stationary charging setup time (min)", min_value=0, value=5, step=1)
-            energy_usage = st.number_input("Bus energy usage (kWmin/mile)", min_value=50, value=150, step=10)
+            min_stoppage_time = st.number_input("Stationary charging setup time (min)", min_value=0, value=0, step=1)
+            energy_usage = st.number_input("Bus energy usage (kWmin/mile)", min_value=5, value=150, step=10)
             #critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             
         critical_range=20
