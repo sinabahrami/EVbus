@@ -704,15 +704,16 @@ def main():
         else:
             st.success("✅ All blocks can be served.")
             
-        if {st.session_state['critical_blocks_count']} > 1:
+        if st.session_state['critical_blocks_count'] > 1:
             st.write(f"- For {st.session_state['critical_blocks_count']} blocks, the bus range falls below the crucial threshold of {critical_range} miles.")
-        elif {st.session_state['critical_blocks_count']} ==1:
+        elif st.session_state['critical_blocks_count'] ==1:
             st.write(f"- For {st.session_state['critical_blocks_count']} block, the bus range falls below the crucial threshold of {critical_range} miles.")
         else:
             st.write(f"- No blocks have a range that drops below the critical threshold of {critical_range} miles.")
-        if {st.session_state['num_locs']} >1: 
+        
+        if st.session_state['num_locs'] >1: 
             st.write(f"- {st.session_state['num_locs']} stationary charging locations are needed.")
-        elif {st.session_state['num_locs']} ==1: 
+        elif st.session_state['num_locs'] ==1: 
             st.write(f"- {st.session_state['num_locs']} stationary charging location is needed.")
         else:
             st.write(f"- No stationary charging location is needed.")
