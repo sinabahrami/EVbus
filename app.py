@@ -304,9 +304,9 @@ def main():
                     # Compute geodesic distance (meters)
                     computed_distance_meter = geodesic((lat1, lon1), (lat2, lon2)).meters
                     computed_distance_feet = geodesic((lat1, lon1), (lat2, lon2)).feet
-                    print(reported_distance)
-                    print(computed_distance_meter)
-                    print(computed_distance_feet)
+                    st.write(f"{reported_distance}")
+                    st.write(f"{computed_distance_meter}")
+                    st.write(f"{computed_distance_feet}")
                     # Get the reported shape_dist_traveled difference
                     reported_distance = sample_shape.iloc[1]['shape_dist_traveled'] - sample_shape.iloc[0]['shape_dist_traveled']
                     if abs(computed_distance_meter - reported_distance) < 0.5:  # Small threshold for rounding errors
