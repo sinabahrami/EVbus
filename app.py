@@ -298,9 +298,6 @@ def main():
                     # Create new columns for reported and computed distances
                     sample_shape['reported_distance'] = None
                     sample_shape['computed_distance_meter'] = None
-                    # sample_shape['computed_distance_feet'] = None
-                    # sample_shape['computed_distance_km'] = None
-                    # sample_shape['computed_distance_mile'] = None
                     sample_shape['shape_dist_flag'] = None
                     for i in range(len(sample_shape) - 1):
                         reported_distance = sample_shape.iloc[i + 1]['shape_dist_traveled'] - sample_shape.iloc[i]['shape_dist_traveled']
@@ -312,11 +309,10 @@ def main():
                 
                         sample_shape.loc[sample_shape.index[i], 'reported_distance'] = reported_distance
                         sample_shape.loc[sample_shape.index[i], 'computed_distance_meter'] = computed_distance_meter
-                        # sample_shape.loc[sample_shape.index[i], 'computed_distance_feet'] = computed_distance_feet
                 
                         if abs(computed_distance_meter - reported_distance) < 0.5:  # Small threshold for rounding errors
                             sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 1
-                        elif abs(computed_distance_meter/3.281 - reported_distance) < 0.5:
+                        elif abs(computed_distance_meter*3.281 - reported_distance) < 0.5:
                             sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 2
                         elif abs(computed_distance_meter/1000 - reported_distance) < 0.5:
                             sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 3
