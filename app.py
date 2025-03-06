@@ -293,11 +293,14 @@ def main():
                 else:
                     # Select a sample shape_id
                     sample_shape_id = shapes['shape_id'].iloc[0]  # Pick the first shape_id
-                    # Get the first two points of that shape_id
-                    sample_shape = shapes[shapes['shape_id'] == sample_shape_id].sort_values(by='shape_pt_sequence').iloc[:2]
-                    # Extract coordinates
-                    lat1, lon1 = sample_shape.iloc[0]['shape_pt_lat'], sample_shape.iloc[0]['shape_pt_lon']
-                    lat2, lon2 = sample_shape.iloc[1]['shape_pt_lat'], sample_shape.iloc[1]['shape_pt_lon']
+                    sample_shape = shapes[shapes['shape_id'] == sample_shape_id].sort_values(by='shape_pt_sequence')
+                    for i in range(len(sample_shape) - 1):
+                        reported_distance = sample_shape.iloc[i + 1]['shape_dist_traveled'] - sample_shape.iloc[i]['shape_dist_traveled']
+                        if reported_distance > 10:
+                            # Extract coordinates
+                            lat1, lon1 = sample_shape.iloc[i]['shape_pt_lat'], sample_shape.iloc[i]['shape_pt_lon']
+                            lat2, lon2 = sample_shape.iloc[i + 1]['shape_pt_lat'], sample_shape.iloc[i + 1]['shape_pt_lon']
+                            break
                     # Compute geodesic distance (meters)
                     computed_distance_meter = geodesic((lat1, lon1), (lat2, lon2)).meters
                     computed_distance_feet = geodesic((lat1, lon1), (lat2, lon2)).feet
