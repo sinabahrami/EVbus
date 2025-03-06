@@ -289,25 +289,40 @@ def main():
                 missing_rows = shapes.loc[pd.isna(shapes["shape_dist_traveled"])]
                 if not missing_rows.empty:
                     shapes = compute_shape_distances(shapes)
-                    shape_dist_flag=1 #[1: meter, 2:feet]
+                    shape_dist_flag=1 #[1: meter, 2:feet, 3:km, 4:mile]
                 else:
                     # Select a sample shape_id
                     sample_shape_id = shapes['shape_id'].iloc[0]  # Pick the first shape_id
+                    # Get the first two points of that shape_id
                     sample_shape = shapes[shapes['shape_id'] == sample_shape_id].sort_values(by='shape_pt_sequence')
+                    # Create new columns for reported and computed distances
+                    sample_shape['reported_distance'] = None
+                    sample_shape['computed_distance_meter'] = None
+                    # sample_shape['computed_distance_feet'] = None
+                    # sample_shape['computed_distance_km'] = None
+                    # sample_shape['computed_distance_mile'] = None
+                    sample_shape['shape_dist_flag'] = None
                     for i in range(len(sample_shape) - 1):
                         reported_distance = sample_shape.iloc[i + 1]['shape_dist_traveled'] - sample_shape.iloc[i]['shape_dist_traveled']
-                        if reported_distance > 10:
-                            # Extract coordinates
-                            lat1, lon1 = sample_shape.iloc[i]['shape_pt_lat'], sample_shape.iloc[i]['shape_pt_lon']
-                            lat2, lon2 = sample_shape.iloc[i + 1]['shape_pt_lat'], sample_shape.iloc[i + 1]['shape_pt_lon']
-                            break
-                    # Compute geodesic distance (meters)
-                    computed_distance_meter = geodesic((lat1, lon1), (lat2, lon2)).meters
-                    computed_distance_feet = geodesic((lat1, lon1), (lat2, lon2)).feet
-                    if abs(computed_distance_meter - reported_distance) < 0.5:  # Small threshold for rounding errors
-                        shape_dist_flag=1
-                    elif abs(computed_distance_feet - reported_distance) < 0.5:
-                        shape_dist_flag=2
+                        # Extract coordinates
+                        lat1, lon1 = sample_shape.iloc[i]['shape_pt_lat'], sample_shape.iloc[i]['shape_pt_lon']
+                        lat2, lon2 = sample_shape.iloc[i + 1]['shape_pt_lat'], sample_shape.iloc[i + 1]['shape_pt_lon']  
+                        # Compute geodesic distance (meters)
+                        computed_distance_meter = geodesic((lat1, lon1), (lat2, lon2)).meters
+                
+                        sample_shape.loc[sample_shape.index[i], 'reported_distance'] = reported_distance
+                        sample_shape.loc[sample_shape.index[i], 'computed_distance_meter'] = computed_distance_meter
+                        # sample_shape.loc[sample_shape.index[i], 'computed_distance_feet'] = computed_distance_feet
+                
+                        if abs(computed_distance_meter - reported_distance) < 0.5:  # Small threshold for rounding errors
+                            sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 1
+                        elif abs(computed_distance_meter/3.281 - reported_distance) < 0.5:
+                            sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 2
+                        elif abs(computed_distance_meter/1000 - reported_distance) < 0.5:
+                            sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 3
+                        elif abs(computed_distance_meter/1609 - reported_distance) < 0.5:
+                            sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 4
+                    shape_dist_flag=sample_shape['shape_dist_flag'].mode().iloc[0]
                 
                 # Clean and prepare data
                 stop_times = stop_times.sort_values(by=['trip_id', 'stop_sequence']).reset_index(drop=True)
@@ -320,13 +335,17 @@ def main():
                 
                 # Get service ID for weekdays
                 if calendar is not None:
-                    weekday_service_id = calendar[
+                    weekday_services = calendar[
                         (calendar["monday"] == 1) &
                         (calendar["tuesday"] == 1) &
                         (calendar["wednesday"] == 1) &
-                        (calendar["thursday"] == 1) #&
-                        #(calendar["friday"] == 1)
-                    ]["service_id"].iloc[0]
+                        (calendar["thursday"] == 1)
+                    ]["service_id"]
+                    
+                    if not weekday_services.empty:
+                        weekday_service_id = weekday_services.iloc[0]  # Take the first one
+                    else:
+                        weekday_service_id = trips['service_id'].value_counts().index[0]
                 else:
                     # If no calendar.txt, use a default service_id
                     weekday_service_id = trips['service_id'].value_counts().index[0]
@@ -340,6 +359,12 @@ def main():
                     shape_distances.columns = ['shape_distance_meters']  # Rename the column to match the expected name
                 elif shape_dist_flag==2:
                     shape_distances['shape_dist_traveled']/=3.281
+                elif shape_dist_flag==3:
+                    shape_distances['shape_dist_traveled']*=1000
+                    shape_distances.columns = ['shape_distance_meters']
+                elif shape_dist_flag==4:
+                    shape_distances['shape_dist_traveled']*=1609
+                    shape_distances.columns = ['shape_distance_meters']
                     
                 shape_distances.columns = ['shape_distance_meters']
                 shape_distances['shape_distance_km'] = shape_distances['shape_distance_meters'] / 1000
