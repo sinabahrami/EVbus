@@ -181,7 +181,13 @@ def compute_shape_distances(df):
             df.loc[i, "shape_dist_traveled"] = prev_row["shape_dist_traveled"] + distance  # Cumulative sum
 
     return df
-
+    
+def find_nearest_stop(lat, lon, stops_df):
+    """Find the nearest stop based on latitude and longitude."""
+    stops_df['distance'] = stops_df.apply(lambda row: geodesic((lat, lon), (row['stop_lat'], row['stop_lon'])).meters, axis=1)
+    nearest_stop = stops_df.loc[stops_df['distance'].idxmin()]
+    return nearest_stop['stop_id']
+    
 def compute_range_tracking_lane(distances, time_gaps,end_id_lists,shapeids,speeds, bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids, wireless_track_length):
     range_tracking = [bus_range]  # Initialize list with Bus_range
     current_range = bus_range  # Initialize range tracking variable
@@ -283,6 +289,24 @@ def main():
                 missing_rows = shapes.loc[pd.isna(shapes["shape_dist_traveled"])]
                 if not missing_rows.empty:
                     shapes = compute_shape_distances(shapes)
+                    shape_dist_flag=1 #[1: meter, 2:feet]
+                else:
+                    # Select a sample shape_id
+                    sample_shape_id = shapes['shape_id'].iloc[0]  # Pick the first shape_id
+                    # Get the first two points of that shape_id
+                    sample_shape = shapes[shapes['shape_id'] == sample_shape_id].sort_values(by='shape_pt_sequence').iloc[:2]
+                    # Extract coordinates
+                    lat1, lon1 = sample_shape.iloc[0]['shape_pt_lat'], sample_shape.iloc[0]['shape_pt_lon']
+                    lat2, lon2 = sample_shape.iloc[1]['shape_pt_lat'], sample_shape.iloc[1]['shape_pt_lon']
+                    # Compute geodesic distance (meters)
+                    computed_distance_meter = geodesic((lat1, lon1), (lat2, lon2)).meters
+                    computed_distance_feet = geodesic((lat1, lon1), (lat2, lon2)).feet
+                    # Get the reported shape_dist_traveled difference
+                    reported_distance = sample_shape.iloc[1]['shape_dist_traveled'] - sample_shape.iloc[0]['shape_dist_traveled']
+                    if abs(computed_distance_meter - reported_distance) < 0.5:  # Small threshold for rounding errors
+                        shape_dist_flag=1
+                    elif abs(computed_distance_feet - reported_distance) < 0.5:
+                        shape_dist_flag=2
                 
                 # Clean and prepare data
                 stop_times = stop_times.sort_values(by=['trip_id', 'stop_sequence']).reset_index(drop=True)
@@ -311,6 +335,11 @@ def main():
                 
                 # Calculate shape distances
                 shape_distances = shapes.groupby('shape_id').last()[['shape_dist_traveled']]
+                if shape_dist_flag==1:
+                    shape_distances.columns = ['shape_distance_meters']  # Rename the column to match the expected name
+                elif shape_dist_flag==2:
+                    shape_distances['shape_dist_traveled']/=3.281
+                    
                 shape_distances.columns = ['shape_distance_meters']
                 shape_distances['shape_distance_km'] = shape_distances['shape_distance_meters'] / 1000
                 shape_distances['shape_distance_miles'] = shape_distances['shape_distance_km'] * 0.621371
@@ -341,9 +370,41 @@ def main():
                 # Get start and end points
                 start_points = shapes[shapes["shape_pt_sequence"] == 1][["shape_id", "shape_pt_lat", "shape_pt_lon"]]
                 start_points = start_points.rename(columns={"shape_pt_lat": "start_lat", "shape_pt_lon": "start_lon"})
+
+                start_points = start_points.merge(
+                    stops[['stop_id', 'stop_lat', 'stop_lon']],
+                    left_on=['start_lat', 'start_lon'],
+                    right_on=['stop_lat', 'stop_lon'],
+                    how='left'
+                ).rename(columns={'stop_id': 'start_stop_id'})
+                
+                # Find closest stop if no exact match
+                missing_stops = start_points['start_stop_id'].isna()
+                start_points.loc[missing_stops, 'start_stop_id'] = start_points[missing_stops].apply(
+                    lambda row: find_nearest_stop(row['start_lat'], row['start_lon'], stops) if pd.isna(row['start_stop_id']) else row['start_stop_id'], axis=1
+                )
+                
+                # # Drop redundant stop_lat and stop_lon
+                start_points.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
                 
                 end_points = shapes.loc[shapes.groupby("shape_id")["shape_pt_sequence"].idxmax(), ["shape_id", "shape_pt_lat", "shape_pt_lon"]]
                 end_points = end_points.rename(columns={"shape_pt_lat": "end_lat", "shape_pt_lon": "end_lon"})
+
+                end_points = end_points.merge(
+                    stops[['stop_id', 'stop_lat', 'stop_lon']],
+                    left_on=['end_lat', 'end_lon'],
+                    right_on=['stop_lat', 'stop_lon'],
+                    how='left'
+                ).rename(columns={'stop_id': 'end_stop_id'})
+                
+                # Find closest stop if no exact match
+                missing_stops = end_points['end_stop_id'].isna()
+                end_points.loc[missing_stops, 'end_stop_id'] = end_points[missing_stops].apply(
+                    lambda row: find_nearest_stop(row['end_lat'], row['end_lon'], stops) if pd.isna(row['end_stop_id']) else row['end_stop_id'], axis=1
+                )
+                
+                # Drop redundant stop_lat and stop_lon
+                end_points.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
                 
                 # Merge points with trips
                 weekday_trips = weekday_trips.merge(start_points, on="shape_id", how="left")
@@ -355,24 +416,24 @@ def main():
                 weekday_trips['time_gap'] = (weekday_trips['next_trip_start_time'] - weekday_trips['trip_end_time']).dt.total_seconds() / 60
                 weekday_trips["trip_speed"] = weekday_trips['shape_distance_miles']/((weekday_trips['trip_end_time'] - weekday_trips['trip_start_time']).dt.total_seconds() / 3600) #mile per hour
                 
-                # Get start and end stop IDs
-                weekday_trips = weekday_trips.merge(
-                    stops[['stop_id', 'stop_lat', 'stop_lon']],
-                    left_on=['start_lat', 'start_lon'],
-                    right_on=['stop_lat', 'stop_lon'],
-                    how='left'
-                ).rename(columns={'stop_id': 'start_stop_id'})
+                # # Get start and end stop IDs
+                # weekday_trips = weekday_trips.merge(
+                #     stops[['stop_id', 'stop_lat', 'stop_lon']],
+                #     left_on=['start_lat', 'start_lon'],
+                #     right_on=['stop_lat', 'stop_lon'],
+                #     how='left'
+                # ).rename(columns={'stop_id': 'start_stop_id'})
                 
-                weekday_trips.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
+                # weekday_trips.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
                 
-                weekday_trips = weekday_trips.merge(
-                    stops[['stop_id', 'stop_lat', 'stop_lon']],
-                    left_on=['end_lat', 'end_lon'],
-                    right_on=['stop_lat', 'stop_lon'],
-                    how='left'
-                ).rename(columns={'stop_id': 'end_stop_id'})
+                # weekday_trips = weekday_trips.merge(
+                #     stops[['stop_id', 'stop_lat', 'stop_lon']],
+                #     left_on=['end_lat', 'end_lon'],
+                #     right_on=['stop_lat', 'stop_lon'],
+                #     how='left'
+                # ).rename(columns={'stop_id': 'end_stop_id'})
                 
-                weekday_trips.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
+                # weekday_trips.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
                 
                 # Calculate block distances
                 block_distances = weekday_trips.groupby('block_id').agg({
