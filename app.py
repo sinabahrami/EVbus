@@ -238,7 +238,7 @@ def main():
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
-    st.markdown("*Internal Testing Release*")
+    st.markdown("*Internal Testing Release 1*")
     
     # Create sidebar for settings
     with st.sidebar:
