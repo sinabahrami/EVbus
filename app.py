@@ -289,7 +289,6 @@ def main():
                 missing_rows = shapes.loc[pd.isna(shapes["shape_dist_traveled"])]
                 if not missing_rows.empty:
                     shapes = compute_shape_distances(shapes)
-                    shape_dist_flag=1 #[1: meter, 2:feet, 3:km, 4:mile]
                 else:
                     # Select a sample shape_id
                     sample_shape_id = shapes['shape_id'].iloc[0]  # Pick the first shape_id
@@ -318,7 +317,13 @@ def main():
                             sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 3
                         elif abs(computed_distance_meter/1609 - reported_distance) < 0.5:
                             sample_shape.loc[sample_shape.index[i], 'shape_dist_flag'] = 4
-                    shape_dist_flag=sample_shape['shape_dist_flag'].mode().iloc[0]
+                    shape_dist_flag=sample_shape['shape_dist_flag'].mode().iloc[0] #shape_dist_flag=1 #[1: meter, 2:feet, 3:km, 4: mile]
+                    if shape_dist_flag==2:
+                        shapes["shape_dist_traveled"]/=3.281
+                    elif shape_dist_flag==3:
+                        shapes["shape_dist_traveled"]*=1000
+                    elif shape_dist_flag==4:
+                        shapes["shape_dist_traveled"]*=1609
                 
                 # Clean and prepare data
                 stop_times = stop_times.sort_values(by=['trip_id', 'stop_sequence']).reset_index(drop=True)
@@ -351,18 +356,7 @@ def main():
                 
                 # Calculate shape distances
                 shape_distances = shapes.groupby('shape_id').last()[['shape_dist_traveled']]
-                if shape_dist_flag==1:
-                    shape_distances.columns = ['shape_distance_meters']  # Rename the column to match the expected name
-                elif shape_dist_flag==2:
-                    shape_distances['shape_dist_traveled']/=3.281
-                elif shape_dist_flag==3:
-                    shape_distances['shape_dist_traveled']*=1000
-                    shape_distances.columns = ['shape_distance_meters']
-                elif shape_dist_flag==4:
-                    shape_distances['shape_dist_traveled']*=1609
-                    shape_distances.columns = ['shape_distance_meters']
-                    
-                shape_distances.columns = ['shape_distance_meters']
+                shape_distances.columns = ['shape_distance_meters']  # Rename the column to match the expected name     
                 shape_distances['shape_distance_km'] = shape_distances['shape_distance_meters'] / 1000
                 shape_distances['shape_distance_miles'] = shape_distances['shape_distance_km'] * 0.621371
                 
@@ -635,7 +629,7 @@ def main():
                         else:
                             # If no common shape ID, return the highest count shape from each row
                             highest_shapes = {max(row, key=row.get) for row in filtered_blocks['flattened_counts']}
-                            track_shape_id = highest_shapes
+                            track_shape_id = {next(iter(highest_shapes))}
                             
                         # Compute the sum of counts for the selected shape IDs in each row
                         filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(lambda row: sum(row[shape] for shape in track_shape_id if shape in row))
@@ -683,13 +677,15 @@ def main():
                                     overlap_data.append({"target_shape_id": target_shape_id,"overlap_shape_id": shape_id, "overlap_distance_mile": overlap.loc[i, "overlap_dist_traveled"]/1609})
                         overlap_data_df=pd.DataFrame(overlap_data)
     
-                        wireless_track_length= wireless_track_length+min(max(filtered_blocks['estimate_length-per_shape']),min(overlap_data_df['overlap_distance_mile']))
+                        wireless_track_length= wireless_track_length+min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']),min(overlap_data['overlap_distance_mile']))
+
                         if target_direction==1: 
-                            filtered_shapes = target_shape[target_shape['shape_dist_traveled'] <= min(max(filtered_blocks['estimate_length-per_shape']), min(overlap_data_df['overlap_distance_mile'])) * 1609]
+                            filtered_shapes = target_shape[target_shape['shape_dist_traveled'] <= min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data['overlap_distance_mile'])) * 1609]
                         else:
-                            filtered_shapes = target_shape[target_shape['shape_dist_traveled'] >= max(target_shape['shape_dist_traveled'])-min(max(filtered_blocks['estimate_length-per_shape']), min(overlap_data_df['overlap_distance_mile'])) * 1609]
+                            filtered_shapes = target_shape[target_shape['shape_dist_traveled'] >= max(target_shape['shape_dist_traveled'])-min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data['overlap_distance_mile'])) * 1609]
+                        
                         wireless_track_shape = pd.concat([wireless_track_shape, filtered_shapes], ignore_index=True)
-                        wireless_track_shapeids.update(set(overlap_data_df['overlap_shape_id'].explode()))
+                        wireless_track_shapeids.update(set(overlap_data.loc[overlap_data['target_shape_id'] == target_shape_id, 'overlap_shape_id'].explode()))
                         
                         if len(infeasible_blocks)>0:    
                             filtered_blocks["new_range_tracking"] = filtered_blocks.apply(
