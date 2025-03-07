@@ -676,12 +676,8 @@ def main():
                                         overlap.loc[i, "overlap_dist_traveled"] = overlap.loc[i-1, "overlap_dist_traveled"] + distance  # Cumulative sum
                                     overlap_data.append({"target_shape_id": target_shape_id,"overlap_shape_id": shape_id, "overlap_distance_mile": overlap.loc[i, "overlap_dist_traveled"]/1609})
                         overlap_data_df=pd.DataFrame(overlap_data)
-
-                        st.write(f"{min(overlap_data_df['overlap_distance_mile'])}")
                         
                         wireless_track_length= wireless_track_length+min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']),min(overlap_data_df['overlap_distance_mile']))
-                        
-                        st.write(f"{wireless_track_length}")
                         
                         if target_direction==1: 
                             filtered_shapes = target_shape[target_shape['shape_dist_traveled'] <= min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data_df['overlap_distance_mile'])) * 1609]
@@ -689,11 +685,10 @@ def main():
                             filtered_shapes = target_shape[target_shape['shape_dist_traveled'] >= max(target_shape['shape_dist_traveled'])-min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data_df['overlap_distance_mile'])) * 1609]
                         
                         wireless_track_shape = pd.concat([wireless_track_shape, filtered_shapes], ignore_index=True)
-                        st.write(f"{wireless_track_shape}")
+                        
+                        st.write(f"{overlap_data_df}")
                         
                         wireless_track_shapeids.update(set(overlap_data_df.loc[overlap_data_df['target_shape_id'] == target_shape_id, 'overlap_shape_id'].explode()))
-                        
-                        
                         
                         if len(infeasible_blocks)>0:    
                             filtered_blocks["new_range_tracking"] = filtered_blocks.apply(
