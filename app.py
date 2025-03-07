@@ -630,7 +630,7 @@ def main():
                             # If no common shape ID, return the highest count shape from each row
                             highest_shapes = {max(row, key=row.get) for row in filtered_blocks['flattened_counts']}
                             track_shape_id = {next(iter(highest_shapes))}
-                            
+                        st.write({track_shape_id})   
                         # Compute the sum of counts for the selected shape IDs in each row
                         filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(lambda row: sum(row[shape] for shape in track_shape_id if shape in row))
     
