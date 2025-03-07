@@ -630,8 +630,7 @@ def main():
                             # If no common shape ID, return the highest count shape from each row
                             highest_shapes = {max(row, key=row.get) for row in filtered_blocks['flattened_counts']}
                             track_shape_id = {next(iter(highest_shapes))}
-                        
-                        st.write(f"{track_shape_id}")   
+                          
                         # Compute the sum of counts for the selected shape IDs in each row
                         filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(lambda row: sum(row[shape] for shape in track_shape_id if shape in row))
     
@@ -679,7 +678,9 @@ def main():
                         overlap_data_df=pd.DataFrame(overlap_data)
     
                         wireless_track_length= wireless_track_length+min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']),min(overlap_data['overlap_distance_mile']))
-
+                        
+                        st.write(f"{wireless_track_length})
+                        
                         if target_direction==1: 
                             filtered_shapes = target_shape[target_shape['shape_dist_traveled'] <= min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data['overlap_distance_mile'])) * 1609]
                         else:
@@ -687,6 +688,8 @@ def main():
                         
                         wireless_track_shape = pd.concat([wireless_track_shape, filtered_shapes], ignore_index=True)
                         wireless_track_shapeids.update(set(overlap_data.loc[overlap_data['target_shape_id'] == target_shape_id, 'overlap_shape_id'].explode()))
+                        
+                        st.write(f"{wireless_track_shapeid})
                         
                         if len(infeasible_blocks)>0:    
                             filtered_blocks["new_range_tracking"] = filtered_blocks.apply(
