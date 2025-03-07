@@ -677,7 +677,7 @@ def main():
                                     overlap_data.append({"target_shape_id": target_shape_id,"overlap_shape_id": shape_id, "overlap_distance_mile": overlap.loc[i, "overlap_dist_traveled"]/1609})
                         overlap_data_df=pd.DataFrame(overlap_data)
 
-                        st.write(f"fine!")
+                        st.write(f"{filtered_blocks['track_shape_count']}")
                         
                         wireless_track_length= wireless_track_length+min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']),min(overlap_data['overlap_distance_mile']))
                         
