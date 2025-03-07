@@ -234,7 +234,8 @@ def main():
     )
     
     # List of allowed agency zip files
-    agencies = ["BATA (Traverse City)", "DDOT (Detroit)", "MAX (Holland)", "Smart (Detroit)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
+    #agencies = ["BATA (Traverse City)", "DDOT (Detroit)", "MAX (Holland)", "Smart (Detroit)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
+    agencies = ["DDOT (Detroit)", "MAX (Holland)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
