@@ -689,7 +689,7 @@ def main():
                             filtered_shapes = target_shape[target_shape['shape_dist_traveled'] >= max(target_shape['shape_dist_traveled'])-min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data_df['overlap_distance_mile'])) * 1609]
                         
                         wireless_track_shape = pd.concat([wireless_track_shape, filtered_shapes], ignore_index=True)
-                        wireless_track_shapeids.update(set(overlap_data_df.loc[overlap_data['target_shape_id'] == target_shape_id, 'overlap_shape_id'].explode()))
+                        wireless_track_shapeids.update(set(overlap_data_df.loc[overlap_data_df['target_shape_id'] == target_shape_id, 'overlap_shape_id'].explode()))
                         
                         st.write(f"{wireless_track_shapeid}")
                         
