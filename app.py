@@ -686,8 +686,6 @@ def main():
                         
                         wireless_track_shape = pd.concat([wireless_track_shape, filtered_shapes], ignore_index=True)
                         
-                        st.write(f"{overlap_data_df}")
-                        
                         wireless_track_shapeids.update(set(overlap_data_df.loc[overlap_data_df['target_shape_id'] == target_shape_id, 'overlap_shape_id'].explode()))
                         
                         if len(infeasible_blocks)>0:    
