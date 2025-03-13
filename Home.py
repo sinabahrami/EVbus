@@ -18,11 +18,10 @@ st.markdown("""
 .med-font {
     font-size: 16px !important;
     line-height: 2; /* Adjusts line spacing */
-    }
+}
 ul.med-font {
     padding-left: 20px;  /* Adjust the indentation */
 }
-
 ul.med-font li {
     margin-bottom: 10px;  /* Adjust spacing between list items */
 }
