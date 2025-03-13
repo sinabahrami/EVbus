@@ -258,8 +258,8 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
     
     # Loop through each other shape_id to measure overlap
     max_overlap = 0
-    best_segment = None
-    best_overlapping_shapes = []
+    best_segment = segments[0]
+    best_overlapping_shapes = [target_shape_id]
 
     for segment in segments:
         segment_overlap = 0
