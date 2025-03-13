@@ -40,13 +40,13 @@ ul.med-font {
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<p class="big-font">The agency app assesses the agency's full service and determines the number of blocks that can be electrified based on user-provided inputs. It also provides the number of necessary stationary chargers, the required length of dynamic chargers, and maps their locations. </p>
+<p class="big-font"><strong>Disclaimer:</strong> The agency app assesses the agency's full service and determines the number of blocks that can be electrified based on user-provided inputs. It also provides the number of necessary stationary chargers, the required length of dynamic chargers, and maps their locations. </p>
 """, unsafe_allow_html=True)
 
 if st.button("Take me to the agency app"):
     st.switch_page("pages/Agency.py")  
 
-st.markdown("&nbsp;" * 50, unsafe_allow_html=True) 
+st.markdown("<br><br><br>", unsafe_allow_html=True) 
 
 st.markdown("""
 <style>
