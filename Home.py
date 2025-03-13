@@ -45,3 +45,13 @@ st.markdown("""
 
 if st.button("Take me to the agency app"):
     st.switch_page("pages/Agency.py")  
+
+st.markdown("""
+<style>
+.small-font {
+    font-size: 10px !important;
+    line-height: 1; /* Adjusts line spacing */
+    }
+</style>
+<p class="small-font">This web app provides general information and is not intended to serve as professional advice. The information and content are provided "as is" without warranties of any kind, either express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We assume no liability for any errors or omissions in the information presented or for any damages or losses that may arise from reliance on or use of this tool. Use of this web app is solely at your own risk." </p>
+""", unsafe_allow_html=True)
