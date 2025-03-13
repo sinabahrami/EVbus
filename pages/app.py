@@ -775,15 +775,26 @@ def main():
         
         # Display additional information
         st.subheader("Analysis Results")
-        st.metric("Min Range Required to cover all blocks without charging", f"{st.session_state['minimum_range_without_charger']} miles")
+        #st.metric("Min Range Required to cover all blocks without charging", f"{st.session_state['minimum_range_without_charger']} miles")
         st.write(f"With the selected configurations:")
-        
-        if st.session_state['infeasible_blocks_count'] > 1:
-            st.warning(f"⚠️ {st.session_state['infeasible_blocks_count']} blocks cannot be served.")
-        elif st.session_state['infeasible_blocks_count'] == 1:
-            st.warning(f"⚠️ {st.session_state['infeasible_blocks_count']} block cannot be served.") 
+        if st.session_state['infeasible_blocks_count']==0:
+            st.success("✅ All blocks can be electrified.")
         else:
-            st.success("✅ All blocks can be served.")
+            if st.session_state['infeasible_blocks_count'] ==1:
+                st.success(f"⚠️ {st.session_state['blocks_count']-st.session_state['infeasible_blocks_count']} blocks can be electrified.")
+                st.error(f"❌ {st.session_state['infeasible_blocks_count']} block cannot be electrified.")
+            else:
+                st.success(f"⚠️ {st.session_state['blocks_count']-st.session_state['infeasible_blocks_count']} blocks can be electrified.")
+                st.error(f"❌ {st.session_state['infeasible_blocks_count']} blocks cannot be electrified.")
+            
+
+        
+        # if st.session_state['infeasible_blocks_count'] > 1:
+        #     st.warning(f"⚠️ {st.session_state['infeasible_blocks_count']} blocks cannot be served.")
+        # elif st.session_state['infeasible_blocks_count'] == 1:
+        #     st.warning(f"⚠️ {st.session_state['infeasible_blocks_count']} block cannot be served.") 
+        # else:
+        #     st.success("✅ All blocks can be served.")
             
         # if st.session_state['critical_blocks_count'] > 1:
         #     st.write(f"- For {st.session_state['critical_blocks_count']} blocks, the bus range falls below the crucial threshold of {critical_range} miles.")
