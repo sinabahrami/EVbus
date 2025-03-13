@@ -46,6 +46,8 @@ st.markdown("""
 if st.button("Take me to the agency app"):
     st.switch_page("pages/Agency.py")  
 
+st.markdown("&nbsp;" * 20, unsafe_allow_html=True) 
+
 st.markdown("""
 <style>
 .small-font {
