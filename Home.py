@@ -19,7 +19,7 @@ st.markdown("""
     line-height: 2; /* Adjusts line spacing */
     }
 </style>
-<p class="big-font">This web app is designed to assist transit agencies and policymakers in evaluating the transition to an electric fleet. It utilizes <a href="https://gtfs.org/getting-started/what-is-GTFS/> GTFS (General Transit Feed Specification)</a> data along with user inputs, including:\".</p>
+<p class="big-font">This web app is designed to assist transit agencies and policymakers in evaluating the transition to an electric fleet. It utilizes <a href="https://gtfs.org/getting-started/what-is-GTFS/"> GTFS (General Transit Feed Specification)</a> data along with user inputs, including:\".</p>
 """, unsafe_allow_html=True)
 
 
