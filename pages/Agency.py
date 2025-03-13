@@ -239,7 +239,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
     #         start_indices.append(i)
     #         last_dist = target_shape.iloc[i]["target_shape_dist_traveled"]
 
-    indices=np.linspace(0, target_shape["target_shape_pt_sequence"].max(), 101)  
+    indices=np.linspace(0, target_shape["target_shape_pt_sequence"].max(), 21)  
     start_indices=indices[:-1].astype(int)
 
     # Generate sub-segments starting from these selected points
