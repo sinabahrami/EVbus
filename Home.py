@@ -4,8 +4,8 @@ st.title("Welcome!")
 st.markdown("""
 <style>
 .big-font {
-    font-size: 16px !important;
-    line-height: 1.5; /* Adjusts line spacing */
+    font-size: 20px !important;
+    line-height: 2; /* Adjusts line spacing */
     }
 </style>
 <p class="big-font">This app has been developed by a team of researchers from the University of Michigan, including [Prof. Yafeng Yin](https://cee.engin.umich.edu/people/yin-yafeng/), [Dr. Sina Bahrami](https://sinabahrami.github.io/), and Dr. Manzi Li, as part of the deliverables for the MDOT (Michigan Department of Transportation) research project OR24-003: \"Inductive Vehicle Charging - Identify Best Practices/Applications and Optimum Locations for Light to Heavy Duty Vehicles\".</p>
