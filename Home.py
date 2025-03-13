@@ -36,6 +36,7 @@ ul.med-font li {
         <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging)</li>
     </ul>
 </p>
+""", unsafe_allow_html=True)
 
 if st.button("Take me to the app"):
     st.switch_page("pages/app.py")  
