@@ -230,14 +230,27 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
 
     
-    # Select start points at roughly every 50 meters
-    start_indices = [0]  # Always start from the first point
-    last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
+    # # Select start points at roughly every 50 meters
+    # start_indices = [0]  # Always start from the first point
+    # last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
     
-    for i in range(1, len(target_shape)):
-        if target_shape.iloc[i]["target_shape_dist_traveled"] - last_dist >= 50:
-            start_indices.append(i)
-            last_dist = target_shape.iloc[i]["target_shape_dist_traveled"]
+    # for i in range(1, len(target_shape)):
+    #     if target_shape.iloc[i]["target_shape_dist_traveled"] - last_dist >= 50:
+    #         start_indices.append(i)
+    #         last_dist = target_shape.iloc[i]["target_shape_dist_traveled"]
+
+    # Get total distance of the shape
+    max_distance = target_shape["target_shape_dist_traveled"].max()
+
+    # Generate 100 evenly spaced breakpoints
+    breakpoints = np.linspace(0, max_distance, 101)  # 101 to get 100 segments
+
+    # Find the closest available points in shape_dist_traveled
+    segment_start_points = target_shape.iloc[
+        np.searchsorted(target_shape["target_shape_dist_traveled"].values, breakpoints)
+    ]
+
+    
 
     # Generate sub-segments starting from these selected points
     segments = []
