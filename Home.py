@@ -18,14 +18,11 @@ st.markdown("""
 <p class="big-font">This web app is designed to assist transit agencies and policymakers in evaluating the transition to an electric fleet. It utilizes <a href="https://gtfs.org/getting-started/what-is-GTFS/"> GTFS (General Transit Feed Specification)</a> data along with user inputs, including:</p>
 """, unsafe_allow_html=True)
 
-
 st.markdown("""
-<p class="big-font">
-  <ul>
+<p class="big-font"><ul>
     <li>Electric bus range (the distance an electric bus can travel on a fully charged battery)</li>
     <li>Bus energy usage - Stationary and dynamic charging power</li>
-    <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging)</li>
-  </ul>
+    <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging)</li></ul>
 </p>
 """, unsafe_allow_html=True)
 
