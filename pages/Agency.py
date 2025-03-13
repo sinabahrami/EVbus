@@ -137,7 +137,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
         counter=1
         for shape_id in wireless_track_shape_df['shape_id'].unique():
             wireless_track_group = folium.FeatureGroup(name=f"Wireless track {counter}")
-            shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='shape_pt_sequence')
+            shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='target_shape_pt_sequence')
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
             folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
             counter+=1
@@ -223,6 +223,77 @@ def extract_shape_counts(row):
         for shape in group:
             shape_counts[shape] = shape_counts.get(shape, 0) + count
     return shape_counts
+
+def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered_blocks):
+    target_shape = shapes[shapes["shape_id"] == target_shape_id].copy()
+    target_shape = target_shape.rename(columns={"shape_pt_sequence": "target_shape_pt_sequence",
+                                                "shape_dist_traveled": "target_shape_dist_traveled"})
+
+    
+    # Select start points at roughly every 100 meters
+    start_indices = [0]  # Always start from the first point
+    last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
+    
+    for i in range(1, len(target_shape)):
+        if target_shape.iloc[i]["target_shape_dist_traveled"] - last_dist >= 100:
+            start_indices.append(i)
+            last_dist = target_shape.iloc[i]["target_shape_dist_traveled"]
+
+    # Generate sub-segments starting from these selected points
+    segments = []
+    for start_idx in start_indices:
+        for end_idx in range(start_idx + 1, len(target_shape)):
+            segment = target_shape.iloc[start_idx:end_idx + 1]
+            total_distance = segment["target_shape_dist_traveled"].iloc[-1] - segment["target_shape_dist_traveled"].iloc[0]
+
+            if abs(total_distance - input_distance) < 5:  # Allowing small tolerance
+                segments.append(segment)
+                break  # Stop early to avoid unnecessary longer segments
+    
+    if not segments:
+        return None, []  # No valid segment found
+    
+    # Loop through each other shape_id to measure overlap
+    max_overlap = 0
+    best_segment = None
+    best_overlapping_shapes = []
+
+    for segment in segments:
+        segment_overlap = 0
+        overlapping_shapes = []  # Stores shape IDs that overlap with this segment
+
+        for shape_id in set(filtered_blocks["routes_in_block_shapes"].explode()):
+            overlap_shape = shapes[shapes["shape_id"] == shape_id].rename(
+                columns={"shape_pt_sequence": "overlap_shape_pt_sequence",
+                         "shape_dist_traveled": "overlap_shape_dist_traveled"}
+            )
+
+            # Find matching points in overlap shape
+            overlap = pd.merge(segment[["shape_pt_lat", "shape_pt_lon", "target_shape_pt_sequence"]],
+                               overlap_shape[["shape_pt_lat", "shape_pt_lon", "overlap_shape_pt_sequence"]],
+                               on=["shape_pt_lat", "shape_pt_lon"],
+                               how="inner")
+
+            # Sort and keep only consecutive points
+            overlap = overlap.sort_values(by="target_shape_pt_sequence").reset_index(drop=True)
+
+            if len(overlap) > 1:
+                mask = (overlap["target_shape_pt_sequence"].diff() == 1) & (overlap["overlap_shape_pt_sequence"].diff() == 1)
+                overlap = overlap[mask].reset_index(drop=True)
+
+            # If there is overlap, add shape_id to list
+            if not overlap.empty:
+                overlapping_shapes.append(shape_id)
+                segment_overlap += len(overlap)  # Count overlapping points
+
+        # Choose the segment with max overlap
+        if segment_overlap > max_overlap:
+            max_overlap = segment_overlap
+            best_segment = segment
+            best_overlapping_shapes = overlapping_shapes  # Store the best segment's overlapping shape IDs
+
+    return best_segment, best_overlapping_shapes
+
 
 
 def main():
@@ -635,58 +706,12 @@ def main():
                         filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(lambda row: sum(row[shape] for shape in track_shape_id if shape in row))
     
                         filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
-    
-    
                         
-                        for id in track_shape_id:
-                            overlap_data=[]
-                        # Filter for the target shape_id and other shape_ids
-                            target_shape_id = id
-                            target_route_id=trips.loc[trips["shape_id"] == target_shape_id, "route_id"].iloc[0]
-                            target_direction=trips.loc[trips["shape_id"] == target_shape_id, "direction_id"].iloc[0]
-                            target_shape=shapes[shapes["shape_id"] == target_shape_id]
-                            # Loop through each other shape_id
-                            for shape_id in set(shape_route["shape_id"].explode()):
-                                overlap=list()
-                                if target_direction==trips.loc[trips["shape_id"] == shape_id, "direction_id"].iloc[0] and target_route_id==trips.loc[trips["shape_id"] == shape_id, "route_id"].iloc[0]:
-                                    overlapshapes=shapes[shapes["shape_id"] == shape_id]
-                                    # Merge the target shape with each group based on matching lat-lon
-                                    overlap = pd.merge(target_shape[["shape_pt_lat", "shape_pt_lon"]],
-                                                    overlapshapes[["shape_pt_lat", "shape_pt_lon", "shape_pt_sequence","shape_dist_traveled"]],
-                                                    on=["shape_pt_lat", "shape_pt_lon"],
-                                                    how="inner")
-                                    # Sort by shape_pt_sequence of the target shape
-                                    overlap = overlap.sort_values(by="shape_pt_sequence")
-    
-                                    # Keep only unique shape_pt_sequence values (optional)
-                                    overlap = overlap.drop_duplicates(subset=["shape_pt_sequence"])
-    
-                                    # Reset index (optional for clean output)
-                                    overlap = overlap.reset_index(drop=True)
-    
-                                # Calculate the overlap distance
-                                if len(overlap)>0:
-                                    overlap.loc[0, "overlap_dist_traveled"]=0
-                                    for i in range(1, len(overlap)):  # Start from the second row
-                                        if overlap.iloc[i]["shape_pt_sequence"]-overlap.iloc[i-1]["shape_pt_sequence"]==1:
-                                            distance = overlap.iloc[i]["shape_dist_traveled"]-overlap.iloc[i-1]["shape_dist_traveled"]  # Distance in meters
-                                        else:
-                                            distance = 0
-                                        
-                                        overlap.loc[i, "overlap_dist_traveled"] = overlap.loc[i-1, "overlap_dist_traveled"] + distance  # Cumulative sum
-                                    overlap_data.append({"target_shape_id": target_shape_id,"overlap_shape_id": shape_id, "overlap_distance_mile": overlap.loc[i, "overlap_dist_traveled"]/1609})
-                        overlap_data_df=pd.DataFrame(overlap_data)
-                        
-                        wireless_track_length= wireless_track_length+min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']),min(overlap_data_df['overlap_distance_mile']))
-                        
-                        if target_direction==1: 
-                            filtered_shapes = target_shape[target_shape['shape_dist_traveled'] <= min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data_df['overlap_distance_mile'])) * 1609]
-                        else:
-                            filtered_shapes = target_shape[target_shape['shape_dist_traveled'] >= max(target_shape['shape_dist_traveled'])-min(max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape']), min(overlap_data_df['overlap_distance_mile'])) * 1609]
-                        
-                        wireless_track_shape = pd.concat([wireless_track_shape, filtered_shapes], ignore_index=True)
-                        
-                        wireless_track_shapeids.update(set(overlap_data_df.loc[overlap_data_df['target_shape_id'] == target_shape_id, 'overlap_shape_id'].explode()))
+                        new_track_shape, new_track_shapeids=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
+        
+                        wireless_track_length= wireless_track_length+max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])
+                        wireless_track_shape = pd.concat([wireless_track_shape, new_track_shape], ignore_index=True)
+                        wireless_track_shapeids.update(new_track_shapeids)
                         
                         if len(infeasible_blocks)>0:    
                             filtered_blocks["new_range_tracking"] = filtered_blocks.apply(
