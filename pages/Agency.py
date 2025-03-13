@@ -649,7 +649,9 @@ def main():
                 wireless_track_shape = pd.DataFrame()
 
                 if dynamic_wireless_charging_power>0:
-                    while len(infeasible_blocks)>0:
+                    counter=0
+                    while len(infeasible_blocks)>0 and counter<10:
+                        counter+=1
                         # Filter block_general to keep only rows where block_id is in infeasible_blocks
                         filtered_blocks = block_general[block_general["block_id"].isin(infeasible_blocks)].copy()
                         
