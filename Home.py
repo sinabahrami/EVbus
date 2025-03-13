@@ -14,16 +14,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("""
+<style>
+.med-font {
+    font-size: 16px !important;
+    line-height: 2; /* Adjusts line spacing */
+    }
+ul.med-font {
+    padding-left: 20px;  /* Adjust the indentation */
+}
+
+ul.med-font li {
+    margin-bottom: 10px;  /* Adjust spacing between list items */
+}
+</style>
+
 <p class="big-font">
     This web app is designed to assist transit agencies and policymakers in evaluating the transition to an electric fleet. It utilizes 
     <a href="https://gtfs.org/getting-started/what-is-GTFS/">GTFS (General Transit Feed Specification)</a> data along with user inputs, including:
-        <ul class="big-font">
+    <ul class="med-font">
         <li>Electric bus range (the distance an electric bus can travel on a fully charged battery)</li>
         <li>Bus energy usage - Stationary and dynamic charging power</li>
         <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging)</li>
-        </ul>
+    </ul>
 </p>
-""", unsafe_allow_html=True)
 
 if st.button("Take me to the app"):
     st.switch_page("pages/app.py")  
