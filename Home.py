@@ -16,7 +16,7 @@ st.markdown("""
 st.markdown("""
 <style>
 .med-font {
-    font-size: 19px !important;
+    font-size: 18px !important;
     line-height: 2; /* Adjusts line spacing */
 }
 ul.med-font {
