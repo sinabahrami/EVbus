@@ -29,7 +29,7 @@ ul.med-font {
 
 <p class="big-font">
     This web app is designed to assist transit agencies and policymakers in evaluating the transition to an electric fleet. It utilizes 
-    <a href="https://gtfs.org/getting-started/what-is-GTFS/">GTFS (General Transit Feed Specification)</a> data along with user congiguraion inputs, including:
+    <a href="https://gtfs.org/getting-started/what-is-GTFS/">GTFS (General Transit Feed Specification)</a> data along with user inputs, including:
     <ul class="med-font">
         <li>Electric bus range (the distance an electric bus can travel on a fully charged battery),</li>
         <li>Bus energy usage - Stationary and dynamic charging power, and</li>
@@ -39,8 +39,8 @@ ul.med-font {
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<p class="big-font">The app analyzes the entire agency service and determines the number of blocks that can be electrified based on user inputs. It also provides the number of necessary stationary chargers, the required length of dynamic chargers, and maps their locations. </p>
+<p class="big-font">The agency app assesses the agency's full service and determines the number of blocks that can be electrified based on user-provided inputs. It also provides the number of necessary stationary chargers, the required length of dynamic chargers, and maps their locations. </p>
 """, unsafe_allow_html=True)
 
-if st.button("Take me to the app"):
-    st.switch_page("pages/app.py")  
+if st.button("Take me to the agency app"):
+    st.switch_page("pages/agency.py")  
