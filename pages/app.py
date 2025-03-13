@@ -775,31 +775,29 @@ def main():
         
         # Display additional information
         st.subheader("Analysis Results")
-        #st.metric("Min Range Required to cover all blocks without charging", f"{st.session_state['minimum_range_without_charger']} miles")
-        
-        st.write("With the selected configurations:")
-        
-        if st.session_state['infeasible_blocks_count'] == 0:
+        st.write(f"With the selected configurations:")
+        if st.session_state['infeasible_blocks_count']==0:
             st.success("✅ All blocks can be electrified.")
         else:
-            st.success(f"✅ {st.session_state['blocks_count'] - st.session_state['infeasible_blocks_count']} blocks can be electrified.")
-            st.error(f"❌ {st.session_state['infeasible_blocks_count']} block(s) cannot be electrified.")
-        
-        # Indent the next lines
-        st.markdown("""
-        <div style="padding-left: 20px;">
-            <p>- {} stationary charging location(s) {} needed.</p>
-            <p>- The total length of the dynamic wireless track is {} miles.</p>
-        </div>
-        """.format(
-            st.session_state['num_locs'], 
-            "is" if st.session_state['num_locs'] == 1 else "are", 
-            st.session_state['wirelesslength']
-        ), unsafe_allow_html=True)
+            if st.session_state['infeasible_blocks_count'] ==1:
+                st.success(f"✅ {st.session_state['blocks_count']-st.session_state['infeasible_blocks_count']} blocks can be electrified.")
+                st.error(f"❌ {st.session_state['infeasible_blocks_count']} block cannot be electrified.")
+            else:
+                st.success(f"✅ {st.session_state['blocks_count']-st.session_state['infeasible_blocks_count']} blocks can be electrified.")
+                st.error(f"❌ {st.session_state['infeasible_blocks_count']} blocks cannot be electrified.")
+            
+        if st.session_state['num_locs'] >1: 
+            st.write(f"- {st.session_state['num_locs']} stationary charging locations are needed.")
+        elif st.session_state['num_locs'] ==1: 
+            st.write(f"- {st.session_state['num_locs']} stationary charging location is needed.")
+        else:
+            st.write(f"- No stationary charging location is needed.")
+            
+        st.write(f"- The total length of the dynamic wireless track is {st.session_state['wirelesslength']} miles.")
         
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
-        st_folium(st.session_state["map"], width=1000, height=600, returned_objects=[])
+        st_folium(st.session_state["map"], width=800, height=600, returned_objects=[])
 
 if __name__ == "__main__":
     main()
