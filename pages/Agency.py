@@ -230,12 +230,12 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
 
     
-    # Select start points at roughly every 100 meters
+    # Select start points at roughly every 50 meters
     start_indices = [0]  # Always start from the first point
     last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
     
     for i in range(1, len(target_shape)):
-        if target_shape.iloc[i]["target_shape_dist_traveled"] - last_dist >= 100:
+        if target_shape.iloc[i]["target_shape_dist_traveled"] - last_dist >= 50:
             start_indices.append(i)
             last_dist = target_shape.iloc[i]["target_shape_dist_traveled"]
 
