@@ -43,4 +43,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if st.button("Take me to the agency app"):
-    st.switch_page("pages/agency.py")  
+    st.switch_page("pages/Agency.py")  
