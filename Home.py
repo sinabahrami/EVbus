@@ -19,10 +19,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<p class="big-font"> -Electric bus range (the distance an electric bus can travel on a fully charged battery) \n
--Bus energy usage \n
--Stationary and dynamic charging power\n
--Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging)</p>
+<p class="big-font"> -Electric bus range (the distance an electric bus can travel on a fully charged battery) -Bus energy usage -Stationary and dynamic charging power -Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging)</p>
 """, unsafe_allow_html=True)
 
 if st.button("Take me to the app"):
