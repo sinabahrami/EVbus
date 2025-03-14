@@ -254,6 +254,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
                 break  # Stop early to avoid unnecessary longer segments
     
     if not segments:
+        st.write(f"no segments!")
         return None, []  # No valid segment found
     
     # Loop through each other shape_id to measure overlap
