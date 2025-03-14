@@ -229,10 +229,8 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
     target_shape = target_shape.rename(columns={"shape_pt_sequence": "target_shape_pt_sequence",
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
     if input_distance>target_shape["target_shape_dist_traveled"].max():
-        st.write(f"gotcha!")
         input_distance=target_shape["target_shape_pt_sequence"].max()
-    st.write(f"{target_shape_id}")
-    st.write(f"{target_shape["target_shape_pt_sequence"].max()}")
+
     # # Select start points at roughly every 50 meters
     # start_indices = [0]  # Always start from the first point
     # last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
@@ -258,7 +256,6 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
                 break  # Stop early to avoid unnecessary longer segments
     
     if not segments:
-        st.write(f"no segments!")
         return None, []  # No valid segment found
     
     # Loop through each other shape_id to measure overlap
@@ -654,9 +651,7 @@ def main():
                 wireless_track_shape = pd.DataFrame()
 
                 if dynamic_wireless_charging_power>0:
-                    counter=0
-                    while len(infeasible_blocks)>0 and counter<10:
-                        counter+=1
+                    while len(infeasible_blocks)>0:
                         # Filter block_general to keep only rows where block_id is in infeasible_blocks
                         filtered_blocks = block_general[block_general["block_id"].isin(infeasible_blocks)].copy()
                         
