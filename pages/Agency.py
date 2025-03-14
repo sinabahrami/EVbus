@@ -703,12 +703,12 @@ def main():
                         filtered_blocks["estimate_required_length"]=-(
                             filtered_blocks["range_tracking"].apply(min) * energy_usage * filtered_blocks["avg_speed_list"].apply(max)
                         ) / (dynamic_wireless_charging_power * 60)
-    
+                
                         # Count occurrences
                         filtered_blocks["shape_counts"] = filtered_blocks["trips_by_route"].apply(Counter) 
                         filtered_blocks["shape_id_groups"] = None  # Initialize column
                         filtered_blocks = filtered_blocks.astype({"shape_id_groups": "object"})  # Force dtype to object
-    
+                
                         for index, ids in filtered_blocks["routes_in_block_shapes"].items():
                             groups=[]
                             for shape_id in ids:
@@ -734,15 +734,18 @@ def main():
                             filtered_blocks.at[index, "shape_id_groups"] = groups
                         
                         filtered_blocks['group_counts'] = filtered_blocks.apply(compute_group_counts, axis=1)
-    
+                
                         filtered_blocks['flattened_counts'] = filtered_blocks['group_counts'].apply(extract_shape_counts)
-    
+                
+                
                         # Step 2: Find common shape IDs across all rows
                         common_shapes = set(filtered_blocks['flattened_counts'].iloc[0].keys()-wireless_track_shapeids)
                         
+                
                         for i in range(1, len(filtered_blocks)):
                             common_shapes.intersection_update(filtered_blocks['flattened_counts'].iloc[i].keys()-wireless_track_shapeids)
-    
+                
+                
                         # Step 3: If common shape IDs exist, find the one with the highest count sum
                         if common_shapes:
                             best_shape = max(common_shapes, key=lambda shape: sum(filtered_blocks['flattened_counts'].iloc[i][shape] for i in range(len(filtered_blocks))))
@@ -751,24 +754,31 @@ def main():
                             # If no common shape ID, return the highest count shape from each row
                             highest_shapes = {max(row, key=row.get) for row in filtered_blocks['flattened_counts']}
                             track_shape_id = {next(iter(highest_shapes))}
-                          
+                         
+                   
+                
                         # Compute the sum of counts for the selected shape IDs in each row
                         filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(lambda row: sum(row[shape] for shape in track_shape_id if shape in row))
-    
+                
                         filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
-                        
+                
+                
+                
                         new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
-        
+                        
                         wireless_track_length= wireless_track_length+new_distance/1609
                         wireless_track_shape = pd.concat([wireless_track_shape, new_track_shape], ignore_index=True)
                         wireless_track_shapeids.update(new_track_shapeids)
+                
                         
+                
                         if len(infeasible_blocks)>0:   
                             filtered_blocks["range_tracking"] = filtered_blocks.apply(
-                                lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"]),# bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape),
+                                lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"]),
                                 axis=1
                             )
                             infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
+
 
 
                 
