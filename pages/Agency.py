@@ -776,13 +776,16 @@ def main():
                                 axis=1
                             )
                             infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
+                        
+                        if new_distance==0:
+                            break
 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
                 return
         
         msg3.success("✅ Dynamic track locations are optimized.")
-        with st.spinner("Checking for further improvments..."):  
+        with st.spinner("Checking for further improvments & preparing results..."):  
             try:
                 
                 for id in top_end_stop_ids[:]:  # Iterate over a copy
