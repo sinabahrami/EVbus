@@ -365,6 +365,7 @@ def main():
     if analyze_button:
         msg1 = st.empty()
         msg2 = st.empty()
+        msg3 = st.empty()
         with st.spinner("Processing GTFS data and analyzing bus routes..."):
             # Load data
             zip_file_path = f"{selected_agency}_GTFS.zip"
@@ -776,9 +777,13 @@ def main():
                             )
                             infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
 
-
-
-                st.write("good")
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {str(e)}")
+                return
+        
+        msg2.success("✅ Dynamic track locations are optimized.")
+        with st.spinner("Preparing results..."):  
+            try:
                 
                 for id in top_end_stop_ids[:]:  # Iterate over a copy
                     top_end_stop_ids.remove(id)  # Remove safely
@@ -839,6 +844,7 @@ def main():
 
                 msg1.empty()
                 msg2.empty()
+                msg3.empty()
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
