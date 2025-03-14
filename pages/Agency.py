@@ -240,7 +240,7 @@ def extract_shape_counts(row):
             shape_counts[shape] = shape_counts.get(shape, 0) + count
     return shape_counts
 
-def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered_blocks):
+def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered_blocks,wireless_track_shape):
     target_shape = shapes[shapes["shape_id"] == target_shape_id].copy()
     target_shape = target_shape.rename(columns={"shape_pt_sequence": "target_shape_pt_sequence",
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
@@ -762,7 +762,7 @@ def main():
                 
                         
                 
-                        new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
+                        new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks,wireless_track_shape)
                         
                         st.write("good")
                         st.write(f"{new_track_shape}")
