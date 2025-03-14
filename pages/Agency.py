@@ -692,8 +692,6 @@ def main():
                 wireless_track_shapeids=set()
                 wireless_track_length=0
                 wireless_track_shape = pd.DataFrame()
-
-                st.write("good")
                 
                 if dynamic_wireless_charging_power>0:
                     while len(infeasible_blocks)>0:
@@ -762,7 +760,7 @@ def main():
                 
                         filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
                 
-                
+                        st.write("good")
                 
                         new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
                         
