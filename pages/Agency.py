@@ -340,6 +340,8 @@ def main():
     
     # Main content
     if analyze_button:
+        msg1 = st.empty()
+        msg2 = st.empty()
         with st.spinner("Processing GTFS data and analyzing bus routes..."):
             # Load data
             zip_file_path = f"{selected_agency}_GTFS.zip"
@@ -407,6 +409,14 @@ def main():
 
                 shape_route = trips[['route_id', 'shape_id']].drop_duplicates()
                 shape_route = shape_route.merge(routes[['route_id','route_type','route_color']], on='route_id', how='left')
+                
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {str(e)}")
+                return            
+    
+        msg1.success("✅ GTFS data processed successfully.")
+        with st.spinner("Optimizing stationary charging locations..."):    
+            try: 
                 
                 # Get service ID for weekdays
                 if calendar is not None:
@@ -578,13 +588,7 @@ def main():
                 infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
                 blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
             
-            except Exception as e:
-                st.error(f"An error occurred during analysis: {str(e)}")
-                return            
-    
-        st.success("✅ GTFS data processed successfully.")
-        with st.spinner("Optimizing stationary charging locations..."):    
-            try: 
+
 
                 # Iteratively select charging locations
                 iteration_count = 0
@@ -656,7 +660,7 @@ def main():
                 st.error(f"An error occurred during analysis: {str(e)}")
                 return
         
-        st.success("✅ Stationary charging locations are optimized.")
+        msg2.success("✅ Stationary charging locations are optimized.")
         with st.spinner("Optimizing dynamic track locations..."):  
             try:
                 
@@ -797,6 +801,9 @@ def main():
                 st.session_state["minimum_range_without_charger"] = min_range_without_charging
                 st.session_state["num_locs"] = len(proposed_locations)
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
+
+                msg1.empty()
+                msg2.empty()
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
