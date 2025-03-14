@@ -764,6 +764,8 @@ def main():
                 
                         new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
                         
+                        st.write(f"{new_track_shape}")
+                        
                         wireless_track_length= wireless_track_length+new_distance/1609
                         wireless_track_shape = pd.concat([wireless_track_shape, new_track_shape], ignore_index=True)
                         wireless_track_shapeids.update(new_track_shapeids)
