@@ -228,7 +228,9 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
     target_shape = shapes[shapes["shape_id"] == target_shape_id].copy()
     target_shape = target_shape.rename(columns={"shape_pt_sequence": "target_shape_pt_sequence",
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
-
+    if input_distance>target_shape["target_shape_dist_traveled"].max():
+        st.write(f"gotcha!")
+        input_distance=target_shape["target_shape_pt_sequence"].max()
     st.write(f"{target_shape_id}")
     st.write(f"{target_shape["target_shape_pt_sequence"].max()}")
     # # Select start points at roughly every 50 meters
