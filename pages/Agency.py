@@ -717,11 +717,11 @@ def main():
                         wireless_track_shapeids.update(new_track_shapeids)
                         
                         if len(infeasible_blocks)>0:    
-                            filtered_blocks["new_range_tracking"] = filtered_blocks.apply(
+                            filtered_blocks["range_tracking"] = filtered_blocks.apply(
                                 lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"], bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids, wireless_track_length),
                                 axis=1
                             )
-                            infeasible_blocks = filtered_blocks[filtered_blocks["new_range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
+                            infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
 
 
                 
