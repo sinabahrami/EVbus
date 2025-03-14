@@ -230,6 +230,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
 
     st.write(f"{target_shape_id}")
+    st.write(f"{target_shape["target_shape_pt_sequence"].max()}")
     # # Select start points at roughly every 50 meters
     # start_indices = [0]  # Always start from the first point
     # last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
