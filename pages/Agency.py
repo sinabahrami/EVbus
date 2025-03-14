@@ -228,42 +228,38 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
     target_shape = shapes[shapes["shape_id"] == target_shape_id].copy()
     target_shape = target_shape.rename(columns={"shape_pt_sequence": "target_shape_pt_sequence",
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
+
+
     if input_distance>target_shape["target_shape_dist_traveled"].max():
         input_distance=target_shape["target_shape_pt_sequence"].max()
-
-    # # Select start points at roughly every 50 meters
-    # start_indices = [0]  # Always start from the first point
-    # last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
     
-    # for i in range(1, len(target_shape)):
-    #     if target_shape.iloc[i]["target_shape_dist_traveled"] - last_dist >= 50:
-    #         start_indices.append(i)
-    #         last_dist = target_shape.iloc[i]["target_shape_dist_traveled"]
-
     indices=np.linspace(0, target_shape["target_shape_pt_sequence"].max(), 21)  
     start_indices=indices[:-1].astype(int)
 
     # Generate sub-segments starting from these selected points
     segments = []
+    segment_distances=[]
     for start_idx in start_indices:
         for end_idx in range(start_idx + 1, len(target_shape)):
             segment = target_shape.iloc[start_idx:end_idx + 1]
             total_distance = segment["target_shape_dist_traveled"].iloc[-1] - segment["target_shape_dist_traveled"].iloc[0]
 
-            #if abs(total_distance - input_distance) < 5:  # Allowing small tolerance
             if total_distance-input_distance>0:
                 segments.append(segment)
+                segment_distances.append(total_distance)
                 break  # Stop early to avoid unnecessary longer segments
+
     
     if not segments:
         return None, []  # No valid segment found
     
     # Loop through each other shape_id to measure overlap
     max_overlap = 0
-    best_segment = segments[0]
-    best_overlapping_shapes = [target_shape_id]
+    best_segment = None
+    best_overlapping_shapes = []
 
-    for segment in segments:
+    for i in range(len(segments)):
+        segment=segments[i]
         segment_overlap = 0
         overlapping_shapes = []  # Stores shape IDs that overlap with this segment
 
@@ -295,9 +291,10 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
         if segment_overlap > max_overlap:
             max_overlap = segment_overlap
             best_segment = segment
+            added_distance=segment_distances[i]
             best_overlapping_shapes = overlapping_shapes  # Store the best segment's overlapping shape IDs
-    #st.write(f"{best_segment}")
-    return best_segment, best_overlapping_shapes
+
+    return best_segment, best_overlapping_shapes,added_distance
 
 
 
@@ -712,9 +709,9 @@ def main():
     
                         filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
                         
-                        new_track_shape, new_track_shapeids=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
+                        new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
         
-                        wireless_track_length= wireless_track_length+max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])
+                        wireless_track_length= wireless_track_length+new_distance
                         wireless_track_shape = pd.concat([wireless_track_shape, new_track_shape], ignore_index=True)
                         wireless_track_shapeids.update(new_track_shapeids)
                         
