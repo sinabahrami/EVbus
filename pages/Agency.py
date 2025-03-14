@@ -693,7 +693,7 @@ def main():
                 wireless_track_length=0
                 wireless_track_shape = pd.DataFrame()
 
-                st.wrtie("good")
+                st.write("good")
                 
                 if dynamic_wireless_charging_power>0:
                     while len(infeasible_blocks)>0:
