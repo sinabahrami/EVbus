@@ -769,6 +769,7 @@ def main():
                             infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
 
 
+                st.wrtie("good")
                 
                 for id in top_end_stop_ids[:]:  # Iterate over a copy
                     top_end_stop_ids.remove(id)  # Remove safely
