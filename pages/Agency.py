@@ -409,14 +409,7 @@ def main():
 
                 shape_route = trips[['route_id', 'shape_id']].drop_duplicates()
                 shape_route = shape_route.merge(routes[['route_id','route_type','route_color']], on='route_id', how='left')
-                
-            except Exception as e:
-                st.error(f"An error occurred during analysis: {str(e)}")
-                return            
-    
-        msg1.success("✅ GTFS data processed successfully.")
-        with st.spinner("Optimizing stationary charging locations..."):    
-            try: 
+
                 
                 # Get service ID for weekdays
                 if calendar is not None:
@@ -534,6 +527,15 @@ def main():
                 # ).rename(columns={'stop_id': 'end_stop_id'})
                 
                 # weekday_trips.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
+
+                
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {str(e)}")
+                return            
+    
+        msg1.success("✅ GTFS data processed successfully.")
+        with st.spinner("Optimizing stationary charging locations..."):    
+            try: 
                 
                 # Calculate block distances
                 block_distances = weekday_trips.groupby('block_id').agg({
