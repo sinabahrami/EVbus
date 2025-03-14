@@ -229,7 +229,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
     target_shape = target_shape.rename(columns={"shape_pt_sequence": "target_shape_pt_sequence",
                                                 "shape_dist_traveled": "target_shape_dist_traveled"})
 
-    
+    st.write(f"{target_shape_id}")
     # # Select start points at roughly every 50 meters
     # start_indices = [0]  # Always start from the first point
     # last_dist = target_shape.iloc[0]["target_shape_dist_traveled"]
@@ -294,7 +294,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
             max_overlap = segment_overlap
             best_segment = segment
             best_overlapping_shapes = overlapping_shapes  # Store the best segment's overlapping shape IDs
-    print(best_segment)
+    #st.write(f"{best_segment}")
     return best_segment, best_overlapping_shapes
 
 
