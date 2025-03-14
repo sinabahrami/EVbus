@@ -781,7 +781,7 @@ def main():
                 st.error(f"An error occurred during analysis: {str(e)}")
                 return
         
-        msg2.success("✅ Dynamic track locations are optimized.")
+        msg3.success("✅ Dynamic track locations are optimized.")
         with st.spinner("Preparing results..."):  
             try:
                 
