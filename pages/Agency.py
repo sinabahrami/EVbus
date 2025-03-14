@@ -693,6 +693,8 @@ def main():
                 wireless_track_length=0
                 wireless_track_shape = pd.DataFrame()
 
+                st.wrtie("good")
+                
                 if dynamic_wireless_charging_power>0:
                     while len(infeasible_blocks)>0:
                         # Filter block_general to keep only rows where block_id is in infeasible_blocks
@@ -769,7 +771,7 @@ def main():
                             infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
 
 
-                st.wrtie("good")
+                
                 
                 for id in top_end_stop_ids[:]:  # Iterate over a copy
                     top_end_stop_ids.remove(id)  # Remove safely
