@@ -782,7 +782,7 @@ def main():
                 return
         
         msg3.success("✅ Dynamic track locations are optimized.")
-        with st.spinner("Preparing results..."):  
+        with st.spinner("Checking for further improvments..."):  
             try:
                 
                 for id in top_end_stop_ids[:]:  # Iterate over a copy
