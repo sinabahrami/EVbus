@@ -780,7 +780,7 @@ def main():
                 st.session_state["critical_blocks_count"] = len(blocks_below_critical)
                 st.session_state["minimum_range_without_charger"] = min_range_without_charging
                 st.session_state["num_locs"] = len(proposed_locations)
-                st.session_state["wirelesslength"]= round(wireless_track_length,1)
+                st.session_state["wirelesslength"]= round(wireless_track_length,2)
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
