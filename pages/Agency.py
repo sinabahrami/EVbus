@@ -287,7 +287,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
         segment_overlap = 0
         overlapping_shapes = []  # Stores shape IDs that overlap with this segment
 
-        for shape_id in set(shapes["shape_id"]):  #set(filtered_blocks["routes_in_block_shapes"].explode()):
+        for shape_id in set(filtered_blocks["routes_in_block_shapes"].explode()):
             overlap_shape = shapes[shapes["shape_id"] == shape_id].rename(
                 columns={"shape_pt_sequence": "overlap_shape_pt_sequence",
                          "shape_dist_traveled": "overlap_shape_dist_traveled"}
