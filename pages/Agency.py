@@ -577,10 +577,15 @@ def main():
                 # Identify infeasible blocks
                 infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
                 blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
-                
-    # st.success("✅ GTFS data processed successfully.")
-    with st.spinner("Optimizing stationary charging locations..."):    
-                
+            
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {str(e)}")
+                return            
+    
+        st.success("✅ GTFS data processed successfully.")
+        with st.spinner("Optimizing stationary charging locations..."):    
+            try: 
+
                 # Iteratively select charging locations
                 iteration_count = 0
                 
@@ -647,8 +652,13 @@ def main():
                     
                     iteration_count += 1
 
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {str(e)}")
+                return
+        
         st.success("✅ Stationary charging locations are optimized.")
         with st.spinner("Optimizing dynamic track locations..."):  
+            try:
                 
                 wireless_track_shapeids=set()
                 wireless_track_length=0
