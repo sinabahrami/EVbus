@@ -249,7 +249,8 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
             segment = target_shape.iloc[start_idx:end_idx + 1]
             total_distance = segment["target_shape_dist_traveled"].iloc[-1] - segment["target_shape_dist_traveled"].iloc[0]
 
-            if abs(total_distance - input_distance) < 5:  # Allowing small tolerance
+            #if abs(total_distance - input_distance) < 5:  # Allowing small tolerance
+            if total_distance-input_distance>0
                 segments.append(segment)
                 break  # Stop early to avoid unnecessary longer segments
     
