@@ -332,14 +332,6 @@ def main():
     
     # List of allowed agency zip files
     agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "Smart (Detroit)", "The Rapid (Grand Rapids)","TheRide (Ann Arbor-Ypsilanti)", "UMich"]
-
-    if selected_agency=="BATA (Traverse City)":
-        feasible_block_options=[424160, 424161, 424162, 424163, 424164, 424165, 424166, 424167, 424168, 424169, 424170, 424171, 424172, 424173, 424174, 424175, 424176, 424177, 424178, 424179, 424180, 424181, 424182, 424183, 424184, 424185, 424186, 424187]
-        feasible_route_options=[5990, 5991, 5992, 5993, 5994, 5995, 5996, 6003, 6013, 6107, 6234, 6451]
-    elif selected_agency=="UMich":
-        feasible_block_options =['BB217', 'CN100', 'CN101', 'CN102', 'CN103', 'CN104', 'CN105', 'CN106', 'CN107', 'CN108', 'CN109', 'CN110', 'CS100', 'CS101', 'CS102', 'CS103', 'CS104', 'CS105', 'CSX550', 'CSX552', 'MX500', 'MX501', 'MX502', 'MX503', 'MX504', 'MX505', 'MX506', 'MX507', 'MX508', 'MX509', 'MX510', 'MX511', 'NES700', 'NES701', 'NES702', 'NES703', 'NW351', 'NW352', 'NW353', 'NW354', 'NW355', 'NW356', 'NW357', 'NW358', 'OS260', 'OS261', 'OS262', 'OS263', 'OS264', 'T1', 'T2', 'WS600', 'WS601', 'WS602', 'WS603', 'WS604', 'WX600', 'WX601']
-        feasible_route_options=[]
-
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
@@ -365,6 +357,14 @@ def main():
             #critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             
 
+        if selected_agency=="BATA (Traverse City)":
+            feasible_block_options=[424160, 424161, 424162, 424163, 424164, 424165, 424166, 424167, 424168, 424169, 424170, 424171, 424172, 424173, 424174, 424175, 424176, 424177, 424178, 424179, 424180, 424181, 424182, 424183, 424184, 424185, 424186, 424187]
+            feasible_route_options=[5990, 5991, 5992, 5993, 5994, 5995, 5996, 6003, 6013, 6107, 6234, 6451]
+        elif selected_agency=="UMich":
+            feasible_block_options =['BB217', 'CN100', 'CN101', 'CN102', 'CN103', 'CN104', 'CN105', 'CN106', 'CN107', 'CN108', 'CN109', 'CN110', 'CS100', 'CS101', 'CS102', 'CS103', 'CS104', 'CS105', 'CSX550', 'CSX552', 'MX500', 'MX501', 'MX502', 'MX503', 'MX504', 'MX505', 'MX506', 'MX507', 'MX508', 'MX509', 'MX510', 'MX511', 'NES700', 'NES701', 'NES702', 'NES703', 'NW351', 'NW352', 'NW353', 'NW354', 'NW355', 'NW356', 'NW357', 'NW358', 'OS260', 'OS261', 'OS262', 'OS263', 'OS264', 'T1', 'T2', 'WS600', 'WS601', 'WS602', 'WS603', 'WS604', 'WX600', 'WX601']
+            feasible_route_options=[]
+        
+        
         with st.expander("Specific block analysis"): 
             user_block_choice = st.multiselect("Choose desired block(s):", feasible_block_options, default=feasible_block_options)
 
