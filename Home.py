@@ -34,13 +34,32 @@ ul.med-font {
         <li>Electric bus range (the distance an electric bus can travel on a fully charged battery),</li>
         <li>Bus energy usage,</li>
         <li>Stationary and dynamic charging power, and </li>
-        <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging).</li>
+        <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging),</li>
     </ul>
+    and determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results.
 </p>
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<p class="big-font">The agency app assesses the agency's full service and determines the number of blocks that can be electrified based on user-provided inputs. It also provides the number of necessary stationary chargers, the required length of dynamic chargers, and maps their locations. </p>
+<p class="big-font">The web app defaults to analyzing the entire service, but you have the option to focus on specific routes or blocks. </p>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <style>
+        .stButton button {
+            background-color: #1E90FF;
+            color: white;
+            padding: 16px 24px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .stButton button:hover {
+            background-color: #4682B4;
+        }
+    </style>
 """, unsafe_allow_html=True)
 
 if st.button("Take me to the agency app"):
