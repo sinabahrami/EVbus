@@ -922,7 +922,7 @@ def main():
         
         # Display additional information
         st.subheader("Analysis Results")
-        if st.session_state["add_flag"]==0:
+        if st.session_state['add_flag']==0:
             st.write(f"With the selected configurations:")
             if st.session_state['infeasible_blocks_count']==0:
                 st.success("✅ All blocks can be electrified.")
