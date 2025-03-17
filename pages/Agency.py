@@ -939,10 +939,10 @@ def main():
                 st.success("✅ All selected block(s) can be electrified.")
             else:
                 if st.session_state['infeasible_blocks_count'] ==1:
-                    st.success(f"✅ {st.session_state['feasible_blocks_count']-st.session_state['infeasible_blocks_count']} of selected block(s) can be electrified.")
+                    st.success(f"✅ {st.session_state['feasible_blocks_count']} of selected block(s) can be electrified.")
                     st.error(f"❌ {st.session_state['infeasible_blocks_count']} seleted block cannot be electrified.")
                 else:
-                    st.success(f"✅ {st.session_state['feasible_blocks_count']-st.session_state['infeasible_blocks_count']} of selected block(s) can be electrified.")
+                    st.success(f"✅ {st.session_state['feasible_blocks_count']} of selected block(s) can be electrified.")
                     st.error(f"❌ {st.session_state['infeasible_blocks_count']} of selected blocks cannot be electrified.")
                     
         if st.session_state['num_locs'] >1: 
