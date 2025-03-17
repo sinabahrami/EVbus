@@ -596,6 +596,7 @@ def main():
 
                 # Filter to include only block_id that are in user choice
                 block_general = block_general[block_general['block_id'].isin(user_choice)]
+                st.write(f"{block_general"})
                 
                 block_general['time_gaps_sum'] = block_general['time_gaps'].apply(lambda x: np.nansum(x) if isinstance(x, list) else np.nan)
                 block_general["time_gaps"] = block_general["time_gaps"].apply(lambda lst: [x for x in lst if not pd.isna(x)])
