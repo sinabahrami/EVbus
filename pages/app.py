@@ -340,6 +340,11 @@ def main():
     # Create sidebar for settings
     with st.sidebar:
         st.header("Configuration")
+
+        # Initialize session state for the toggle
+        if "toggle_state" not in st.session_state:
+            st.session_state.toggle_state = False
+
         
         # Allow user to select agency
         selected_agency = st.selectbox("Select the agency", agencies)
