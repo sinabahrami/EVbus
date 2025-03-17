@@ -50,20 +50,16 @@ st.markdown("""
         .stButton button {
             background-color: #00274C;
             color: #FFCB05;
-            padding: 16px 24px;
+            padding: 20px 30px;
             font-size: 24px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
             cursor: pointer;
-        }
-
-        .stButton button:hover {
-            background-color: #4682B4;
         }
     </style>
 """, unsafe_allow_html=True)
 
-if st.button("Take me to the agency app"):
+if st.button("Take me to the app"):
     st.switch_page("pages/Agency.py")  
 
 
