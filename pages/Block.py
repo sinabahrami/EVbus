@@ -559,6 +559,12 @@ def main():
                 return            
     
         msg1.success("✅ GTFS data processed successfully.")
+
+        blockset=set(weekday_trips["block_id"].explode())
+        feasible_options =sorted(blockset)
+        user_choice = st.selectbox("Choose desired blocks:", feasible_options)
+
+        
         with st.spinner("Optimizing stationary charging locations..."):    
             try: 
                 
@@ -587,6 +593,10 @@ def main():
                 
                 # Merge block info
                 block_general = pd.merge(block_distances, block_trip_routes, on='block_id', how='outer')
+
+                # Filter to include only block_id that are in user choice
+                block_general = block_general[block_general['block_id'].isin(user_choice)]
+                
                 block_general['time_gaps_sum'] = block_general['time_gaps'].apply(lambda x: np.nansum(x) if isinstance(x, list) else np.nan)
                 block_general["time_gaps"] = block_general["time_gaps"].apply(lambda lst: [x for x in lst if not pd.isna(x)])
                 block_general = block_general.sort_values(by=['total_distance_miles', 'time_gaps_sum'])
@@ -823,12 +833,14 @@ def main():
                 # Calculate map center
                 center_lat = shapes['shape_pt_lat'].mean()
                 center_lon = shapes['shape_pt_lon'].mean()
-                
+
+
+                maptrips=trips[trips["route_id"].isin(block_general["routes_in_block_id"].explode())]
                 # Create map
                 bus_map = create_bus_electrification_map(
                     shapes,
                     routes,
-                    trips,
+                    maptrips,
                     proposed_locations,
                     wireless_track_shape,
                     center_lat,
