@@ -562,7 +562,7 @@ def main():
 
         blockset=set(weekday_trips["block_id"].explode())
         feasible_options =sorted(blockset)
-        user_choice = st.selectbox("Choose desired blocks:", feasible_options)
+        user_choice = st.multiselect(("Choose desired blocks:", feasible_options)
 
         
         with st.spinner("Optimizing stationary charging locations..."):    
