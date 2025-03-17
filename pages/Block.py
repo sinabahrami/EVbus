@@ -798,6 +798,7 @@ def main():
                 return
         
         msg3.success("✅ Dynamic track locations are optimized.")
+        st.write("check1")
         with st.spinner("Checking for further improvments & preparing results..."):  
             try:
                 
@@ -826,7 +827,7 @@ def main():
                 # Identify block_ids where any range_tracking value is below critical_range
                 blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist() 
 
-                                
+                st.write("check2")                
                 # Get proposed charging locations
                 selected_stops = pd.DataFrame(top_end_stop_ids, columns=["stop_id"])
                 proposed_locations = selected_stops.merge(stops[["stop_id", "stop_lat", "stop_lon"]], on="stop_id", how="left")
@@ -836,7 +837,7 @@ def main():
                 center_lat = shapes['shape_pt_lat'].mean()
                 center_lon = shapes['shape_pt_lon'].mean()
 
-
+                st.write("check3")
                 maptrips=trips[trips["route_id"].isin(block_general["routes_in_block_id"].explode())]
                 # Create map
                 bus_map = create_bus_electrification_map(
@@ -848,7 +849,7 @@ def main():
                     center_lat,
                     center_lon
                 )
-                
+                st.write("check4")
                 # Store results
                 st.session_state["map"] = bus_map
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
