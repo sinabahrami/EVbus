@@ -42,16 +42,16 @@ ul.med-font {
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<p class="big-font">The web app defaults to analyzing the entire service, but you have the option to focus on specific routes or blocks. </p>
+<p class="big-font">The web app considers the entire service by default; however, you can also choose to focus on specific routes or blocks. </p>
 """, unsafe_allow_html=True)
 
 st.markdown("""
     <style>
         .stButton button {
-            background-color: #1E90FF;
-            color: white;
+            background-color: #00274C;
+            color: #FFCB05;
             padding: 16px 24px;
-            font-size: 18px;
+            font-size: 24px;
             border-radius: 10px;
             border: none;
             cursor: pointer;
