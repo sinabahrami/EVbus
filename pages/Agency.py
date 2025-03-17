@@ -386,8 +386,10 @@ def main():
             option = st.radio("Choose an option:", ["Block", "Route"])
             if option =="Block":
                 user_block_choice = st.multiselect("Choose desired block(s):", feasible_block_options)
+                user_route_choice=feasible_route_options
             if option =="Route":
                 user_route_choice = st.multiselect("Choose desired route(s):", feasible_route_options)
+                user_block_choice=feasible_block_options
         else:
             user_block_choice=feasible_block_options
             user_route_choice=feasible_route_options
