@@ -363,7 +363,7 @@ def main():
             energy_usage = st.number_input("Bus energy usage (kWmin/mile)", min_value=5, value=150, step=10)
             #critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             
-       with st.expander("Specific Block"): 
+        with st.expander("Specific Block"): 
             user_choice = st.multiselect("Choose desired blocks:", feasible_options, default=feasible_options)
         
         critical_range=20
