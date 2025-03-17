@@ -621,6 +621,7 @@ def main():
                 # Merge block info
                 block_general = pd.merge(block_distances, block_trip_routes, on='block_id', how='outer')
 
+                num_blocks_total=len(block_general)
                 # Filter to include only block_id that are in user choice
                 block_general = block_general[block_general['block_id'].isin(user_block_choice)]
                 block_general = block_general[block_general['routes_in_block_id'].apply(lambda x: any(sel_route in user_route_choice for sel_route in x))]
@@ -879,7 +880,7 @@ def main():
                 st.session_state["map"] = bus_map
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
                 st.session_state["stops_count"] = stops['stop_id'].nunique()
-                st.session_state["blocks_count"] = len(block_general)
+                st.session_state["blocks_count"] = num_blocks_total
                 st.session_state["infeasible_blocks_count"] = len(infeasible_blocks)
                 st.session_state["critical_blocks_count"] = len(blocks_below_critical)
                 st.session_state["minimum_range_without_charger"] = min_range_without_charging
