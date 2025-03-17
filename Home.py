@@ -34,15 +34,15 @@ ul.med-font {
         <li>Electric bus range (the distance an electric bus can travel on a fully charged battery),</li>
         <li>Bus energy usage,</li>
         <li>Stationary and dynamic charging power, and </li>
-        <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging),</li>
+        <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging).</li>
     </ul>
     </p>
-    <p class="big-font"> and determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results.
+    <p class="big-font"> The app determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results. The 
 </p>
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<p class="big-font">The web app considers the entire service by default; however, you can also choose to focus on specific routes or blocks. </p>
+<p class="big-font">The web app considers the entire service by default; however, you can also choose to focus on specific routes or blocks. You can use the map layer to switch different routes or chargers on and off to focus on specific areas of interest. </p>
 """, unsafe_allow_html=True)
 
 st.markdown("""
