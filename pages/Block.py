@@ -561,8 +561,8 @@ def main():
         msg1.success("✅ GTFS data processed successfully.")
 
         blockset=set(weekday_trips["block_id"].explode())
-    feasible_options =sorted(blockset)
-    user_choice = st.multiselect("Choose desired blocks:", feasible_options)
+        feasible_options =sorted(blockset)
+        user_choice = st.multiselect("Choose desired blocks:", feasible_options)
     # Stop execution until user selects an option
     if not user_choices:
         st.warning("⚠️ Please select at least one Block.")
