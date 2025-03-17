@@ -36,7 +36,8 @@ ul.med-font {
         <li>Stationary and dynamic charging power, and </li>
         <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging),</li>
     </ul>
-    <class="big-font"> and determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results.
+    </p>
+    <p class="big-font"> and determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results.
 </p>
 """, unsafe_allow_html=True)
 
