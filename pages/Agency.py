@@ -389,8 +389,8 @@ def main():
             if option =="Route":
                 user_route_choice = st.multiselect("Choose desired route(s):", feasible_route_options)
         else:
-            feasible_block_options=feasible_block_options
-            feasible_route_options=feasible_route_options
+            user_block_choice=feasible_block_options
+            user_route_choice=feasible_route_options
             
         
         critical_range=20
