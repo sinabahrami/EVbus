@@ -320,7 +320,8 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
 
     return best_segment, best_overlapping_shapes,added_distance
 
-
+def reset_toggle():
+    st.session_state.toggle_state = False  # Turn off toggle
 
 def main():
     # Set page config for a cleaner interface
@@ -347,7 +348,7 @@ def main():
 
         
         # Allow user to select agency
-        selected_agency = st.selectbox("Select the agency", agencies)
+        selected_agency = st.selectbox("Select the agency", agencies, on_change=reset_toggle)
         
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
@@ -389,8 +390,10 @@ def main():
         
         # Toggle button
         toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state)
+        # Update session state when toggle is changed
+        st.session_state.toggle_state = toggle_value
        
-        if toggle_value==True:
+        if st.session_state.toggle_state==True:
             option = st.radio("Choose an option:", ["Block", "Route"])
             add_flag=1
             if option =="Block":
