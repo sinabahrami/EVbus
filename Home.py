@@ -46,6 +46,13 @@ st.markdown("""
 if st.button("Take me to the agency app"):
     st.switch_page("pages/Agency.py")  
 
+st.markdown("""
+<p class="big-font">For those interested in specific blocks, the Block app enables you to select them and evaluate their potential for electrification based on user inputs. It also determines the number of stationary chargers needed, the length of dynamic chargers required, and maps out their locations. </p>
+""", unsafe_allow_html=True)
+
+if st.button("Take me to the Block app"):
+    st.switch_page("pages/Block.py") 
+
 st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True) 
 
 st.markdown("""
