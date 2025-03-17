@@ -846,10 +846,11 @@ def main():
                 center_lon = shapes['shape_pt_lon'].mean()
                 
                 # Create map
+                maptrips=trips[trips["route_id"].isin(block_general["routes_in_block_id"].explode())]
                 bus_map = create_bus_electrification_map(
                     shapes,
                     routes,
-                    trips,
+                    maptrips,
                     proposed_locations,
                     wireless_track_shape,
                     center_lat,
