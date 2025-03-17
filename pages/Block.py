@@ -343,6 +343,11 @@ def main():
         
         # Allow user to select agency
         selected_agency = st.selectbox("Select the agency", agencies)
+
+        if selected_agency=="UMich":
+            feasible_options =['BB217', 'CN100', 'CN101', 'CN102', 'CN103', 'CN104', 'CN105', 'CN106', 'CN107', 'CN108', 'CN109', 'CN110', 'CS100', 'CS101', 'CS102', 'CS103', 'CS104', 'CS105', 'CSX550', 'CSX552', 'MX500', 'MX501', 'MX502', 'MX503', 'MX504', 'MX505', 'MX506', 'MX507', 'MX508', 'MX509', 'MX510', 'MX511', 'NES700', 'NES701', 'NES702', 'NES703', 'NW351', 'NW352', 'NW353', 'NW354', 'NW355', 'NW356', 'NW357', 'NW358', 'OS260', 'OS261', 'OS262', 'OS263', 'OS264', 'T1', 'T2', 'WS600', 'WS601', 'WS602', 'WS603', 'WS604', 'WX600', 'WX601']
+        
+        user_choice = st.multiselect("Choose desired blocks:", feasible_options)        
         
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
@@ -559,15 +564,6 @@ def main():
                 return            
     
         msg1.success("✅ GTFS data processed successfully.")
-
-        blockset=set(weekday_trips["block_id"].explode())
-        feasible_options =sorted(blockset)
-        user_choice = st.multiselect("Choose desired blocks:", feasible_options)
-    # Stop execution until user selects an option
-    if not user_choices:
-        st.warning("⚠️ Please select at least one Block.")
-        st.stop()
-
         
         with st.spinner("Optimizing stationary charging locations..."):    
             try: 
