@@ -604,8 +604,8 @@ def main():
                 block_general = pd.merge(block_distances, block_trip_routes, on='block_id', how='outer')
 
                 # Filter to include only block_id that are in user choice
-                block_general = block_general[block_general['block_id'].isin(selected_blocks)]
-                block_general = block_general[block_general['routes_in_block_id'].apply(lambda x: any(sel_route in selected_routes for sel_route in x))]
+                block_general = block_general[block_general['block_id'].isin(user_block_choice)]
+                block_general = block_general[block_general['routes_in_block_id'].apply(lambda x: any(sel_route in user_route_choice for sel_route in x))]
                 
                 
                 block_general['time_gaps_sum'] = block_general['time_gaps'].apply(lambda x: np.nansum(x) if isinstance(x, list) else np.nan)
