@@ -383,10 +383,9 @@ def main():
             feasible_route_options=['CN', 'CS', 'CSX', 'MX', 'NES', 'NW', 'OS', 'WS', 'WX']
         
         if st.toggle("Specific block analysis"):
-        #with st.checkbox("Specific block analysis"): 
             user_block_choice = st.multiselect("Choose desired block(s):", feasible_block_options, default=feasible_block_options)
 
-        with st.checkbox("Specific route analysis"): 
+        if st.checkbox("Specific route analysis"): 
             user_route_choice = st.multiselect("Choose desired route(s):", feasible_route_options, default=feasible_route_options)
         
         critical_range=20
