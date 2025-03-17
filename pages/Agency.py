@@ -382,11 +382,12 @@ def main():
             feasible_block_options =['BB217', 'CN100', 'CN101', 'CN102', 'CN103', 'CN104', 'CN105', 'CN106', 'CN107', 'CN108', 'CN109', 'CN110', 'CS100', 'CS101', 'CS102', 'CS103', 'CS104', 'CS105', 'CSX550', 'CSX552', 'MX500', 'MX501', 'MX502', 'MX503', 'MX504', 'MX505', 'MX506', 'MX507', 'MX508', 'MX509', 'MX510', 'MX511', 'NES700', 'NES701', 'NES702', 'NES703', 'NW351', 'NW352', 'NW353', 'NW354', 'NW355', 'NW356', 'NW357', 'NW358', 'OS260', 'OS261', 'OS262', 'OS263', 'OS264', 'T1', 'T2', 'WS600', 'WS601', 'WS602', 'WS603', 'WS604', 'WX600', 'WX601']
             feasible_route_options=['CN', 'CS', 'CSX', 'MX', 'NES', 'NW', 'OS', 'WS', 'WX']
         
-        if st.toggle("Specific block analysis"):
-            user_block_choice = st.multiselect("Choose desired block(s):", feasible_block_options, default=feasible_block_options)
-
-        if st.checkbox("Specific route analysis"): 
-            user_route_choice = st.multiselect("Choose desired route(s):", feasible_route_options, default=feasible_route_options)
+        if st.toggle("Specific route or block"):
+            option = st.radio("Choose an option:", ["Block", "Route"])
+            if option =="Block":
+                user_block_choice = st.multiselect("Choose desired block(s):", feasible_block_options, default=feasible_block_options)
+            if option =="Route":
+                user_route_choice = st.multiselect("Choose desired route(s):", feasible_route_options, default=feasible_route_options)
         
         critical_range=20
         
