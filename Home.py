@@ -56,6 +56,9 @@ st.markdown("""
             border: none;
             cursor: pointer;
         }
+        .stButton button:hover {
+            color: white
+        }
     </style>
 """, unsafe_allow_html=True)
 
