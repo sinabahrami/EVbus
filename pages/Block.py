@@ -85,7 +85,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     
     # Generate colors for routes using a colormap
     colormap = matplotlib.colormaps.get_cmap('tab20b')  # Only pass the colormap name
-    colors = [mcolors.to_hex(colormap(i / (num_routes - 1))) for i in range(num_routes)]  # Normalize indices
+    colors = [mcolors.to_hex(colormap(i / (max(1,num_routes - 1)))) for i in range(num_routes)]  # Normalize indices
     route_colors = dict(zip(unique_routes, colors))
     
     # Add route lines to the map
@@ -840,7 +840,6 @@ def main():
 
                 maptrips=trips[trips["route_id"].isin(block_general["routes_in_block_id"].explode())]
                 
-                st.write("check3")
                 # Create map
                 bus_map = create_bus_electrification_map(
                     shapes,
@@ -851,7 +850,7 @@ def main():
                     center_lat,
                     center_lon
                 )
-                st.write("check4")
+
                 # Store results
                 st.session_state["map"] = bus_map
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
