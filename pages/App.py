@@ -927,9 +927,9 @@ def main():
             st.metric("Total Stops", st.session_state['stops_count'])
 
         with col3:
-            st.metric("Total Blocks ℹ️", st.session_state['blocks_count'])
-            with st.expander("ℹ️ More Info"):  # ℹ️ is the information icon
-                st.write("Here you can provide additional details about this feature.")
+            st.metric("Total Blocks",help="additional info", st.session_state['blocks_count'])
+            #with st.expander("Total Blocksℹ️"):  # ℹ️ is the information icon
+                #st.write("Here you can provide additional details about this feature.")
         
         # Display additional information
         st.subheader("Analysis Results")
