@@ -354,11 +354,11 @@ def main():
         #st.subheader("Electric Bus Parameters")
         bus_range = st.number_input("Electric bus range (miles)", min_value=5, value=150, step=10)
         charging_power = st.number_input("Stationary Charging power (kW)", min_value=0, value=250, step=50)
+        min_stoppage_time = st.number_input(label="Stationary charging setup time (min)", min_value=0, value=0, step=1,help="inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging.")
         dynamic_wireless_charging_power = st.number_input("Dynamic Charging power (kW)", min_value=0, value=0, step=10)
 
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
-            min_stoppage_time = st.number_input("Stationary charging setup time (min)", min_value=0, value=0, step=1)
             energy_usage = st.number_input("Bus energy usage (kWmin/mile)", min_value=5, value=150, step=10)
             #critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             
