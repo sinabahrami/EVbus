@@ -927,7 +927,7 @@ def main():
             st.metric("Total Stops", st.session_state['stops_count'])
 
         with col3:
-            st.metric(label="Total Blocks ℹ️", value=st.session_state['blocks_count'], help="Additional info about total blocks.")
+            st.metric(label="Total Blocks", value=st.session_state['blocks_count'], help="A block is a sequence of consecutive routes assigned to a single vehicle")
         
         # Display additional information
         st.subheader("Analysis Results")
