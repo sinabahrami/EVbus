@@ -394,7 +394,7 @@ def main():
         st.session_state.toggle_state = toggle_value
        
         if st.session_state.toggle_state==True:
-            option = st.radio("Choose an option:", ["Block", label="Route"],help="add")
+            option = st.radio("Choose an option:", ["Block", "Route"],help="add")
             add_flag=1
             if option =="Block":
                 user_block_choice = st.multiselect("Choose desired block(s):", feasible_block_options)
