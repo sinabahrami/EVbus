@@ -928,7 +928,7 @@ def main():
 
         with col3:
             st.metric("Total Blocks ℹ️", st.session_state['blocks_count'])
-            with st.popover("ℹ️ More Info"):  # ℹ️ is the information icon
+            with st.expander("ℹ️ More Info"):  # ℹ️ is the information icon
                 st.write("Here you can provide additional details about this feature.")
         
         # Display additional information
