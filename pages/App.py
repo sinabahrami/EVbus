@@ -928,8 +928,8 @@ def main():
 
         with col3:
             st.metric("Total Blocks ℹ️", st.session_state['blocks_count'])
-            #st.metric("Infeasible Blocks", st.session_state['infeasible_blocks_count'])
-            #st.metric("Proposed Charging Locations", st.session_state['num_locs'])
+            with st.popover("ℹ️ More Info"):  # ℹ️ is the information icon
+                st.write("Here you can provide additional details about this feature.")
         
         # Display additional information
         st.subheader("Analysis Results")
