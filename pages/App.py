@@ -359,7 +359,7 @@ def main():
 
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
-            energy_usage = st.number_input("Bus energy usage (kWmin/mile)", min_value=5, value=150, step=10)
+            energy_usage = st.number_input("Bus energy usage (kWh/mile)", min_value=0.05, value=2.5, step=0.05)*60
             #critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             
 
