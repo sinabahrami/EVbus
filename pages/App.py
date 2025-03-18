@@ -927,7 +927,7 @@ def main():
             st.metric("Total Stops", st.session_state['stops_count'])
 
         with col3:
-            st.metric("Total Blocks", st.session_state['blocks_count'])
+            st.metric("Total Blocks ℹ️", st.session_state['blocks_count'])
             #st.metric("Infeasible Blocks", st.session_state['infeasible_blocks_count'])
             #st.metric("Proposed Charging Locations", st.session_state['num_locs'])
         
