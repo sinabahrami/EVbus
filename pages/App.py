@@ -389,7 +389,7 @@ def main():
             feasible_route_options=['CN', 'CS', 'CSX', 'MX', 'NES', 'NW', 'OS', 'WS', 'WX']
         
         # Toggle button
-        toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="You have the option to focus the analysis on specific routes or blocks. When analyzing specific routes, the system automatically includes other routes located on the same blocks as the chosen route(s).")
+        toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="You have the option to focus the analysis on specific routes or blocks. When analyzing specific routes, the model automatically includes other routes located on the same blocks as the chosen route(s).")
         # Update session state when toggle is changed
         st.session_state.toggle_state = toggle_value
        
