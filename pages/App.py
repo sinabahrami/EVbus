@@ -893,6 +893,7 @@ def main():
                 st.session_state["minimum_range_without_charger"] = min_range_without_charging
                 st.session_state["num_locs"] = len(proposed_locations)
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
+                st.session_state["output"]=wireless_track_shape.to_csv(index=False).encode("utf-8")
 
                 msg1.empty()
                 msg2.empty()
@@ -953,14 +954,11 @@ def main():
         st.subheader("Route Map with Proposed Charging Locations")
         st_folium(st.session_state["map"], width=800, height=600, returned_objects=[])
 
-
-        # Convert DataFrame to CSV
-        csv_data = wireless_track_shape.to_csv(index=False).encode("utf-8")
-        
+       
         # Streamlit Download Button
         st.download_button(
             label="Download CSV",
-            data=csv_data,
+            data= st.session_state["output"],
             file_name="output.csv",
             mime="text/csv"
         )
