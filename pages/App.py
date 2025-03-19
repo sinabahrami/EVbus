@@ -960,13 +960,13 @@ def main():
         st_folium(st.session_state["map"], width=800, height=600, returned_objects=[])
 
        
-        # Streamlit Download Button
-        st.download_button(
-            label="Download CSV",
-            data= st.session_state["output"],
-            file_name="output.csv",
-            mime="text/csv"
-        )
+        if st.session_state["output"] is not None:
+            st.download_button(
+                label="Download CSV",
+                data=st.session_state["output"],
+                file_name="output.csv",
+                mime="text/csv"
+            )
 
 
 if __name__ == "__main__":
