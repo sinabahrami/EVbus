@@ -750,9 +750,8 @@ def main():
                     iteration_count += 1
 
             except Exception as e:
-                error_message = f"An error occurred during analysis:\n{traceback.format_exc()}"
-                st.error(error_message)  # Display error in Streamlit UI
-                print(error_message)  # Also print error in terminal/logs
+                st.error(f"An error occurred during analysis: {str(e)}")
+                return
         
         msg2.success("✅ Stationary charging locations are optimized.")
         with st.spinner("Optimizing dynamic track locations..."):  
@@ -852,7 +851,9 @@ def main():
                             break
 
             except Exception as e:
-                st.error(f"An error occurred during analysis: {str(e)}")
+                error_message = f"An error occurred during analysis:\n{traceback.format_exc()}"
+                st.error(error_message)  # Display error in Streamlit UI
+                print(error_message)  # Also print error in terminal/logs
                 return
         
         msg3.success("✅ Dynamic track locations are optimized.")
