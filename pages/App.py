@@ -281,7 +281,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
 
     
     if not segments:
-        return None, []  # No valid segment found
+        return None, [], 0  # No valid segment found
     
     # Loop through each other shape_id to measure overlap
     max_overlap = 0
