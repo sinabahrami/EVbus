@@ -838,8 +838,7 @@ def main():
                                 axis=1
                             )
                             infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
-                        st.write(f"{countertest}")
-                        st.write(f"{new_distance}")
+                        st.write(f"{countertest}:{new_distance} and {len(infeasible_blocks)}")
                         st.write(f"_______________")
                         if new_distance==0:
                             break
