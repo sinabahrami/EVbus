@@ -831,7 +831,7 @@ def main():
                         filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
                 
                         
-                
+                        st.write(f"{countertest}: {list(track_shape_id)[0]} & {max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609} & {len(filtered_blocks)}")
                         new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks,wireless_track_shape)
                         
                         wireless_track_length= wireless_track_length+new_distance/1609
