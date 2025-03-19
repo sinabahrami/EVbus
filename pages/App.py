@@ -14,6 +14,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
+import logging
+import traceback
+
+logging.basicConfig(level=logging.ERROR)
+
+
+
 # Cache the data processing to improve performance
 @st.cache_data
 def load_gtfs_data(zip_file_path):
@@ -743,8 +750,9 @@ def main():
                     iteration_count += 1
 
             except Exception as e:
-                st.error(f"An error occurred during analysis: {str(e)}")
-                return
+                error_message = f"An error occurred during analysis:\n{traceback.format_exc()}"
+                st.error(error_message)  # Display error in Streamlit UI
+                print(error_message)  # Also print error in terminal/logs
         
         msg2.success("✅ Stationary charging locations are optimized.")
         with st.spinner("Optimizing dynamic track locations..."):  
