@@ -953,5 +953,18 @@ def main():
         st.subheader("Route Map with Proposed Charging Locations")
         st_folium(st.session_state["map"], width=800, height=600, returned_objects=[])
 
+
+        # Convert DataFrame to CSV
+        csv_data = wireless_track_shape.to_csv(index=False).encode("utf-8")
+        
+        # Streamlit Download Button
+        st.download_button(
+            label="Download CSV",
+            data=csv_data,
+            file_name="output.csv",
+            mime="text/csv"
+        )
+
+
 if __name__ == "__main__":
     main()
