@@ -14,12 +14,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
-import logging
-import traceback
-
-logging.basicConfig(level=logging.ERROR)
-
-
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -141,13 +135,11 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     all_routes.add_to(m)
 
     if not wireless_track_shape_df.empty:
-        counter=1
-        for shape_id in wireless_track_shape_df['shape_id'].unique():
-            wireless_track_group = folium.FeatureGroup(name=f"Wireless track {counter}")
-            shape_data = wireless_track_shape_df[wireless_track_shape_df['shape_id'] == shape_id].sort_values(by='target_shape_pt_sequence')
+        for track in wireless_track_shape_df['counter'].unique():
+            wireless_track_group = folium.FeatureGroup(name=f"Wireless track {track}")
+            shape_data = wireless_track_shape_df[wireless_track_shape_df['counter'] == track].sort_values(by='target_shape_pt_sequence')
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
             folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
-            counter+=1
             wireless_track_group.add_to(m)
 
     # Create a feature group for charging locations
@@ -762,9 +754,9 @@ def main():
                 wireless_track_shape = pd.DataFrame()
                 
                 if dynamic_wireless_charging_power>0:
-                    countertest=0
+                    counter_track=0
                     while len(infeasible_blocks)>0:
-                        countertest+=1
+                        counter_track+=1
                         # Filter block_general to keep only rows where block_id is in infeasible_blocks
                         filtered_blocks = block_general[block_general["block_id"].isin(infeasible_blocks)].copy()
                         
@@ -830,11 +822,11 @@ def main():
                 
                         filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
                 
-                        
-                        st.write(f"{countertest}: {list(track_shape_id)[0]} & {max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609} & {len(filtered_blocks)}")
                         new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks,wireless_track_shape)
                         
                         wireless_track_length= wireless_track_length+new_distance/1609
+                        if new_track_shape is not None:
+                            new_track_shape["counter"] = counter_track  # Assign the same value to all rows
                         wireless_track_shape = pd.concat([wireless_track_shape, new_track_shape], ignore_index=True)
                         wireless_track_shapeids.update(new_track_shapeids)
  
@@ -845,15 +837,11 @@ def main():
                                 axis=1
                             )
                             infeasible_blocks = filtered_blocks[filtered_blocks["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
-                        st.write(f"{countertest}:{new_distance} and {len(infeasible_blocks)}")
-                        st.write(f"_______________")
                         if new_distance==0:
                             break
 
             except Exception as e:
-                error_message = f"An error occurred during analysis:\n{traceback.format_exc()}"
-                st.error(error_message)  # Display error in Streamlit UI
-                print(error_message)  # Also print error in terminal/logs
+                st.error(f"An error occurred during analysis: {str(e)}")
                 return
         
         msg3.success("✅ Dynamic track locations are optimized.")
