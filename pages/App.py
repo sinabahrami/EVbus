@@ -354,7 +354,7 @@ def main():
         #st.subheader("Electric Bus Parameters")
         bus_range = st.number_input("Electric bus range (miles)", min_value=5, value=150, step=10)
         charging_power = st.number_input("Stationary Charging power (kW)", min_value=0, value=250, step=50)
-        min_stoppage_time = st.number_input(label="Stationary charging setup time (min)", min_value=0, value=0, step=1,help="inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging.")
+        min_stoppage_time = st.number_input(label="Stationary charging setup time (min)", min_value=0, value=0, step=1,help="Wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging.")
         dynamic_wireless_charging_power = st.number_input("Dynamic Charging power (kW)", min_value=0, value=0, step=10)
 
         # Advanced parameters with expander to keep interface clean
@@ -389,7 +389,7 @@ def main():
             feasible_route_options=['CN', 'CS', 'CSX', 'MX', 'NES', 'NW', 'OS', 'WS', 'WX']
         
         # Toggle button
-        toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state)
+        toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="You have the option to focus the analysis on specific routes or blocks. When analyzing specific routes, the system automatically includes other routes located on the same blocks as the chosen route(s).")
         # Update session state when toggle is changed
         st.session_state.toggle_state = toggle_value
        
