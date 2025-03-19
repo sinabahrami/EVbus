@@ -323,6 +323,11 @@ def reset_toggle():
     st.session_state.toggle_state = False  # Turn off toggle
 
 def main():
+    # Initialize session state if not already set
+    if "output" not in st.session_state:
+        st.session_state["output"] = None  # Or set a default DataFrame
+
+    
     # Set page config for a cleaner interface
     st.set_page_config(
         page_title="Bus Electrification Analysis",
