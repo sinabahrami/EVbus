@@ -10,7 +10,7 @@ st.markdown("""
     line-height: 2; /* Adjusts line spacing */
     }
 </style>
-<p class="big-font">This app has been developed by a team of researchers from the University of Michigan, including <a href="https://cee.engin.umich.edu/people/yin-yafeng/"> Prof. Yafeng Yin</a>, <a href="https://cee.engin.umich.edu/people/bahrami-sina/"> Dr. Sina Bahrami</a>, and <a href="https://cee.engin.umich.edu/people/li-manzi/">Dr. Manzi Li</a>, as part of the deliverables for the MDOT (Michigan Department of Transportation) research project <strong>OR24-003</strong>: \"Inductive Vehicle Charging - Identify Best Practices/Applications and Optimum Locations for Light to Heavy Duty Vehicles\".</p>
+<p class="big-font">This app has been developed by a team of researchers from the University of Michigan, including <a href="https://cee.engin.umich.edu/people/yin-yafeng/"> Prof. Yafeng Yin</a>, <a href="https://cee.engin.umich.edu/people/bahrami-sina/"> Dr. Sina Bahrami</a>, and <a href="https://cee.engin.umich.edu/people/li-manzi/">Dr. Manzi Li</a>, as part of the deliverables for the MDOT (Michigan Department of Transportation) research project <strong>OR24-003</strong>: \"Inductive Vehicle Charging - Identify Best Practices/Applications and Optimum Locations for Light to Heavy Duty Vehicles\" managed by <a href="https://www.linkedin.com/in/michele-mueller-7a7870118">Michele Mueller</a>.</p>
 """, unsafe_allow_html=True)
 
 st.markdown("""
