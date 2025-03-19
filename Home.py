@@ -33,7 +33,7 @@ ul.med-font {
     <ul class="med-font">
         <li>Electric bus range (the distance an electric bus can travel on a fully charged battery),</li>
         <li>Bus energy usage (distance traveled per unit of battery energy consumed),</li>
-        <li>Stationary and dynamic charging power, and </li>
+        <li>Stationary and in-motion charging powers, and </li>
         <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging).</li>
     </ul>
     </p>
