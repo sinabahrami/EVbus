@@ -355,18 +355,18 @@ def main():
 
         
         # Allow user to select agency
-        selected_agency = st.selectbox("Select the agency", agencies, on_change=reset_toggle)
+        selected_agency = st.selectbox("Transit Agency", agencies, on_change=reset_toggle)
         
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
-        bus_range = st.number_input("Electric bus range (miles)", min_value=5, value=150, step=10)
-        charging_power = st.number_input("Stationary Charging power (kW)", min_value=0, value=250, step=50, help="Stationary chargers can be either wireless or plug-in types.")
-        min_stoppage_time = st.number_input(label="Stationary charging setup time (min)", min_value=0, value=0, step=1,help="Wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging.")
-        dynamic_wireless_charging_power = st.number_input("In-motion Charging power (kW)", min_value=0, value=0, step=10)
+        bus_range = st.number_input("Electric Bus Range [miles]", min_value=5, value=150, step=10)
+        charging_power = st.number_input("Stationary Charging Power [kW]", min_value=0, value=250, step=50, help="Stationary chargers can be either wireless or plug-in types.")
+        min_stoppage_time = st.number_input(label="Stationary charging Setup Time [min]", min_value=0, value=0, step=1,help="Wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging.")
+        dynamic_wireless_charging_power = st.number_input("In-motion Charging Power [kW]", min_value=0, value=0, step=10)
 
         # Advanced parameters with expander to keep interface clean
         with st.expander("Advanced Parameters"):
-            energy_usage = st.number_input("Bus energy usage (kWh/mile)", min_value=0.05, value=2.5, step=0.05)*60
+            energy_usage = st.number_input("Bus Energy Usage [kWh/mile]", min_value=0.05, value=2.5, step=0.05)*60
             #critical_range = st.number_input("Critical range threshold (miles)", min_value=5, value=20, step=5)
             
 
