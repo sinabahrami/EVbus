@@ -135,27 +135,31 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     all_routes.add_to(m)
 
     if not wireless_track_shape_df.empty:
+    all_wireless_tracks = folium.FeatureGroup(name="Wireless Charging Tracks Locations", show=True)
         for track in wireless_track_shape_df['counter'].unique():
-            wireless_track_group = folium.FeatureGroup(name=f"Wireless track {track}")
+            wireless_track_group = folium.FeatureGroup(name=f"Wireless track {track}",show=False)
             shape_data = wireless_track_shape_df[wireless_track_shape_df['counter'] == track].sort_values(by='target_shape_pt_sequence')
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
             folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
+            folium.PolyLine(shape_coords, color="green", weight=4).add_to(all_wireless_tracks)
             wireless_track_group.add_to(m)
+        all_wireless_tracks.add_to(m)
 
-    # Create a feature group for charging locations
-    charging_locations = folium.FeatureGroup(name="Proposed Charging Locations", show=True)
+    if not proposed_locations_df.empty:
+        # Create a feature group for charging locations
+        charging_locations = folium.FeatureGroup(name="Proposed Charging Locations", show=True)
     
-    # Add markers for charging locations
-    for idx, row in proposed_locations_df.iterrows():
-        folium.Marker(
-            location=[row["stop_lat"], row["stop_lon"]],
-            icon=folium.Icon(color="blue", icon="plug", prefix="fa"),
-            popup=f"Charging Location ID: {row['stop_id']}",
-            tooltip="Charging Location"
-        ).add_to(charging_locations)
-    
-    # Add the charging locations group to the map
-    charging_locations.add_to(m)
+        # Add markers for charging locations
+        for idx, row in proposed_locations_df.iterrows():
+            folium.Marker(
+                location=[row["stop_lat"], row["stop_lon"]],
+                icon=folium.Icon(color="blue", icon="plug", prefix="fa"),
+                popup=f"Charging Location ID: {row['stop_id']}",
+                tooltip="Charging Location"
+            ).add_to(charging_locations)
+        
+        # Add the charging locations group to the map
+        charging_locations.add_to(m)
     
     # Add layer control to toggle visibility
     folium.LayerControl().add_to(m)
