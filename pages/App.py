@@ -252,6 +252,9 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
         # Remove matching rows
         target_shape = target_shape[~mask].reset_index(drop=True)
     
+    if target_shape.empty:
+        return None, [], 0  # No valid segment found
+        
     if input_distance>target_shape["target_shape_dist_traveled"].max():
         input_distance=target_shape["target_shape_dist_traveled"].max()
     
