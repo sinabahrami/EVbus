@@ -810,7 +810,9 @@ def main():
                             )
                             filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
                             #new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
+                            st.write("check1")
                             new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, selected_shape_id, max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
+                            st.write("check2")
                             if new_distance>0:
                                 break
                                            
