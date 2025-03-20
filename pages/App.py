@@ -135,7 +135,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     all_routes.add_to(m)
 
     if not wireless_track_shape_df.empty:
-    all_wireless_tracks = folium.FeatureGroup(name="Wireless Charging Tracks Locations", show=True)
+        all_wireless_tracks = folium.FeatureGroup(name="Wireless Charging Tracks Locations", show=True)
         for track in wireless_track_shape_df['counter'].unique():
             wireless_track_group = folium.FeatureGroup(name=f"Wireless track {track}",show=False)
             shape_data = wireless_track_shape_df[wireless_track_shape_df['counter'] == track].sort_values(by='target_shape_pt_sequence')
