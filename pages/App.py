@@ -135,9 +135,9 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
     all_routes.add_to(m)
 
     if not wireless_track_shape_df.empty:
-        all_wireless_tracks = folium.FeatureGroup(name="Wireless Charging Tracks Locations", show=True)
+        all_wireless_tracks = folium.FeatureGroup(name="All Wireless Charging Tracks", show=True)
         for track in wireless_track_shape_df['counter'].unique():
-            wireless_track_group = folium.FeatureGroup(name=f"Wireless track {track}",show=False)
+            wireless_track_group = folium.FeatureGroup(name=f"Wireless Charging Track {track}",show=False)
             shape_data = wireless_track_shape_df[wireless_track_shape_df['counter'] == track].sort_values(by='target_shape_pt_sequence')
             shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
             folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
@@ -147,7 +147,7 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
 
     if not proposed_locations_df.empty:
         # Create a feature group for charging locations
-        charging_locations = folium.FeatureGroup(name="Proposed Charging Locations", show=True)
+        charging_locations = folium.FeatureGroup(name="Stationary Chargers", show=True)
     
         # Add markers for charging locations
         for idx, row in proposed_locations_df.iterrows():
@@ -366,7 +366,7 @@ def main():
         
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
-        bus_range = st.number_input("Electric Bus Range [miles]", min_value=5, value=150, step=10)
+        bus_range = st.number_input("Electric Bus Range [mile]", min_value=5, value=150, step=10)
         charging_power = st.number_input("Stationary Charging Power [kW]", min_value=0, value=250, step=50, help="Stationary chargers can be either wireless or plug-in types.")
         min_stoppage_time = st.number_input(label="Stationary Charging Setup Time [min]", min_value=0, value=0, step=1,help="Wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging.")
         dynamic_wireless_charging_power = st.number_input("In-motion Charging Power [kW]", min_value=0, value=0, step=10)
