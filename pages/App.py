@@ -794,33 +794,26 @@ def main():
                 
                         filtered_blocks['flattened_counts'] = filtered_blocks['group_counts'].apply(extract_shape_counts)
                 
+                        # Initialize an empty Counter
+                        shape_counts = Counter()
                 
-                        # Step 2: Find common shape IDs across all rows
-                        common_shapes = set(filtered_blocks['flattened_counts'].iloc[0].keys()-wireless_track_shapeids)
-                        
-                
-                        for i in range(1, len(filtered_blocks)):
-                            common_shapes.intersection_update(filtered_blocks['flattened_counts'].iloc[i].keys()-wireless_track_shapeids)
-                
-                
-                        # Step 3: If common shape IDs exist, find the one with the highest count sum
-                        if common_shapes:
-                            best_shape = max(common_shapes, key=lambda shape: sum(filtered_blocks['flattened_counts'].iloc[i][shape] for i in range(len(filtered_blocks))))
-                            track_shape_id = {best_shape}
-                        else:
-                            # If no common shape ID, return the highest count shape from each row
-                            highest_shapes = {max(row, key=row.get) for row in filtered_blocks['flattened_counts']}
-                            track_shape_id = {next(iter(highest_shapes))}
+                        # Iterate over the 'flattened_counts' column and update the Counter
+                        for counts_dict in filtered_blocks['flattened_counts']:
+                            shape_counts.update(counts_dict)
+                        # Sort the shape IDs by count in descending order
+                        sorted_shape_counts = sorted(shape_counts.items(), key=lambda x: x[1], reverse=True)
+                        track_shape_ids = [shape for shape, _ in sorted_shape_counts]
                          
-                   
-                
-                        # Compute the sum of counts for the selected shape IDs in each row
-                        filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(lambda row: sum(row[shape] for shape in track_shape_id if shape in row))
-                
-                        filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
-                
-                        new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks,wireless_track_shape)
-                        
+                        for selected_shape_id in track_shape_ids:
+                            filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(
+                                lambda row: row[selected_shape_id] if selected_shape_id in row else 0
+                            )
+                            filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
+                            #new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, list(track_shape_id)[0], max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
+                            new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, selected_shape_id, max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks)
+                            if new_distance>0:
+                                break
+                                           
                         wireless_track_length= wireless_track_length+new_distance/1609
                         if new_track_shape is not None:
                             if not wireless_track_shape.empty and wireless_track_shape["shape_id"].iloc[-1]==new_track_shape["shape_id"].iloc[0] and wireless_track_shape["target_shape_pt_sequence"].iloc[-1]==new_track_shape["target_shape_pt_sequence"].iloc[0]-1:
