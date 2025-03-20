@@ -805,13 +805,13 @@ def main():
                         track_shape_ids = [shape for shape, _ in sorted_shape_counts]
                          
                         for selected_shape_id in track_shape_ids:
-                        filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(
-                            lambda row: row[selected_shape_id] if selected_shape_id in row else 0
-                        )
-                        filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
-                        new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, selected_shape_id, max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks,wireless_track_shape)
-                        if new_distance>0:
-                            break
+                            filtered_blocks['track_shape_count'] = filtered_blocks['flattened_counts'].apply(
+                                lambda row: row[selected_shape_id] if selected_shape_id in row else 0
+                            )
+                            filtered_blocks['estimate_length-per_shape']=filtered_blocks["estimate_required_length"]/filtered_blocks["track_shape_count"]
+                            new_track_shape, new_track_shapeids,new_distance=find_best_matching_segment(shapes, selected_shape_id, max(filtered_blocks.loc[filtered_blocks['track_shape_count']>0,'estimate_length-per_shape'])*1609, filtered_blocks,wireless_track_shape)
+                            if new_distance>0:
+                                break
                                            
                         wireless_track_length= wireless_track_length+new_distance/1609
                         if new_track_shape is not None:
