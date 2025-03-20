@@ -253,7 +253,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
         target_shape = target_shape[~mask].reset_index(drop=True)
     
     if input_distance>target_shape["target_shape_dist_traveled"].max():
-        input_distance=target_shape["target_shape_pt_sequence"].max()
+        input_distance=target_shape["target_shape_dist_traveled"].max()
     
     indices=np.linspace(0, target_shape["target_shape_pt_sequence"].max(), 21)  
     start_indices=indices[:-1].astype(int)
@@ -270,6 +270,9 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
                 segments.append(segment)
                 segment_distances.append(total_distance)
                 break  # Stop early to avoid unnecessary longer segments
+            elif end_idx==len(target_shape)-1:
+                segments.append(segment)
+                segment_distances.append(total_distance)
 
     
     if not segments:
@@ -817,6 +820,8 @@ def main():
                         
                         wireless_track_length= wireless_track_length+new_distance/1609
                         if new_track_shape is not None:
+                            if not wireless_track_shape.empty and wireless_track_shape["shape_id"].iloc[-1]==new_track_shape["shape_id"].iloc[0] and wireless_track_shape["target_shape_pt_sequence"].iloc[-1]==new_track_shape["target_shape_pt_sequence"].iloc[0]-1:
+                                counter_track-=1
                             new_track_shape["counter"] = counter_track  # Assign the same value to all rows
                         wireless_track_shape = pd.concat([wireless_track_shape, new_track_shape], ignore_index=True)
                         wireless_track_shapeids.update(new_track_shapeids)
@@ -960,13 +965,13 @@ def main():
         st_folium(st.session_state["map"], width=800, height=600, returned_objects=[])
 
        
-        if st.session_state["output"] is not None:
-            st.download_button(
-                label="Download CSV",
-                data=st.session_state["output"],
-                file_name="output.csv",
-                mime="text/csv"
-            )
+        # if st.session_state["output"] is not None:
+        #     st.download_button(
+        #         label="Download CSV",
+        #         data=st.session_state["output"],
+        #         file_name="output.csv",
+        #         mime="text/csv"
+        #     )
 
 
 if __name__ == "__main__":
