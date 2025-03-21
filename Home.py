@@ -37,13 +37,10 @@ ul.med-font {
         <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging).</li>
     </ul>
     </p>
-    <p class="big-font"> The app determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results. The 
+    <p class="big-font"> The app determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results. The web app considers the entire service by default; however, you can also choose to focus on specific routes or blocks. You can use the map layer to switch different routes or chargers on and off to focus on specific areas of interest.
 </p>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<p class="big-font">The web app considers the entire service by default; however, you can also choose to focus on specific routes or blocks. You can use the map layer to switch different routes or chargers on and off to focus on specific areas of interest. </p>
-""", unsafe_allow_html=True)
 
 st.markdown("""
     <style>
