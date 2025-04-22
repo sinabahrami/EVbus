@@ -937,10 +937,10 @@ def main():
             else:
                 if st.session_state['infeasible_blocks_count'] ==1:
                     st.success(f"✅ {st.session_state['blocks_count']-st.session_state['infeasible_blocks_count']} blocks can be electrified.")
-                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} block cannot be electrified.")
+                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} block cannot be electrified without adjusting the block schedule or assignment.")
                 else:
                     st.success(f"✅ {st.session_state['blocks_count']-st.session_state['infeasible_blocks_count']} blocks can be electrified.")
-                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} blocks cannot be electrified.")
+                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} blocks cannot be electrified without adjusting the block schedule or assignment.")
         else:
             st.write(f"The application of the filters yielded {st.session_state['feasible_blocks_count']+st.session_state['infeasible_blocks_count']} block(s). With the selected configurations:")
             if st.session_state['infeasible_blocks_count']==0:
@@ -948,10 +948,10 @@ def main():
             else:
                 if st.session_state['infeasible_blocks_count'] ==1:
                     st.success(f"✅ {st.session_state['feasible_blocks_count']} of selected block(s) can be electrified.")
-                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} seleted block cannot be electrified.")
+                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} seleted block cannot be electrified without adjusting the block schedule or assignment.")
                 else:
                     st.success(f"✅ {st.session_state['feasible_blocks_count']} of selected block(s) can be electrified.")
-                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} of selected blocks cannot be electrified.")
+                    st.error(f"❌ {st.session_state['infeasible_blocks_count']} of selected blocks cannot be electrified without adjusting the block schedule or assignment.")
                     
         if st.session_state['num_locs'] >1: 
             st.write(f"- {st.session_state['num_locs']} stationary charging locations are needed.")
