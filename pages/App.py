@@ -434,13 +434,18 @@ def main():
         # Update session state when toggle is changed
         st.session_state.toggle_state_cost = toggle_value_cost
         if st.session_state.toggle_state_cost==True:
-            bus_cost = st.number_input("Electric Bus cost [$]", min_value=0, value=500000,step=10000, help="The cost of purchasing an electric bus.")
+            # Show a text input with comma formatting
+            formatted_value_bus = st.text_input(
+                "Electric Bus Price [$]",
+                value=f"{st.session_state.bus_cost:,}",
+                help="Cost of purchasing an electric bus."
+            )
+            # Convert back to integer
+            try:
+                st.session_state.bus_cost = int(formatted_value_bus.replace(",", ""))
+            except ValueError:
+                st.session_state.bus_cost = 0
             
-            # Initial value
-            default_value = 50000
-            # Store the unformatted integer in session state
-            if "stationary_charging_cost" not in st.session_state:
-                st.session_state.stationary_charging_cost = default_value
             # Show a text input with comma formatting
             formatted_value = st.text_input(
                 "Cost of Building Stationary Charging [$]",
@@ -452,10 +457,19 @@ def main():
                 st.session_state.stationary_charging_cost = int(formatted_value.replace(",", ""))
             except ValueError:
                 st.session_state.stationary_charging_cost = 0
-            # Show the parsed number for debugging or confirmation
-            st.write("Selected cost (number):", st.session_state.stationary_charging_cost)
 
-            dynamic_charging_cost = st.number_input("Cost of Building Dynamic Charging per mile [$]", min_value=0, value=2000000, step=50000, help="The average cost of building dynamic charging track per mile.")
+            # Show a text input with comma formatting
+            formatted_value_dynamic = st.text_input(
+                "Cost of Constructing Dyanmic Charging per Mile [$]",
+                value=f"{st.session_state.dynamic_charging_cost:,}",
+                help="The average cost of constructing dynamic charging track per mile."
+            )
+            # Convert back to integer
+            try:
+                st.session_state.dynamic_charging_cost = int(formatted_value_dynamic.replace(",", ""))
+            except ValueError:
+                st.session_state.dynamic_charging_cost = 0
+
             
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
@@ -1008,6 +1022,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
