@@ -434,9 +434,9 @@ def main():
         # Update session state when toggle is changed
         st.session_state.toggle_state_cost = toggle_value_cost
         if st.session_state.toggle_state_cost==True:
-            bus_cost = st.number_input("Electric Bus cost", min_value=0, value=500000,step=10000, help="The cost of purchasing an electric bus.")
-            stationary_charging_cost = st.number_input("Cost of Building Stationary Charging", min_value=0, value=50000, step=5000, help="The average cost of building a stationary charging station.")
-            dynamic_charging_cost = st.number_input("Cost of Building Dynamic Charging per mile", min_value=0, value=200000, step=5000, help="The average cost of building dynamic charging track per mile.")
+            bus_cost = st.number_input("Electric Bus cost [$]", min_value=0, value=500000,step=10000, help="The cost of purchasing an electric bus.")
+            stationary_charging_cost = st.number_input("Cost of Building Stationary Charging [$]", min_value=0, value=50000, step=5000, help="The average cost of building a stationary charging station.")
+            dynamic_charging_cost = st.number_input("Cost of Building Dynamic Charging per mile [$]", min_value=0, value=2000000, step=50000, help="The average cost of building dynamic charging track per mile.")
         
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
@@ -989,5 +989,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
