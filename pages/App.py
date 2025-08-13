@@ -354,6 +354,9 @@ def main():
     
     # Create sidebar for settings
     with st.sidebar:
+        # Allow user to select agency
+        selected_agency = st.selectbox("Transit Agency", agencies, on_change=reset_toggle)
+        
         st.header("Configuration")
 
         # Initialize session state for the toggle
@@ -361,8 +364,7 @@ def main():
             st.session_state.toggle_state = False
 
         
-        # Allow user to select agency
-        selected_agency = st.selectbox("Transit Agency", agencies, on_change=reset_toggle)
+        
         
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
@@ -978,3 +980,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
