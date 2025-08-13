@@ -900,7 +900,7 @@ def main():
                     top_end_stop_ids.remove(id)  # Remove safely
 
                     block_general["range_tracking"] = block_general.apply(
-                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"],bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape,shapes) if row["total_distance_miles"] > bus_range and id in row["end_id_list"] else None,
+                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"],bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape,shapes), #if row["total_distance_miles"] > bus_range and id in row["end_id_list"] else None,
                         axis=1
                     )
                     infeasible_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -1028,6 +1028,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
