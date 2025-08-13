@@ -435,11 +435,27 @@ def main():
         st.session_state.toggle_state_cost = toggle_value_cost
         if st.session_state.toggle_state_cost==True:
             bus_cost = st.number_input("Electric Bus cost [$]", min_value=0, value=500000,step=10000, help="The cost of purchasing an electric bus.")
-            st.write("Selected cost: ${:,}".format(bus_cost))
-            stationary_charging_cost = st.number_input("Cost of Building Stationary Charging [$]", min_value=0, value=50000, step=5000, help="The average cost of building a stationary charging station.")
-            st.write("Selected cost: ${:,}".format(stationary_charging_cost))
+            
+            # Initial value
+            default_value = 50000
+            # Store the unformatted integer in session state
+            if "stationary_charging_cost" not in st.session_state:
+                st.session_state.stationary_charging_cost = default_value
+            # Show a text input with comma formatting
+            formatted_value = st.text_input(
+                "Cost of Building Stationary Charging [$]",
+                value=f"{st.session_state.stationary_charging_cost:,}",
+                help="The average cost of building a stationary charging station."
+            )
+            # Convert back to integer
+            try:
+                st.session_state.stationary_charging_cost = int(formatted_value.replace(",", ""))
+            except ValueError:
+                st.session_state.stationary_charging_cost = 0
+            # Show the parsed number for debugging or confirmation
+            st.write("Selected cost (number):", st.session_state.stationary_charging_cost)
+
             dynamic_charging_cost = st.number_input("Cost of Building Dynamic Charging per mile [$]", min_value=0, value=2000000, step=50000, help="The average cost of building dynamic charging track per mile.")
-            st.write("Selected cost: ${:,}".format(dynamic_charging_cost))
             
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
@@ -992,6 +1008,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
