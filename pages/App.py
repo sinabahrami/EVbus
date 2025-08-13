@@ -434,6 +434,8 @@ def main():
         # Update session state when toggle is changed
         st.session_state.toggle_state_cost = toggle_value_cost
         if st.session_state.toggle_state_cost==True:
+            if "bus_cost" not in st.session_state:
+                st.session_state.bus_cost =500000
             # Show a text input with comma formatting
             formatted_value_bus = st.text_input(
                 "Electric Bus Price [$]",
@@ -445,7 +447,9 @@ def main():
                 st.session_state.bus_cost = int(formatted_value_bus.replace(",", ""))
             except ValueError:
                 st.session_state.bus_cost = 0
-            
+
+            if "stationary_charging_cost" not in st.session_state:
+                st.session_state.stationary_charging_cost =50000
             # Show a text input with comma formatting
             formatted_value = st.text_input(
                 "Cost of Building Stationary Charging [$]",
@@ -458,6 +462,8 @@ def main():
             except ValueError:
                 st.session_state.stationary_charging_cost = 0
 
+            if "dynamic_charging_cost" not in st.session_state:
+                st.session_state.dynamic_charging_cost =2000000
             # Show a text input with comma formatting
             formatted_value_dynamic = st.text_input(
                 "Cost of Constructing Dyanmic Charging per Mile [$]",
@@ -1022,6 +1028,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
