@@ -962,7 +962,7 @@ def main():
                 st.session_state["num_locs"] = len(proposed_locations)
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
                 st.session_state["output"]=wireless_track_shape.to_csv(index=False).encode("utf-8")
-                if toggle_value_cost==True:
+                if st.session_state.toggle_state_cost==True:
                     st.session_state["initial_num_infeasible_blocks"]=initial_num_infeasible_blocks
                     st.session_state["final_number_infeasible_blocks"]=final_number_infeasible_blocks
                     st.session_state["additional_fleet_cost_no_ivc"]=additional_fleet_cost_no_ivc
@@ -1039,7 +1039,7 @@ def main():
         #         mime="text/csv"
         #     )
 
-    if "map" in st.session_state and toggle_value_cost==True:
+    if st.session_state.toggle_state_cost==True:
         if st.session_state['initial_num_infeasible_blocks']==0:
             categories = ["All Blocks Feasible with No Chargers"]
             Additional_fleet=np.array([st.session_state['additional_fleet_cost_no_ivc']])/1e6
@@ -1082,4 +1082,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
