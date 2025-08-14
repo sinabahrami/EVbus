@@ -698,6 +698,7 @@ def main():
                 
                 #calculate cost with no IVC charger and additional buses
                 block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
+                msg1.success("✅ made it here.")
                 if st.session_state.toggle_state_cost==True:
                     existing_fleet_cost=len(block_general)*bus_cost
                     additional_fleet_cost_no_ivc=bus_cost*block_general['additional_buses'].sum()
@@ -1066,3 +1067,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
