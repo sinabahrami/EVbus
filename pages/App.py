@@ -477,6 +477,8 @@ def main():
                     50_000,
                     "Cost of installing a wireless charging receiver on each bus."
                 )
+            else:
+                bus_receiver = 0
         
             dynamic_charger_cost = number_input_with_commas(
                 "Cost of Constructing Dynamic Charging per Mile [$]",
@@ -1117,6 +1119,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
