@@ -702,6 +702,8 @@ def main():
                 if toggle_value_cost==True:
                     existing_fleet_cost=len(block_general)*bus_cost
                     additional_fleet_cost_no_ivc=bus_cost*block_general['additional_buses'].sum()
+                else:
+                    additional_fleet_cost_no_ivc=0
 
                 # Identify infeasible blocks
                 infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
