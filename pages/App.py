@@ -441,53 +441,48 @@ def main():
         
         critical_range=20
 
-        # Toggle button
         toggle_value_cost = st.toggle(
             "Economic Analysis",
-            value=st.session_state.toggle_state_cost,
-            help="Compare the costs of different electric bus and charging infrastructure scenarios."
+            value=st.session_state.get("toggle_state_cost", False),
+            help="You can compare the costs of different scenarios."
         )
-        
-        # Update session state when toggle is changed
         st.session_state.toggle_state_cost = toggle_value_cost
         
         if st.session_state.toggle_state_cost:
-            bus_cost = st.number_input(
+            # Helper function for formatted input
+            def number_input_with_commas(label, value, help_text=""):
+                formatted_value = "{:,}".format(value)
+                user_input = st.text_input(label, formatted_value, help=help_text)
+                try:
+                    # Remove commas before converting back
+                    return int(user_input.replace(",", "").strip())
+                except ValueError:
+                    return value
+        
+            bus_cost = number_input_with_commas(
                 "Electric Bus Price [$]",
-                value=500_000,
-                min_value=0,
-                step=10_000,
-                help="Purchase cost of a single electric bus."
+                500_000,
+                "Cost of purchasing an electric bus."
             )
-            st.caption(f"Selected: ${bus_cost:,.0f}")
         
-            stationary_charger_cost = st.number_input(
+            stationary_charger_cost = number_input_with_commas(
                 "Cost of Building Stationary Charging [$]",
-                value=200_000,
-                min_value=0,
-                step=10_000,
-                help="Average cost to build a stationary charging station."
+                200_000,
+                "Average cost of building a stationary charging station."
             )
-            st.caption(f"Selected: ${stationary_charger_cost:,.0f}")
         
-            if min_stoppage_time < 1:
-                bus_receiver = st.number_input(
+            if min_stoppage_time >= 1:
+                bus_receiver = number_input_with_commas(
                     "Cost of Installing Wireless Charging Receiver on Each Bus [$]",
-                    value=50_000,
-                    min_value=0,
-                    step=5_000,
-                    help="Cost to equip each bus with a wireless charging receiver coil."
+                    50_000,
+                    "Cost of installing a wireless charging receiver on each bus."
                 )
-                st.caption(f"Selected: ${bus_receiver:,.0f}")
         
-            dynamic_charger_cost = st.number_input(
+            dynamic_charger_cost = number_input_with_commas(
                 "Cost of Constructing Dynamic Charging per Mile [$]",
-                value=2_500_000,
-                min_value=0,
-                step=50_000,
-                help="Average cost to construct one mile of dynamic charging track."
-            )
-            st.caption(f"Selected: ${dynamic_charger_cost:,.0f}")   
+                2_500_000,
+                "Average cost of constructing a dynamic charging track per mile."
+            )   
             
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
@@ -1122,5 +1117,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
