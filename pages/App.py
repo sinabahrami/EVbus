@@ -1039,46 +1039,47 @@ def main():
         #         mime="text/csv"
         #     )
 
-    if "initial_num_infeasible_blocks" in st.session_state:
-        if st.session_state.get("initial_num_infeasible_blocks") == 0:
-            categories = ["All Blocks Feasible with No Chargers"]
-            Additional_fleet=np.array([st.session_state.get("additional_fleet_cost_no_ivc",0)])/1e6
-            Stationary_charger=np.array([0])/1e6
-            Bus_reciever=np.array([0])/1e6
-            dynamic_charger=np.array([0])/1e6
-
-        elif st.session_state['final_number_infeasible_blocks']==0:
-            categories = [f"All Blocks Feasible with {st.session_state.get("additional_fleet_cost_no_ivc",0)/bus_cost} Additional Buses & No Chargers","All Blocks Feasible with Selected Chargers"]
-            Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc',0),st.session_state.get('additinal_fleet_cost',0)])/1e6
-            Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost')])/1e6
-            Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost',0)])/1e6
-            dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost',0)])/1e6
-
-        else:
-            categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc',0)/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state.get('final_number_infeasible_blocks',0)} Infeasible Blocks", f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost')/bus_cost} Buses & Selected Chargers"]
-            Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc',0),0,st.session_state.get('additinal_fleet_cost',0)])/1e6
-            Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost',0),st.session_state.get('total_stationary_cost',0)])/1e6
-            Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost',0),st.session_state.get('bus_reciever_cost',0)])/1e6
-            dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost',0),st.session_state.get('total_dynamic_cost',0)])/1e6
-
-        # X positions for bars
-        x = np.arange(len(categories))
-        bar_width = 0.5    
-
-        # Create the stacked bars
-        fig, ax = plt.subplots(figsize=(8,6))
-
-        ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
-        ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
-        ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='blue')
-        ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
-
-        # Labels & legend
-        ax.set_ylabel('Total Cost (million $)')
-        ax.set_xticks(x)
-        ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
-        ax.legend()
-        st.pyplot(fig)
+        if "initial_num_infeasible_blocks" in st.session_state:
+            if st.session_state.get("initial_num_infeasible_blocks") == 0:
+                categories = ["All Blocks Feasible with No Chargers"]
+                Additional_fleet=np.array([st.session_state.get("additional_fleet_cost_no_ivc",0)])/1e6
+                Stationary_charger=np.array([0])/1e6
+                Bus_reciever=np.array([0])/1e6
+                dynamic_charger=np.array([0])/1e6
+    
+            elif st.session_state['final_number_infeasible_blocks']==0:
+                categories = [f"All Blocks Feasible with {st.session_state.get("additional_fleet_cost_no_ivc",0)/bus_cost} Additional Buses & No Chargers","All Blocks Feasible with Selected Chargers"]
+                Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc',0),st.session_state.get('additinal_fleet_cost',0)])/1e6
+                Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost')])/1e6
+                Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost',0)])/1e6
+                dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost',0)])/1e6
+    
+            else:
+                categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc',0)/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state.get('final_number_infeasible_blocks',0)} Infeasible Blocks", f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost')/bus_cost} Buses & Selected Chargers"]
+                Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc',0),0,st.session_state.get('additinal_fleet_cost',0)])/1e6
+                Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost',0),st.session_state.get('total_stationary_cost',0)])/1e6
+                Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost',0),st.session_state.get('bus_reciever_cost',0)])/1e6
+                dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost',0),st.session_state.get('total_dynamic_cost',0)])/1e6
+    
+            # X positions for bars
+            x = np.arange(len(categories))
+            bar_width = 0.5    
+    
+            # Create the stacked bars
+            fig, ax = plt.subplots(figsize=(8,6))
+    
+            ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
+            ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
+            ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='blue')
+            ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
+    
+            # Labels & legend
+            ax.set_ylabel('Total Cost (million $)')
+            ax.set_xticks(x)
+            ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
+            ax.legend()
+            st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
+
