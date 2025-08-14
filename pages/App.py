@@ -1058,7 +1058,7 @@ def main():
             dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost')])/1e6
 
         else:
-            categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc')/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state.get('final_number_infeasible_blocks')} Infeasible Blocks", f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost')/bus_cost} Buses & Selected Chargers"]
+            categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc')/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state.get('final_number_infeasible_blocks')} Infeasible Blocks", f"All Blocks Feasible with {st.session_state.get('additinal_fleet_cost')/bus_cost} Buses & Selected Chargers"]
             Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc'),0,st.session_state.get('additinal_fleet_cost')])/1e6
             Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost'),st.session_state.get('total_stationary_cost')])/1e6
             Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost'),st.session_state.get('bus_reciever_cost')])/1e6
@@ -1085,3 +1085,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
