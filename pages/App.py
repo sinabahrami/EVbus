@@ -330,7 +330,7 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
 
     return best_segment, best_overlapping_shapes,added_distance
 
-def calculate_additional_buses(row):
+def calculate_additional_buses(row, bus_range):
     if row['total_distance_miles'] > bus_range:
         min_val = min(row['range_tracking'])
         if min_val < 0:
@@ -1115,4 +1115,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
