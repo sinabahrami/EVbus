@@ -1024,7 +1024,7 @@ def main():
         #         mime="text/csv"
         #     )
 
-    if st.session_state.toggle_state_cost==True:
+    if toggle_value_cost==True:
         if initial_num_infeasible_blocks==0:
             categories = ["All Blocks Feasible with No Chargers"]
             Additional_fleet=np.array([additional_fleet_cost_no_ivc])/1e6
