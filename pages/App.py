@@ -420,7 +420,7 @@ def main():
             feasible_route_options=['BB', 'CN', 'CS', 'CSX', 'DD', 'MX', 'NES', 'NW', 'NX', 'OS', 'WS', 'WX']
         
         # Toggle button
-        toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="You have the option to focus the analysis on specific routes or blocks. When analyzing specific routes, the model automatically includes other routes located on the same blocks as the chosen route(s).")
+        toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="Toggle to focus the analysis on specific routes or blocks. When analyzing specific routes, the model automatically includes other routes located on the same blocks as the chosen route(s).")
         # Update session state when toggle is changed
         st.session_state.toggle_state = toggle_value
        
@@ -442,16 +442,48 @@ def main():
         critical_range=20
 
         # Toggle button
-        toggle_value_cost = st.toggle("Economic analysis", value=st.session_state.toggle_state_cost,help="You have the option to compare the cost of different scenarios.")
+        toggle_value_cost = st.toggle(
+            "Economic Analysis",
+            value=st.session_state.toggle_state_cost,
+            help="Toggle to compare the costs of different scenarios."
+        )
+
         # Update session state when toggle is changed
         st.session_state.toggle_state_cost = toggle_value_cost
-        if st.session_state.toggle_state_cost==True:
-            bus_cost =st.number_input("Electric Bus Price [$]",value=500000,help="Cost of purchasing an electric bus.")
-            stationary_charger_cost =st.number_input("Cost of Building Stationary Charging [$]",value=200000,help="The average cost of building a stationary charging station.")
-            if min_stoppage_time<1:
-                bus_reciever= st.number_input("Cost of Installing Wireless Charging Receiving Coil on Each Bus ",value=50000)
-            dynamic_charger_cost = st.number_input("Cost of Constructing Dynamic Charging per Mile [$]",value=2500000,help="The average cost of constructing dynamic charging track per mile.")
-   
+
+        if st.session_state.toggle_state_cost:
+            bus_cost = st.number_input(
+                "Electric Bus Price [$]",
+                value=500_000,
+                step=10_000,
+                format="%,d",
+                help="The purchase cost of one electric bus."
+            )
+
+            stationary_charger_cost = st.number_input(
+                "Cost of Building Stationary Charging [$]",
+                value=200_000,
+                step=10_000,
+                format="%,d",
+                help="The average cost of building a stationary charging station."
+            )
+
+            if min_stoppage_time < 1:
+                bus_receiver = st.number_input(
+                    "Cost of Installing Wireless Charging Receiver on Each Bus [$]",
+                    value=50_000,
+                    step=5_000,
+                    format="%,d",
+                    help="The installation cost of a wireless charging receiver on each bus."
+                )
+
+            dynamic_charger_cost = st.number_input(
+                "Cost of Constructing Dynamic Charging per Mile [$]",
+                value=2_500_000,
+                step=50_000,
+                format="%,d",
+                help="The average construction cost of dynamic charging track per mile."
+            )   
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
     
@@ -1085,4 +1117,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
