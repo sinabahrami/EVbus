@@ -1048,14 +1048,14 @@ def main():
             dynamic_charger=np.array([0])/1e6
 
         elif st.session_state['final_number_infeasible_blocks']==0:
-            categories = ["All Blocks Feasible with Additional Fleet & No Chargers","All Blocks Feasible with Selected Chargers"]
+            categories = [f"All Blocks Feasible with {st.session_state['additional_fleet_cost_no_ivc']/bus_cost} Additional Buses & No Chargers","All Blocks Feasible with Selected Chargers"]
             Additional_fleet=np.array([st.session_state['additional_fleet_cost_no_ivc'],st.session_state['additinal_fleet_cost']])/1e6
             Stationary_charger=np.array([0,st.session_state['total_stationary_cost']])/1e6
             Bus_reciever=np.array([0,st.session_state['bus_reciever_cost']])/1e6
             dynamic_charger=np.array([0,st.session_state['total_dynamic_cost']])/1e6
 
         else:
-            categories = ["All Blocks Feasible with Additional Fleet & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state['final_number_infeasible_blocks']} Infeasible Blocks", "All Blocks Feasible with Additional Fleet & Selected Chargers"]
+            categories = [f"All Blocks Feasible with {st.session_state['additional_fleet_cost_no_ivc']/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state['final_number_infeasible_blocks']} Infeasible Blocks", f"All Blocks Feasible with {st.session_state['additional_fleet_cost']/bus_cost} Buses & Selected Chargers"]
             Additional_fleet=np.array([st.session_state['additional_fleet_cost_no_ivc'],0,st.session_state['additinal_fleet_cost']])/1e6
             Stationary_charger=np.array([0,st.session_state['total_stationary_cost'],st.session_state['total_stationary_cost']])/1e6
             Bus_reciever=np.array([0,st.session_state['bus_reciever_cost'],st.session_state['bus_reciever_cost']])/1e6
@@ -1078,11 +1078,7 @@ def main():
         ax.set_xticks(x)
         ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
         ax.legend()
-        st.pyplot(fig)
+        plt.show()
 
 if __name__ == "__main__":
     main()
-
-
-
-
