@@ -698,6 +698,7 @@ def main():
                 
                 #calculate cost with no IVC charger and additional buses
                 block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
+                
                 if toggle_value_cost==True:
                     existing_fleet_cost=len(block_general)*bus_cost
                     additional_fleet_cost_no_ivc=bus_cost*block_general['additional_buses'].sum()
@@ -913,7 +914,7 @@ def main():
                 proposed_locations = proposed_locations.drop_duplicates().reset_index(drop=True)
                 
                 final_number_infeasible_blocks=len(infeasible_blocks)
-                if st.session_state.toggle_state_cost==True:
+                if toggle_value_cost==True:
                     if min_stoppage_time<1:
                         bus_reciever_cost=(initial_num_infeasible_blocks-final_number_infeasible_blocks)*bus_reciever
                     else:
@@ -1066,6 +1067,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
