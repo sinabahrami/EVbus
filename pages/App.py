@@ -1078,8 +1078,9 @@ def main():
         ax.set_xticks(x)
         ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
         ax.legend()
-        plt.show()
+        st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
+
 
