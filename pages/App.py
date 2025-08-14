@@ -472,13 +472,13 @@ def main():
             )
         
             if min_stoppage_time < 1:
-                bus_receiver = number_input_with_commas(
+                bus_coil_cost = number_input_with_commas(
                     "Cost of Installing Wireless Charging Receiver on Each Bus [$]",
                     50_000,
                     "Cost of installing a wireless charging receiver on each bus."
                 )
             else:
-                bus_receiver = 0
+                bus_coil_cost = 0
         
             dynamic_charger_cost = number_input_with_commas(
                 "Cost of Constructing Dynamic Charging per Mile [$]",
@@ -954,7 +954,7 @@ def main():
                 final_number_infeasible_blocks=len(infeasible_blocks)
                 if toggle_value_cost==True:
                     if min_stoppage_time<1:
-                        bus_reciever_cost=(initial_num_infeasible_blocks-final_number_infeasible_blocks)*bus_reciever
+                        bus_reciever_cost=(initial_num_infeasible_blocks-final_number_infeasible_blocks)*bus_coil_cost
                     else:
                         bus_reciever_cost=0
 
@@ -1119,6 +1119,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
