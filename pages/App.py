@@ -746,7 +746,7 @@ def main():
                 min_range_without_charging = int(np.ceil(block_general["total_distance_miles"].max()))
                 
                 #calculate cost with no IVC charger and additional buses
-                block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
+                block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
                 if st.session_state.toggle_state_cost==True:
                     existing_fleet_cost=len(block_general)*bus_cost
                     additional_fleet_cost_no_ivc=bus_cost*block_general['additional_buses'].sum()
@@ -813,7 +813,7 @@ def main():
                         axis=1
                     )
                     
-                    block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
+                    block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
 
                     # Update infeasible blocks
                     infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -930,11 +930,11 @@ def main():
                     top_end_stop_ids.remove(id)  # Remove safely
 
                     block_general["range_tracking"] = block_general.apply(
-                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"],bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape,shapes) if row["total_distance_miles"] > bus_range and id in row["end_id_list"] else row["range_tracking"],
+                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"],bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape,shapes), if row["total_distance_miles"] > bus_range and id in row["end_id_list"] else row["range_tracking"],
                         axis=1
                     )
                     
-                    block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
+                    block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
 
                     infeasible_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
                     
@@ -947,7 +947,7 @@ def main():
                     axis=1
                 )
 
-                block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
+                block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
                 
                 # Identify infeasible block_ids where any range_tracking value is negative
                 infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -1115,5 +1115,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
