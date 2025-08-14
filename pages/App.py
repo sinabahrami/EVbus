@@ -1028,7 +1028,7 @@ def main():
         
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
-        st_folium(st.session_state["map"], width=800, height=600, returned_objects=[])
+        st_folium(st.session_state["map"], width=1200, height=800, returned_objects=[])
 
        
         # if st.session_state["output"] is not None:
@@ -1066,7 +1066,7 @@ def main():
         bar_width = 0.5    
 
         # Create the stacked bars
-        fig, ax = plt.subplots(figsize=(6,4))
+        fig, ax = plt.subplots(figsize=(8,6))
 
         ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
         ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
@@ -1082,6 +1082,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
