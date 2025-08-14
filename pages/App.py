@@ -1040,7 +1040,7 @@ def main():
         #     )
 
     if st.session_state.toggle_state_cost==True:
-        if st.session_state['initial_num_infeasible_blocks']==0:
+        if st.session_state.get("initial_num_infeasible_blocks", 0) == 0:
             categories = ["All Blocks Feasible with No Chargers"]
             Additional_fleet=np.array([st.session_state['additional_fleet_cost_no_ivc']])/1e6
             Stationary_charger=np.array([0])/1e6
