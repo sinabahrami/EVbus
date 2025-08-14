@@ -962,14 +962,14 @@ def main():
                 st.session_state["num_locs"] = len(proposed_locations)
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
                 st.session_state["output"]=wireless_track_shape.to_csv(index=False).encode("utf-8")
-                if st.session_state.toggle_state_cost==True:
-                    st.session_state["initial_num_infeasible_blocks"]=initial_num_infeasible_blocks
-                    st.session_state["final_number_infeasible_blocks"]=final_number_infeasible_blocks
-                    st.session_state["additional_fleet_cost_no_ivc"]=additional_fleet_cost_no_ivc
-                    st.session_state["additinal_fleet_cost"]=additinal_fleet_cost
-                    st.session_state["total_stationary_cost"]=total_stationary_cost
-                    st.session_state["bus_reciever_cost"]=bus_reciever_cost
-                    st.session_state["total_dynamic_cost"]=total_dynamic_cost
+                
+                st.session_state["initial_num_infeasible_blocks"]=initial_num_infeasible_blocks
+                st.session_state["final_number_infeasible_blocks"]=final_number_infeasible_blocks
+                st.session_state["additional_fleet_cost_no_ivc"]=additional_fleet_cost_no_ivc
+                st.session_state["additinal_fleet_cost"]=additinal_fleet_cost
+                st.session_state["total_stationary_cost"]=total_stationary_cost
+                st.session_state["bus_reciever_cost"]=bus_reciever_cost
+                st.session_state["total_dynamic_cost"]=total_dynamic_cost
 
                 msg1.empty()
                 msg2.empty()
