@@ -444,63 +444,12 @@ def main():
         # Update session state when toggle is changed
         st.session_state.toggle_state_cost = toggle_value_cost
         if st.session_state.toggle_state_cost==True:
-            if "bus_cost" not in st.session_state:
-                st.session_state.bus_cost =500000
-            # Show a text input with comma formatting
-            formatted_value = st.text_input(
-                "Electric Bus Price [$]",
-                value=f"{st.session_state.bus_cost:,}",
-                help="Cost of purchasing an electric bus."
-            )
-            # Convert back to integer
-            try:
-                st.session_state.bus_cost = int(formatted_value.replace(",", ""))
-            except ValueError:
-                st.session_state.bus_cost = 0
-
-            if "stationary_charger_cost" not in st.session_state:
-                st.session_state.stationary_charger_cost =200000
-            # Show a text input with comma formatting
-            formatted_value = st.text_input(
-                "Cost of Building Stationary Charging [$]",
-                value=f"{st.session_state.stationary_charger_cost:,}",
-                help="The average cost of building a stationary charging station."
-            )
-            # Convert back to integer
-            try:
-                st.session_state.stationary_charger_cost = int(formatted_value.replace(",", ""))
-            except ValueError:
-                st.session_state.stationary_charger_cost = 0
-
+            bus_cost =st.number_input("Electric Bus Price [$]",value=500000,help="Cost of purchasing an electric bus.")
+            stationary_charger_cost =st.number_input("Cost of Building Stationary Charging [$]",value=200000,help="The average cost of building a stationary charging station.")
             if min_stoppage_time<1:
-                if "bus_reciever" not in st.session_state:
-                    st.session_state.bus_reciever =50000
-                # Show a text input with comma formatting
-                formatted_value = st.text_input(
-                    "Cost of Installing Wireless Charging Receiving Coil on Each Bus ",
-                    value=f"{st.session_state.bus_reciever:,}"
-                )
-                # Convert back to integer
-                try:
-                    st.session_state.bus_reciever = int(formatted_value.replace(",", ""))
-                except ValueError:
-                    st.session_state.bus_reciever = 0
-
-            if "dynamic_charger_cost" not in st.session_state:
-                st.session_state.dynamic_charger_cost =2500000
-            # Show a text input with comma formatting
-            formatted_value = st.text_input(
-                "Cost of Constructing Dyanmic Charging per Mile [$]",
-                value=f"{st.session_state.dynamic_charger_cost:,}",
-                help="The average cost of constructing dynamic charging track per mile."
-            )
-            # Convert back to integer
-            try:
-                st.session_state.dynamic_charger_cost = int(formatted_value.replace(",", ""))
-            except ValueError:
-                st.session_state.dynamic_charger_cost = 0
-
-            
+                bus_reciever= st.number_input("Cost of Installing Wireless Charging Receiving Coil on Each Bus ",value=50000)
+            dynamic_charger_cost = st.number_input("Cost of Constructing Dynamic Charging per Mile [$]",value=2500000,help="The average cost of constructing dynamic charging track per mile.")
+   
         # Run analysis button
         analyze_button = st.button("Run Analysis", use_container_width=True)
     
