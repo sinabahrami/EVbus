@@ -438,7 +438,7 @@ def main():
         critical_range=20
 
         # Toggle button
-        toggle_value_cost = st.toggle("Economic analysis", value=st.session_state.toggle_state,help="You have the option to compare the cost of different scenarios.")
+        toggle_value_cost = st.toggle("Economic analysis", value=st.session_state.toggle_state_cost,help="You have the option to compare the cost of different scenarios.")
         # Update session state when toggle is changed
         st.session_state.toggle_state_cost = toggle_value_cost
         if st.session_state.toggle_state_cost==True:
@@ -1115,3 +1115,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
