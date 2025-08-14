@@ -13,6 +13,7 @@ from sklearn.cluster import AgglomerativeClustering
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import textwrap
 
 
 # Cache the data processing to improve performance
@@ -329,6 +330,13 @@ def find_best_matching_segment(shapes, target_shape_id, input_distance, filtered
 
     return best_segment, best_overlapping_shapes,added_distance
 
+def calculate_additional_buses(row):
+    if row['total_distance_miles'] > bus_range:
+        min_val = min(row['range_tracking'])
+        if min_val < 0:
+            return int(np.ceil(abs(min_val) / bus_range))
+    return 0
+
 def reset_toggle():
     st.session_state.toggle_state = False  # Turn off toggle
 
@@ -429,52 +437,66 @@ def main():
         
         critical_range=20
 
-        # # Toggle button
-        # toggle_value_cost = st.toggle("Economic analysis", value=st.session_state.toggle_state,help="You have the option to compare the cost of different scenarios.")
-        # # Update session state when toggle is changed
-        # st.session_state.toggle_state_cost = toggle_value_cost
-        # if st.session_state.toggle_state_cost==True:
-        #     if "bus_cost" not in st.session_state:
-        #         st.session_state.bus_cost =500000
-        #     # Show a text input with comma formatting
-        #     formatted_value_bus = st.text_input(
-        #         "Electric Bus Price [$]",
-        #         value=f"{st.session_state.bus_cost:,}",
-        #         help="Cost of purchasing an electric bus."
-        #     )
-        #     # Convert back to integer
-        #     try:
-        #         st.session_state.bus_cost = int(formatted_value_bus.replace(",", ""))
-        #     except ValueError:
-        #         st.session_state.bus_cost = 0
+        # Toggle button
+        toggle_value_cost = st.toggle("Economic analysis", value=st.session_state.toggle_state,help="You have the option to compare the cost of different scenarios.")
+        # Update session state when toggle is changed
+        st.session_state.toggle_state_cost = toggle_value_cost
+        if st.session_state.toggle_state_cost==True:
+            if "bus_cost" not in st.session_state:
+                st.session_state.bus_cost =500000
+            # Show a text input with comma formatting
+            formatted_value = st.text_input(
+                "Electric Bus Price [$]",
+                value=f"{st.session_state.bus_cost:,}",
+                help="Cost of purchasing an electric bus."
+            )
+            # Convert back to integer
+            try:
+                st.session_state.bus_cost = int(formatted_value.replace(",", ""))
+            except ValueError:
+                st.session_state.bus_cost = 0
 
-        #     if "stationary_charging_cost" not in st.session_state:
-        #         st.session_state.stationary_charging_cost =50000
-        #     # Show a text input with comma formatting
-        #     formatted_value = st.text_input(
-        #         "Cost of Building Stationary Charging [$]",
-        #         value=f"{st.session_state.stationary_charging_cost:,}",
-        #         help="The average cost of building a stationary charging station."
-        #     )
-        #     # Convert back to integer
-        #     try:
-        #         st.session_state.stationary_charging_cost = int(formatted_value.replace(",", ""))
-        #     except ValueError:
-        #         st.session_state.stationary_charging_cost = 0
+            if "stationary_charger_cost" not in st.session_state:
+                st.session_state.stationary_charger_cost =200000
+            # Show a text input with comma formatting
+            formatted_value = st.text_input(
+                "Cost of Building Stationary Charging [$]",
+                value=f"{st.session_state.stationary_charger_cost:,}",
+                help="The average cost of building a stationary charging station."
+            )
+            # Convert back to integer
+            try:
+                st.session_state.stationary_charger_cost = int(formatted_value.replace(",", ""))
+            except ValueError:
+                st.session_state.stationary_charger_cost = 0
 
-        #     if "dynamic_charging_cost" not in st.session_state:
-        #         st.session_state.dynamic_charging_cost =2000000
-        #     # Show a text input with comma formatting
-        #     formatted_value_dynamic = st.text_input(
-        #         "Cost of Constructing Dyanmic Charging per Mile [$]",
-        #         value=f"{st.session_state.dynamic_charging_cost:,}",
-        #         help="The average cost of constructing dynamic charging track per mile."
-        #     )
-        #     # Convert back to integer
-        #     try:
-        #         st.session_state.dynamic_charging_cost = int(formatted_value_dynamic.replace(",", ""))
-        #     except ValueError:
-        #         st.session_state.dynamic_charging_cost = 0
+            if min_stoppage_time<1:
+                if "bus_reciever" not in st.session_state:
+                    st.session_state.bus_reciever =50000
+                # Show a text input with comma formatting
+                formatted_value = st.text_input(
+                    "Cost of Installing Wireless Charging Receiving Coil on Each Bus ",
+                    value=f"{st.session_state.bus_reciever:,}"
+                )
+                # Convert back to integer
+                try:
+                    st.session_state.bus_reciever = int(formatted_value.replace(",", ""))
+                except ValueError:
+                    st.session_state.bus_reciever = 0
+
+            if "dynamic_charger_cost" not in st.session_state:
+                st.session_state.dynamic_charger_cost =2500000
+            # Show a text input with comma formatting
+            formatted_value = st.text_input(
+                "Cost of Constructing Dyanmic Charging per Mile [$]",
+                value=f"{st.session_state.dynamic_charger_cost:,}",
+                help="The average cost of constructing dynamic charging track per mile."
+            )
+            # Convert back to integer
+            try:
+                st.session_state.dynamic_charger_cost = int(formatted_value.replace(",", ""))
+            except ValueError:
+                st.session_state.dynamic_charger_cost = 0
 
             
         # Run analysis button
@@ -723,11 +745,17 @@ def main():
                 
                 min_range_without_charging = int(np.ceil(block_general["total_distance_miles"].max()))
                 
+                #calculate cost with no IVC charger and additional buses
+                block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
+                if st.session_state.toggle_state_cost==True:
+                    existing_fleet_cost=len(block_general)*bus_cost
+                    additional_fleet_cost_no_ivc=bus_cost*block_general['additional_buses'].sum()
+
                 # Identify infeasible blocks
                 infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
                 blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
             
-
+                initial_num_infeasible_blocks=len(infeasible_blocks)
 
                 # Iteratively select charging locations
                 iteration_count = 0
@@ -785,6 +813,8 @@ def main():
                         axis=1
                     )
                     
+                    block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
+
                     # Update infeasible blocks
                     infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
                     blocks_below_critical = block_general[block_general["range_tracking"].apply(lambda rt: any(x < critical_range for x in rt) if rt else False)]["block_id"].tolist()
@@ -903,6 +933,9 @@ def main():
                         lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"],bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape,shapes), if row["total_distance_miles"] > bus_range and id in row["end_id_list"] else row["range_tracking"],
                         axis=1
                     )
+                    
+                    block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
+
                     infeasible_blocks_copy = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
                     
                     if len(infeasible_blocks_copy) > len(infeasible_blocks):
@@ -914,6 +947,7 @@ def main():
                     axis=1
                 )
 
+                block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1)
                 
                 # Identify infeasible block_ids where any range_tracking value is negative
                 infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -927,6 +961,19 @@ def main():
                 proposed_locations = selected_stops.merge(stops[["stop_id", "stop_lat", "stop_lon"]], on="stop_id", how="left")
                 proposed_locations = proposed_locations.drop_duplicates().reset_index(drop=True)
                 
+                final_number_infeasible_blocks=len(infeasible_blocks)
+                if st.session_state.toggle_state_cost==True:
+                    if min_stoppage_time<1:
+                        bus_reciever_cost=(initial_num_infeasible_blocks-final_number_infeasible_blocks)*bus_reciever
+                    else:
+                        bus_reciever_cost=0
+
+                    total_stationary_cost=len(proposed_locations)*stationary_charger_cost
+                    total_dynamic_cost=wireless_track_length*dynamic_charger_cost
+
+                    additinal_fleet_cost=bus_cost*block_general['additional_buses'].sum()
+
+
                 # Calculate map center
                 center_lat = shapes['shape_pt_lat'].mean()
                 center_lon = shapes['shape_pt_lon'].mean()
@@ -1025,16 +1072,46 @@ def main():
         #         mime="text/csv"
         #     )
 
+    if st.session_state.toggle_state_cost==True:
+        if initial_num_infeasible_blocks==0:
+            categories = ["All Blocks Feasible with No Chargers"]
+            Additional_fleet=np.array([additional_fleet_cost_no_ivc])/1e6
+            Stationary_charger=np.array([0])/1e6
+            Bus_reciever=np.array([0])/1e6
+            dynamic_charger=np.array([0])/1e6
+
+        elif final_number_infeasible_blocks==0:
+            categories = ["All Blocks Feasible with Additional Fleet & No Chargers","All Blocks Feasible with Selected Chargers"]
+            Additional_fleet=np.array([additional_fleet_cost_no_ivc,additinal_fleet_cost])/1e6
+            Stationary_charger=np.array([0,total_stationary_cost])/1e6
+            Bus_reciever=np.array([0,bus_reciever_cost])/1e6
+            dynamic_charger=np.array([0,total_dynamic_cost])/1e6
+
+        else:
+            categories = ["All Blocks Feasible with Additional Fleet & No Chargers",f"Existing Fleet & Selected Chargers with {final_number_infeasible_blocks} Infeasible Blocks", "All Blocks Feasible with Additional Fleet & Selected Chargers"]
+            Additional_fleet=np.array([additional_fleet_cost_no_ivc,0,additinal_fleet_cost])/1e6
+            Stationary_charger=np.array([0,total_stationary_cost,total_stationary_cost])/1e6
+            Bus_reciever=np.array([0,bus_reciever_cost,bus_reciever_cost])/1e6
+            dynamic_charger=np.array([0,total_dynamic_cost,total_dynamic_cost])/1e6
+
+        # X positions for bars
+        x = np.arange(len(categories))
+        bar_width = 0.5    
+
+        # Create the stacked bars
+        fig, ax = plt.subplots(figsize=(8,6))
+
+        ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
+        ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
+        ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='blue')
+        ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
+
+        # Labels & legend
+        ax.set_ylabel('Total Cost (million $)')
+        ax.set_xticks(x)
+        ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
+        ax.legend()
+        plt.show()
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
