@@ -488,8 +488,9 @@ def main():
                 help="Average cost to construct one mile of dynamic charging track."
             )
             st.caption(f"Selected: ${dynamic_charger_cost:,.0f}")   
-                # Run analysis button
-                analyze_button = st.button("Run Analysis", use_container_width=True)
+            
+        # Run analysis button
+        analyze_button = st.button("Run Analysis", use_container_width=True)
     
     # Main content
     if analyze_button:
@@ -1121,4 +1122,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
