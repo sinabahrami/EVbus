@@ -956,7 +956,7 @@ def main():
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
                 st.session_state["output"]=wireless_track_shape.to_csv(index=False).encode("utf-8")
                 if toggle_value_cost==True:
-                    st.session_state["initial_no_infeasible_blocks"]=initial_num_infeasible_blocks
+                    st.session_state["initial_num_infeasible_blocks"]=initial_num_infeasible_blocks
                     st.session_state["final_number_infeasible_blocks"]=final_number_infeasible_blocks
                     st.session_state["additional_fleet_cost_no_ivc"]=additional_fleet_cost_no_ivc
                     st.session_state["additinal_fleet_cost"]=additinal_fleet_cost
@@ -1075,3 +1075,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
