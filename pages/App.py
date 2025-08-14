@@ -471,7 +471,7 @@ def main():
                 "Average cost of building a stationary charging station."
             )
         
-            if min_stoppage_time >= 1:
+            if min_stoppage_time < 1:
                 bus_receiver = number_input_with_commas(
                     "Cost of Installing Wireless Charging Receiver on Each Bus [$]",
                     50_000,
@@ -1119,6 +1119,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
