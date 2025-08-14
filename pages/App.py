@@ -1039,8 +1039,8 @@ def main():
         #         mime="text/csv"
         #     )
 
-    if toggle_value_cost==True:
-        if st.session_state.get("initial_num_infeasible_blocks", 0) == 0:
+    if "initial_num_infeasible_blocks" in st.session_state:
+        if st.session_state.get("initial_num_infeasible_blocks") == 0:
             categories = ["All Blocks Feasible with No Chargers"]
             Additional_fleet=np.array([st.session_state.get("additional_fleet_cost_no_ivc",0)])/1e6
             Stationary_charger=np.array([0])/1e6
@@ -1080,8 +1080,5 @@ def main():
         ax.legend()
         st.pyplot(fig)
 
-
 if __name__ == "__main__":
     main()
-
-
