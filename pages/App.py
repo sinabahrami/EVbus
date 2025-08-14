@@ -955,6 +955,13 @@ def main():
                 st.session_state["num_locs"] = len(proposed_locations)
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
                 st.session_state["output"]=wireless_track_shape.to_csv(index=False).encode("utf-8")
+                st.session_state["initial_no_infeasible_blocks"]=initial_num_infeasible_blocks
+                st.session_state["final_number_infeasible_blocks"]=final_number_infeasible_blocks
+                st.session_state["additional_fleet_cost_no_ivc"]=additional_fleet_cost_no_ivc
+                st.session_state["additinal_fleet_cost"]=additinal_fleet_cost
+                st.session_state["total_stationary_cost"]=total_stationary_cost
+                st.session_state["bus_reciever_cost"]=bus_reciever_cost
+                st.session_state["total_dynamic_cost"]=total_dynamic_cost
 
                 msg1.empty()
                 msg2.empty()
@@ -1025,26 +1032,26 @@ def main():
         #     )
 
     if toggle_value_cost==True:
-        if initial_num_infeasible_blocks==0:
+        if st.session_state['initial_num_infeasible_blocks']==0:
             categories = ["All Blocks Feasible with No Chargers"]
-            Additional_fleet=np.array([additional_fleet_cost_no_ivc])/1e6
+            Additional_fleet=np.array([st.session_state['additional_fleet_cost_no_ivc']])/1e6
             Stationary_charger=np.array([0])/1e6
             Bus_reciever=np.array([0])/1e6
             dynamic_charger=np.array([0])/1e6
 
-        elif final_number_infeasible_blocks==0:
+        elif st.session_state['final_number_infeasible_blocks']==0:
             categories = ["All Blocks Feasible with Additional Fleet & No Chargers","All Blocks Feasible with Selected Chargers"]
-            Additional_fleet=np.array([additional_fleet_cost_no_ivc,additinal_fleet_cost])/1e6
-            Stationary_charger=np.array([0,total_stationary_cost])/1e6
-            Bus_reciever=np.array([0,bus_reciever_cost])/1e6
-            dynamic_charger=np.array([0,total_dynamic_cost])/1e6
+            Additional_fleet=np.array([st.session_state['additional_fleet_cost_no_ivc'],st.session_state['additinal_fleet_cost']])/1e6
+            Stationary_charger=np.array([0,st.session_state['total_stationary_cost']])/1e6
+            Bus_reciever=np.array([0,st.session_state['bus_reciever_cost']])/1e6
+            dynamic_charger=np.array([0,st.session_state['total_dynamic_cost']])/1e6
 
         else:
-            categories = ["All Blocks Feasible with Additional Fleet & No Chargers",f"Existing Fleet & Selected Chargers with {final_number_infeasible_blocks} Infeasible Blocks", "All Blocks Feasible with Additional Fleet & Selected Chargers"]
-            Additional_fleet=np.array([additional_fleet_cost_no_ivc,0,additinal_fleet_cost])/1e6
-            Stationary_charger=np.array([0,total_stationary_cost,total_stationary_cost])/1e6
-            Bus_reciever=np.array([0,bus_reciever_cost,bus_reciever_cost])/1e6
-            dynamic_charger=np.array([0,total_dynamic_cost,total_dynamic_cost])/1e6
+            categories = ["All Blocks Feasible with Additional Fleet & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state['final_number_infeasible_blocks']} Infeasible Blocks", "All Blocks Feasible with Additional Fleet & Selected Chargers"]
+            Additional_fleet=np.array([st.session_state['additional_fleet_cost_no_ivc'],0,st.session_state['additinal_fleet_cost']])/1e6
+            Stationary_charger=np.array([0,st.session_state['total_stationary_cost'],st.session_state['total_stationary_cost']])/1e6
+            Bus_reciever=np.array([0,st.session_state['bus_reciever_cost'],st.session_state['bus_reciever_cost']])/1e6
+            dynamic_charger=np.array([0,st.session_state['total_dynamic_cost'],st.session_state['total_dynamic_cost']])/1e6
 
         # X positions for bars
         x = np.arange(len(categories))
