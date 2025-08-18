@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import textwrap
 
+pip install reportlab
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak, Frame, PageTemplate, NextPageTemplate, KeepTogether, FrameBreak)
@@ -1131,6 +1132,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
