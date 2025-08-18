@@ -501,7 +501,7 @@ def generate_transit_report(
     main_template = PageTemplate(id='normal', frames=[main_frame])#, onPageEnd=add_page_number)
 
     def add_figure(img_path, caption_text):
-        global figure_counter
+        nonlocal figure_counter
         # Wrap image and caption in KeepTogether to avoid missing page numbers
         story.append(KeepTogether([
             Image(img_path, width=letter[0]-4*inch, height=4*inch),
@@ -512,7 +512,7 @@ def generate_transit_report(
         figure_counter += 1
 
     def add_table_from_dataframe(df, caption_text, styles, col_widths=None):
-        global table_counter
+        nonlocal table_counter
         # Select the first three columns
         df_table = df.iloc[:, :3].copy()
         df_table.columns = ["Block ID", "Total Distance (miles)", "Routes Included"]  # nice headers
@@ -1553,6 +1553,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
