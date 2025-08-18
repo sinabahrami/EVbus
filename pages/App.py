@@ -338,8 +338,8 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
             lambda p: shapely.affinity.translate(
                 p,
-                xoff=np.random.uniform(-jitter_meters, jitter_meters),
-                yoff=np.random.uniform(-jitter_meters, jitter_meters)
+                xoff=np.random.uniform(-20, 20),
+                yoff=np.random.uniform(-20, 20)
             )
         )
     else:
@@ -1698,6 +1698,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
