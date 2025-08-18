@@ -1507,9 +1507,12 @@ def main():
         ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
         ax.legend()
         st.pyplot(fig)
+    if toggle_value_cost==True:    
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.savefig(tmpfile.name, bbox_inches='tight')
-            econ_figure_path = tmpfile.name
+            econ_figure_gen = tmpfile.name
+    else:
+        econ_figure_gen = None
 
     if flag_done==1:
         report_inputs = {"transit_agency_name": st.session_state["Agency_name"],
@@ -1549,13 +1552,14 @@ def main():
             outputs=report_outputs,
             map_image_path=None,
             econ_toggle=toggle_value_cost,
-            econ_figure_path=econ_figure_path,
+            econ_figure_path=econ_figure_gen,
             agency_name=st.session_state["Agency_name"],
             title_image_path="bus_title_image.png"
         )
 
 if __name__ == "__main__":
     main()
+
 
 
 
