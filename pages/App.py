@@ -1545,12 +1545,13 @@ def main():
             econ_figure_path=econ_figure_gen,
             agency_name=st.session_state["Agency_name"],
             title_image_path="bus_title_image.png",
-            charger_image_path=gen_charger_image_path
+            charger_image_path=gen_charger_image_path,
             routencharger_image_path=gen_full_image_path
         )
 
 if __name__ == "__main__":
     main()
+
 
 
 
