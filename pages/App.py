@@ -314,33 +314,109 @@ def reset_toggle():
     st.session_state.toggle_state = False  # Turn off toggle
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
-###
-def folium_map_to_png_bytes(folium_map, width=1200, height=800, delay=2):
-    """Render a Folium map to PNG bytes using Selenium."""
-    # Render map HTML
-    map_html = folium_map.get_root().render()
+#####################################################
+#
 
-    # Configure headless Chrome
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument(f"--window-size={width},{height}")
+def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
+    map_images = {}
 
-    driver = webdriver.Chrome(options=chrome_options)
+    # --- Prepare route colors ---
+    unique_routes = trips_df['route_id'].unique()
+    num_routes = len(unique_routes)
+    colormap = plt.cm.get_cmap('tab20b')
+    route_colors = {r: colormap(i/max(1, num_routes-1)) for i,r in enumerate(unique_routes)}
+
+    # --- Function to plot routes ---
+    def plot_routes(ax):
+        for route_id in unique_routes:
+            route_shapes = trips_df[trips_df['route_id']==route_id]['shape_id'].unique()
+            for shape_id in route_shapes:
+                shape_points = shapes_df[shapes_df['shape_id']==shape_id].sort_values('shape_pt_sequence')
+                lats = shape_points['shape_pt_lat'].values
+                lons = shape_points['shape_pt_lon'].values
+                ax.plot(lons, lats, color=route_colors[route_id], linewidth=2, label=f"Route {route_id}")
+        # Optional: legend
+        ax.legend(fontsize=6, loc='upper right')
+
+    # --- Function to plot chargers ---
+    def plot_chargers(ax):
+        if not proposed_locations_df.empty:
+            ax.scatter(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat'], 
+                       c='blue', marker='o', s=50, label='Stationary Charger')
+        if not wireless_track_shape_df.empty:
+            for track in wireless_track_shape_df['counter'].unique():
+                track_data = wireless_track_shape_df[wireless_track_shape_df['counter']==track].sort_values('target_shape_pt_sequence')
+                ax.plot(track_data['shape_pt_lon'], track_data['shape_pt_lat'], color='green', linewidth=2, label='Wireless Track')
+
+    # --- 1. Routes only ---
+    fig, ax = plt.subplots(figsize=(8,8))
+    plot_routes(ax)
+    ax.set_title("Routes only")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_aspect('equal')
+    buf_routes = io.BytesIO()
+    plt.savefig(buf_routes, format='png', bbox_inches='tight')
+    buf_routes.seek(0)
+    plt.close(fig)
+    map_images['routes'] = buf_routes
+
+    # --- 2. Chargers only ---
+    fig, ax = plt.subplots(figsize=(8,8))
+    plot_chargers(ax)
+    ax.set_title("Chargers only")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_aspect('equal')
+    buf_chargers = io.BytesIO()
+    plt.savefig(buf_chargers, format='png', bbox_inches='tight')
+    buf_chargers.seek(0)
+    plt.close(fig)
+    map_images['chargers'] = buf_chargers
+
+    # --- 3. Routes + Chargers ---
+    fig, ax = plt.subplots(figsize=(8,8))
+    plot_routes(ax)
+    plot_chargers(ax)
+    ax.set_title("Routes + Chargers")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_aspect('equal')
+    buf_full = io.BytesIO()
+    plt.savefig(buf_full, format='png', bbox_inches='tight')
+    buf_full.seek(0)
+    plt.close(fig)
+    map_images['full'] = buf_full
+
+    return map_images
+
+
+# def folium_map_to_png_bytes(folium_map, width=1200, height=800, delay=2):
+#     """Render a Folium map to PNG bytes using Selenium."""
+#     # Render map HTML
+#     map_html = folium_map.get_root().render()
+
+#     # Configure headless Chrome
+#     chrome_options = Options()
+#     chrome_options.add_argument("--headless=new")
+#     chrome_options.add_argument("--no-sandbox")
+#     chrome_options.add_argument("--disable-dev-shm-usage")
+#     chrome_options.add_argument(f"--window-size={width},{height}")
+
+#     driver = webdriver.Chrome(options=chrome_options)
     
-    # Load map HTML using data URI
-    driver.get("data:text/html;charset=utf-8," + map_html)
+#     # Load map HTML using data URI
+#     driver.get("data:text/html;charset=utf-8," + map_html)
     
-    # Wait for tiles and JS to load
-    import time
-    time.sleep(delay)
+#     # Wait for tiles and JS to load
+#     import time
+#     time.sleep(delay)
     
-    # Take screenshot as PNG
-    png_bytes = driver.get_screenshot_as_png()
-    driver.quit()
+#     # Take screenshot as PNG
+#     png_bytes = driver.get_screenshot_as_png()
+#     driver.quit()
     
-    return io.BytesIO(png_bytes)  # Return as BytesIO for PDF
+#     return io.BytesIO(png_bytes)  # Return as BytesIO for PDF
     
 # def save_folium_map_as_png(
 #     folium_map,
@@ -1477,19 +1553,21 @@ def main():
                 msg3.empty()
                 flag_done=1
 
-                # 1. Routes only
-                map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
-                st.session_state["routes_image_bytes"] = folium_map_to_png_bytes(map_routes)
-                if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
-                    # 2. Chargers only
-                    map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
-                    st.session_state["gen_chargers_image_bytes"] = folium_map_to_png_bytes(map_chargers)
-                    # 3. Routes + chargers
-                    map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
-                    st.session_state["gen_full_image_bytes"] = folium_map_to_png_bytes(map_full)
-                else:
-                    st.session_state["gen_chargers_image_path"] =None
-                    st.session_state["gen_full_image_path"] =None
+                maps = generate_route_charger_maps(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
+                
+                # # 1. Routes only
+                # map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
+                # st.session_state["routes_image_bytes"] = folium_map_to_png_bytes(map_routes)
+                # if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
+                #     # 2. Chargers only
+                #     map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
+                #     st.session_state["gen_chargers_image_bytes"] = folium_map_to_png_bytes(map_chargers)
+                #     # 3. Routes + chargers
+                #     map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
+                #     st.session_state["gen_full_image_bytes"] = folium_map_to_png_bytes(map_full)
+                # else:
+                #     st.session_state["gen_chargers_image_path"] =None
+                #     st.session_state["gen_full_image_path"] =None
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
@@ -1637,13 +1715,13 @@ def main():
         pdf_buffer = generate_transit_report(
             inputs=report_inputs,
             outputs=report_outputs,
-            map_image_path=st.session_state['routes_image_bytes'],          # use BytesIO
+            map_image_path=maps['routes'],
             econ_toggle=toggle_value_cost,
-            econ_figure_path=econ_figure_gen,                                # keep as before if already BytesIO or file path
+            econ_figure_path=econ_figure_gen,
             agency_name=st.session_state['Agency_name'],
             title_image_path="bus_title_image.png",
-            charger_image_path=st.session_state['gen_chargers_image_bytes'], # use BytesIO
-            routencharger_image_path=st.session_state.get("gen_full_image_bytes") # use BytesIO
+            charger_image_path=maps['chargers'],
+            routencharger_image_path=maps['full']
         )
         st.write(f"You can download a PDF report for your analysis by clicking on: ")
         st.download_button(
@@ -1655,6 +1733,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
