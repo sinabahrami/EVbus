@@ -35,7 +35,7 @@ import geopandas as gpd
 import contextily as ctx
 from shapely.geometry import LineString, Point
 
-# from PIL import Image as PILImage
+from PIL import Image as PILImage
 # import imgkit
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
@@ -1816,5 +1816,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
