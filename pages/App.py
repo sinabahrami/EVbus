@@ -1404,17 +1404,17 @@ def main():
 
                 # 1. Routes only
                 map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
-                routes_image_path = save_folium_map_as_png(map_routes, "routes.png",wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
+                st.session_state["routes_image_path"] = save_folium_map_as_png(map_routes, "routes.png",wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
                 if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
                     # 2. Chargers only
                     map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
-                    gen_chargers_image_path = save_folium_map_as_png(map_chargers, "chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
+                    st.session_state["gen_chargers_image_path"] = save_folium_map_as_png(map_chargers, "chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
                     # 3. Routes + chargers
                     map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
-                    gen_full_image_path = save_folium_map_as_png(map_full, "routes_chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
+                    st.session_state["gen_full_image_path"] = save_folium_map_as_png(map_full, "routes_chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
                 else:
-                    gen_chargers_image_path =None
-                    gen_full_image_path =None
+                    st.session_state["gen_chargers_image_path"] =None
+                    st.session_state["gen_full_image_path"] =None
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
@@ -1562,13 +1562,13 @@ def main():
         pdf_buffer=generate_transit_report(
             inputs=report_inputs,
             outputs=report_outputs,
-            map_image_path=routes_image_path,
+            map_image_path=st.session_state["routes_image_path"],
             econ_toggle=toggle_value_cost,
             econ_figure_path=econ_figure_gen,
             agency_name=st.session_state["Agency_name"],
             title_image_path="bus_title_image.png",
-            charger_image_path=gen_chargers_image_path,
-            routencharger_image_path=gen_full_image_path
+            charger_image_path=st.session_state["gen_chargers_image_path"],
+            routencharger_image_path=st.session_state["gen_full_image_path"]
         )
         st.write(f"You can download a PDF report for your analysis by clicking on: ")
         st.download_button(
@@ -1580,6 +1580,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
