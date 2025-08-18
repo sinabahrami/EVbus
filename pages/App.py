@@ -350,26 +350,6 @@ def save_folium_map_as_png(
 
     return output_png_path
 
-# def save_folium_map_as_png(folium_map, filename="map.png", width=1200, height=800):
-#     folium_map.save("temp_map.html")
-    
-#     # Initialize Chrome driver (make sure chromedriver is installed)
-#     options = webdriver.ChromeOptions()
-#     options.add_argument("--headless")
-#     options.add_argument(f"--window-size={width},{height}")
-#     driver = webdriver.Chrome(options=options)
-#     driver.get("file://" + os.path.abspath("temp_map.html"))
-    
-#     # Save screenshot
-#     png = driver.get_screenshot_as_png()
-#     driver.quit()
-    
-#     # Save PNG to file
-#     with open(filename, "wb") as f:
-#         f.write(png)
-    
-#     return filename
-
 class NumberedCanvas(pdfcanvas.Canvas):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -478,7 +458,6 @@ class FullPageImage(Flowable):
                 yb -= self.subtitle_font_size + 3  # spacing between lines
 
 def generate_transit_report(
-    filename,
     inputs,
     outputs,
     map_image_path=None,
@@ -1580,8 +1559,7 @@ def main():
                 "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
         })
     
-        generate_transit_report(
-            filename="Report.pdf",
+        pdf_buffer=generate_transit_report(
             inputs=report_inputs,
             outputs=report_outputs,
             map_image_path=routes_image_path,
@@ -1601,6 +1579,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
