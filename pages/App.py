@@ -1553,7 +1553,7 @@ def main():
                 msg3.empty()
                 flag_done=1
 
-                maps = generate_route_charger_maps(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
+                maps = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
                 
                 # # 1. Routes only
                 # map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
@@ -1733,50 +1733,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
