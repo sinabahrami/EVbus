@@ -1595,12 +1595,13 @@ def main():
         bar_width = 0.5    
 
         # Create the stacked bars
-        fig, ax = plt.subplots(figsize=(4,3))
+        fig, ax = plt.subplots(figsize=(8,6))
 
         ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
         ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
         ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='blue')
-        ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
+        if dynamic_wireless_charging_power>0:
+            ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
 
         # Labels & legend
         ax.set_ylabel('Total Cost (million $)')
@@ -1668,6 +1669,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
