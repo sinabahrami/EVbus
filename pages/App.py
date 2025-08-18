@@ -1541,12 +1541,12 @@ def main():
             "dynamic_lane_length": st.session_state["wirelesslength"],
             "block_general":st.session_state["block_info"],
         }
-            if toggle_value_cost==True:
-                report_outputs += {
-                    "categories":categories,
-                    "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
-                    "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
-            }
+        if toggle_value_cost==True:
+            report_outputs += {
+                "categories":categories,
+                "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
+                "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
+        }
     
         generate_transit_report(
             filename="Report.pdf",
@@ -1561,6 +1561,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
