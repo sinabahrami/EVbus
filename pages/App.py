@@ -1395,6 +1395,7 @@ def main():
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
                 st.session_state["output"]=wireless_track_shape.to_csv(index=False).encode("utf-8")
 
+                st.session_state["Agency_name"]=selected_agency
                 st.session_state["block_info"]=block_general
                 st.session_state["inf_block_info"]=infeasible_blocks
                 
@@ -1517,7 +1518,7 @@ def main():
         st.pyplot(fig)
 
     if flag_done==1:
-        report_inputs = {"transit_agency_name": selected_agency,
+        report_inputs = {"transit_agency_name": st.session_state["Agency_name"],
             "bus_range": bus_range,
             "stationary_power": charging_power,
             "stationary_setup_time_hr": min_stoppage_time,
@@ -1561,6 +1562,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
