@@ -29,6 +29,7 @@ from reportlab.pdfgen import canvas as pdfcanvas
 import tempfile
 
 import imgkit
+from io import BytesIO
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -488,7 +489,8 @@ def generate_transit_report(
     charger_image_path=None,
     routencharger_image_path=None
 ):
-   # Figure counter
+    buffer = BytesIO()
+    # Figure counter
     figure_counter = 1
     table_counter =1 
     # Styles
@@ -743,6 +745,8 @@ def generate_transit_report(
 
     # --- Build PDF ---
     doc.build(story, canvasmaker=NumberedCanvas)
+    buffer.seek(0)
+    return buffer
 ###
 def main():
     flag_done=0
@@ -1588,9 +1592,16 @@ def main():
             charger_image_path=gen_chargers_image_path,
             routencharger_image_path=gen_full_image_path
         )
+        st.download_button(
+            label="📥 Download Report",
+            data=pdf_buffer,
+            file_name="transit_report.pdf",
+            mime="application/pdf"
+        )
 
 if __name__ == "__main__":
     main()
+
 
 
 
