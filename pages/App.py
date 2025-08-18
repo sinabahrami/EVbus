@@ -1639,7 +1639,7 @@ def main():
         ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
         ax.legend()
         st.pyplot(fig)
-    if toggle_value_cost==True:    
+    if flag_done==1 and toggle_value_cost==True:    
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.savefig(tmpfile.name, bbox_inches='tight')
             econ_figure_gen = tmpfile.name
@@ -1699,6 +1699,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
