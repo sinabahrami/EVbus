@@ -564,7 +564,7 @@ def generate_transit_report(
         table_counter+=1
 
     # Document  
-    doc = SimpleDocTemplate(filename, pagesize=letter)
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
     doc.addPageTemplates([front_template, main_template])
 
     story = []
@@ -1579,6 +1579,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
