@@ -28,6 +28,9 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.pdfgen import canvas as pdfcanvas
 import tempfile
 
+from selenium import webdriver
+from PIL import Image
+
 # Cache the data processing to improve performance
 @st.cache_data
 def load_gtfs_data(zip_file_path):
@@ -75,7 +78,7 @@ def compute_range_tracking(distances, time_gaps, end_id_lists, bus_range, chargi
     
     return range_tracking
 
-def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
+def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon, show_routes=True, show_chargers=True):
     """Create a folium map with routes and charging locations."""
     # Create the map with a specific location and zoom level
     m = folium.Map(location=[center_lat, center_lon], zoom_start=11, tiles=None)
@@ -90,93 +93,45 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
         control=True
     ).add_to(m)
     
-    # Create a feature group for all routes
-    all_routes = folium.FeatureGroup(name="All Routes", show=True)
-    
-    # Get unique route IDs
-    unique_routes = trips_df['route_id'].unique()
-    num_routes = len(unique_routes)
-    
-    # Generate colors for routes using a colormap
-    colormap = matplotlib.colormaps.get_cmap('tab20b')  # Only pass the colormap name
-    colors = [mcolors.to_hex(colormap(i / (max(1,num_routes - 1)))) for i in range(num_routes)]  # Normalize indices
-    route_colors = dict(zip(unique_routes, colors))
-    
-    # Add route lines to the map
-    for route_id in unique_routes:
-        # Get shape IDs for this route
-        route_shapes = trips_df[trips_df['route_id'] == route_id]['shape_id'].unique()
-        
-        # Create a feature group for this route
-        route_group = folium.FeatureGroup(name=f"Route {route_id}", show=False)
-        
-        # Get the route color if available, otherwise use the generated color
-        try:
-            #route_color_info = routes_df[routes_df['route_id'] == route_id]['route_color'].iloc[0]
-            #route_color = f"#{route_color_info}" if not pd.isna(route_color_info) else route_colors[route_id]
-            route_color = route_colors[route_id]
-        except (IndexError, KeyError):
-            route_color = route_colors[route_id]
-        
-        # Add each shape for this route
-        for shape_id in route_shapes:
-            shape_points = shapes_df[shapes_df['shape_id'] == shape_id].sort_values('shape_pt_sequence')
-            coordinates = shape_points[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
-            
-            if len(coordinates) > 1:  # Ensure we have at least 2 points to make a line
-                # Add to the route-specific group
-                folium.PolyLine(
-                    coordinates,
-                    color=route_color,
-                    weight=4,
-                    #opacity=1,
-                    tooltip=f"Route {route_id} - Shape {shape_id}"
-                ).add_to(route_group)
-                
-                # Also add to the "All Routes" group
-                folium.PolyLine(
-                    coordinates,
-                    color=route_color,
-                    weight=4,
-                    #opacity=1
-                ).add_to(all_routes)
-        
-        # Add the route group to the map
-        route_group.add_to(m)
-    
-    # Add the "All Routes" group to the map
-    all_routes.add_to(m)
+    # Routes
+    if show_routes:
+        all_routes = folium.FeatureGroup(name="All Routes", show=True)
+        unique_routes = trips_df['route_id'].unique()
+        num_routes = len(unique_routes)
+        colormap = matplotlib.colormaps.get_cmap('tab20b')
+        colors = [mcolors.to_hex(colormap(i / max(1, num_routes-1))) for i in range(num_routes)]
+        route_colors = dict(zip(unique_routes, colors))
 
-    if not wireless_track_shape_df.empty:
-        all_wireless_tracks = folium.FeatureGroup(name="All Wireless Charging Tracks", show=True)
-        for track in wireless_track_shape_df['counter'].unique():
-            wireless_track_group = folium.FeatureGroup(name=f"Wireless Charging Track {track}",show=False)
-            shape_data = wireless_track_shape_df[wireless_track_shape_df['counter'] == track].sort_values(by='target_shape_pt_sequence')
-            shape_coords = shape_data[['shape_pt_lat', 'shape_pt_lon']].values.tolist()
-            folium.PolyLine(shape_coords, color="green", weight=4).add_to(wireless_track_group)
-            folium.PolyLine(shape_coords, color="green", weight=4).add_to(all_wireless_tracks)
-            wireless_track_group.add_to(m)
-        all_wireless_tracks.add_to(m)
+        for route_id in unique_routes:
+            route_shapes = trips_df[trips_df['route_id']==route_id]['shape_id'].unique()
+            for shape_id in route_shapes:
+                shape_points = shapes_df[shapes_df['shape_id']==shape_id].sort_values('shape_pt_sequence')
+                coords = shape_points[['shape_pt_lat','shape_pt_lon']].values.tolist()
+                if len(coords)>1:
+                    folium.PolyLine(coords, color=route_colors[route_id], weight=4).add_to(all_routes)
+        all_routes.add_to(m)
 
-    if not proposed_locations_df.empty:
-        # Create a feature group for charging locations
+    # Chargers
+    if show_chargers and not proposed_locations_df.empty:
         charging_locations = folium.FeatureGroup(name="Stationary Chargers", show=True)
-    
-        # Add markers for charging locations
-        for idx, row in proposed_locations_df.iterrows():
+        for idx,row in proposed_locations_df.iterrows():
             folium.Marker(
                 location=[row["stop_lat"], row["stop_lon"]],
                 icon=folium.Icon(color="blue", icon="plug", prefix="fa"),
-                popup=f"Charging Location ID: {row['stop_id']}",
-                tooltip="Charging Location"
+                popup=f"Charging Location ID: {row['stop_id']}"
             ).add_to(charging_locations)
-        
-        # Add the charging locations group to the map
         charging_locations.add_to(m)
-    
-    # Add layer control to toggle visibility
+
+    # Wireless tracks (optional)
+    if show_chargers and not wireless_track_shape_df.empty:
+        all_wireless_tracks = folium.FeatureGroup(name="Wireless Charging Tracks", show=True)
+        for track in wireless_track_shape_df['counter'].unique():
+            track_data = wireless_track_shape_df[wireless_track_shape_df['counter']==track].sort_values('target_shape_pt_sequence')
+            coords = track_data[['shape_pt_lat','shape_pt_lon']].values.tolist()
+            folium.PolyLine(coords, color="green", weight=4).add_to(all_wireless_tracks)
+        all_wireless_tracks.add_to(m)
+
     folium.LayerControl().add_to(m)
-    
     return m
 
 def compute_shape_distances(df):
@@ -354,6 +309,26 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 ###
+def save_folium_map_as_png(folium_map, filename="map.png", width=1200, height=800):
+    folium_map.save("temp_map.html")
+    
+    # Initialize Chrome driver (make sure chromedriver is installed)
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument(f"--window-size={width},{height}")
+    driver = webdriver.Chrome(options=options)
+    driver.get("file://" + os.path.abspath("temp_map.html"))
+    
+    # Save screenshot
+    png = driver.get_screenshot_as_png()
+    driver.quit()
+    
+    # Save PNG to file
+    with open(filename, "wb") as f:
+        f.write(png)
+    
+    return filename
+
 class NumberedCanvas(pdfcanvas.Canvas):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -469,7 +444,9 @@ def generate_transit_report(
     econ_toggle=False,
     econ_figure_path=None,
     agency_name="Transit Agency",
-    title_image_path=None
+    title_image_path=None,
+    charger_image_path=None,
+    routencharger_image_path=None
 ):
    # Figure counter
     figure_counter = 1
@@ -688,17 +665,16 @@ def generate_transit_report(
         outputs_text += f"In addition to the stationary chargers, {outputs.get('dynamic_lane_length','N/A')} miles of dynamic wireless charging track will be required. "
 
     # Reference figure if applicable
-    outputs_text += f"The spatial distribution of these chargers is presented in Figure {figure_counter}. Furthermore, Figure {figure_counter+1} illustrates the arrangement of chargers along the transit routes."
+    if outputs.get('num_stationary_chargers', 0) > 0 or outputs.get('dynamic_lane_length', 0) > 0:
+        outputs_text += f"The spatial distribution of these chargers is presented in Figure {figure_counter}. Furthermore, Figure {figure_counter+1} illustrates the arrangement of chargers along the transit routes."
 
     # Append paragraph
     story.append(Paragraph(outputs_text, styles["BodyTextCustom"]))
     story.append(Spacer(1,12))
     
-    if map_image_path:
-        add_figure(map_image_path, "Spatial distribution of chargers.")
-    
-    if map_image_path:
-        add_figure(map_image_path, "Arrangement of chargers along transit routes.")
+    if outputs.get('num_stationary_chargers', 0) > 0 or outputs.get('dynamic_lane_length', 0) > 0:
+        add_figure(charger_image_path, "Spatial distribution of chargers.")
+        add_figure(routencharger_image_path, "Arrangement of chargers along transit routes.")
     
     
     if econ_toggle and econ_figure_path:
@@ -1402,6 +1378,20 @@ def main():
                 msg2.empty()
                 msg3.empty()
                 flag_done=1
+
+                # 1. Routes only
+                map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
+                routes_image_path = save_folium_map_as_png(map_routes, "routes.png")
+                if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
+                    # 2. Chargers only
+                    map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
+                    gen_chargers_image_path = save_folium_map_as_png(map_chargers, "chargers.png")
+                    # 3. Routes + chargers
+                    map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
+                    gen_full_image_path = save_folium_map_as_png(map_full, "routes_chargers.png")
+                else:
+                    gen_chargers_image_path =None
+                    gen_full_image_path =None
                 
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
@@ -1550,15 +1540,18 @@ def main():
             filename="Report.pdf",
             inputs=report_inputs,
             outputs=report_outputs,
-            map_image_path=None,
+            map_image_path=routes_image_path,
             econ_toggle=toggle_value_cost,
             econ_figure_path=econ_figure_gen,
             agency_name=st.session_state["Agency_name"],
-            title_image_path="bus_title_image.png"
+            title_image_path="bus_title_image.png",
+            charger_image_path=gen_charger_image_path
+            routencharger_image_path=gen_full_image_path
         )
 
 if __name__ == "__main__":
     main()
+
 
 
 
