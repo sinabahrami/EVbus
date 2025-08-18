@@ -1556,12 +1556,13 @@ def main():
             map_image_path=None,
             econ_toggle=toggle_value_cost,
             econ_figure_path=None,
-            agency_name=inputs["transit_agency_name"],
+            agency_name=st.session_state["Agency_name"],
             title_image_path="bus_title_image.png"
         )
 
 if __name__ == "__main__":
     main()
+
 
 
 
