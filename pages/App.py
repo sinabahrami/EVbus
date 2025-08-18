@@ -29,6 +29,7 @@ from reportlab.pdfgen import canvas as pdfcanvas
 import tempfile
 
 import imgkit
+import io
 from io import BytesIO
 from PIL import Image as PILImage
 
@@ -1602,6 +1603,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
