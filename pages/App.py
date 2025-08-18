@@ -28,7 +28,7 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.pdfgen import canvas as pdfcanvas
 import tempfile
 
-from selenium import webdriver
+import imgkit
 from PIL import Image
 
 # Cache the data processing to improve performance
@@ -309,25 +309,66 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 ###
-def save_folium_map_as_png(folium_map, filename="map.png", width=1200, height=800):
-    folium_map.save("temp_map.html")
+def save_folium_map_as_png(
+    folium_map,
+    output_png_path,
+    wkhtmltoimage_path=None,   # e.g. r"C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe" on Windows
+    width=1200,
+    height=800,
+    delay_ms=1500              # wait a bit for tiles/JS to load
+):
+    """
+    Save a Folium map to PNG using imgkit (wkhtmltoimage).
+    """
+    # Save map HTML to a temp file
+    with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as tmp:
+        tmp_html = tmp.name
+    folium_map.save(tmp_html)
+
+    # imgkit options → wkhtmltoimage flags
+    options = {
+        "format": "png",
+        "width":  str(width),
+        "height": str(height),
+        "quality": "95",
+        "quiet": "",
+        "enable-local-file-access": "",  # needed if you ever load local assets
+        "javascript-delay": str(delay_ms)
+    }
+
+    # Config (set wkhtmltoimage path if provided)
+    config = imgkit.config(wkhtmltoimage=wkhtmltoimage_path) if wkhtmltoimage_path else None
+
+    # Render HTML → PNG
+    imgkit.from_file(tmp_html, output_png_path, options=options, config=config)
+
+    # Clean up temp html
+    try:
+        os.remove(tmp_html)
+    except OSError:
+        pass
+
+    return output_png_path
+
+# def save_folium_map_as_png(folium_map, filename="map.png", width=1200, height=800):
+#     folium_map.save("temp_map.html")
     
-    # Initialize Chrome driver (make sure chromedriver is installed)
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument(f"--window-size={width},{height}")
-    driver = webdriver.Chrome(options=options)
-    driver.get("file://" + os.path.abspath("temp_map.html"))
+#     # Initialize Chrome driver (make sure chromedriver is installed)
+#     options = webdriver.ChromeOptions()
+#     options.add_argument("--headless")
+#     options.add_argument(f"--window-size={width},{height}")
+#     driver = webdriver.Chrome(options=options)
+#     driver.get("file://" + os.path.abspath("temp_map.html"))
     
-    # Save screenshot
-    png = driver.get_screenshot_as_png()
-    driver.quit()
+#     # Save screenshot
+#     png = driver.get_screenshot_as_png()
+#     driver.quit()
     
-    # Save PNG to file
-    with open(filename, "wb") as f:
-        f.write(png)
+#     # Save PNG to file
+#     with open(filename, "wb") as f:
+#         f.write(png)
     
-    return filename
+#     return filename
 
 class NumberedCanvas(pdfcanvas.Canvas):
     def __init__(self, *args, **kwargs):
@@ -1381,14 +1422,14 @@ def main():
 
                 # 1. Routes only
                 map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
-                routes_image_path = save_folium_map_as_png(map_routes, "routes.png")
+                routes_image_path = save_folium_map_as_png(map_routes, "routes.png",wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
                 if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
                     # 2. Chargers only
                     map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
-                    gen_chargers_image_path = save_folium_map_as_png(map_chargers, "chargers.png")
+                    gen_chargers_image_path = save_folium_map_as_png(map_chargers, "chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
                     # 3. Routes + chargers
                     map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
-                    gen_full_image_path = save_folium_map_as_png(map_full, "routes_chargers.png")
+                    gen_full_image_path = save_folium_map_as_png(map_full, "routes_chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
                 else:
                     gen_chargers_image_path =None
                     gen_full_image_path =None
@@ -1551,6 +1592,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
