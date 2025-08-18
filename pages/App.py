@@ -465,7 +465,7 @@ def generate_transit_report(
     filename,
     inputs,
     outputs,
-    map_image_path,
+    map_image_path=None,
     econ_toggle=False,
     econ_figure_path=None,
     agency_name="Transit Agency",
@@ -1513,8 +1513,46 @@ def main():
         ax.legend()
         st.pyplot(fig)
 
+    inputs = {"transit_agency_name": selected_agency,
+        "bus_range": bus_range,
+        "stationary_power": charging_power,
+        "stationary_setup_time_hr": min_stoppage_time,
+        "dynamic_power": dynamic_wireless_charging_power,
+        "bus_price": bus_cost,
+        "stationary_charger_cost": stationary_charger_cost,
+        "coil_install_cost": bus_coil_cost,
+        "dynamic_track_cost": dynamic_charger_cost,
+        "energy_usage":energy_usage,
+    }
+    outputs = {
+        "total_routes": len(trips['route_id'].unique()),
+        "total_stops": stops['stop_id'].nunique(),
+        "total_blocks": num_blocks_total,
+        "electrifiable_blocks": len(block_general) - len(infeasible_blocks),
+        "non_electrifiable_blocks": len(infeasible_blocks),
+        "infeasible_block_ids": infeasible_blocks,
+        "num_stationary_chargers": len(proposed_locations),
+        "dynamic_lane_length": round(wireless_track_length, 1),
+        "block_general":block_general,
+        "categories":categories,
+        "additional_fleet_cost_no_ivc":additional_fleet_cost_no_ivc,
+        "additinal_fleet_cost":additinal_fleet_cost,
+    }
+
+    generate_transit_report(
+        filename="transit_report.pdf",
+        inputs=inputs,
+        outputs=outputs,
+        map_image_path=None,
+        econ_toggle=toggle_value_cost,
+        econ_figure_path=None,
+        agency_name=inputs["transit_agency_name"],
+        title_image_path="bus_title_image.png"
+    )
+
 if __name__ == "__main__":
     main()
+
 
 
 
