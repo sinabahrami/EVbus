@@ -26,7 +26,7 @@ from textwrap import wrap
 from reportlab.lib.enums import TA_CENTER
 from reportlab.platypus import Table, TableStyle
 from reportlab.pdfgen import canvas as pdfcanvas
-
+import tempfile
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -1553,6 +1553,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
