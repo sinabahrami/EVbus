@@ -1394,6 +1394,9 @@ def main():
                 st.session_state["num_locs"] = len(proposed_locations)
                 st.session_state["wirelesslength"]= round(wireless_track_length,1)
                 st.session_state["output"]=wireless_track_shape.to_csv(index=False).encode("utf-8")
+
+                st.session_state["block_info"]=block_general
+                st.session_state["inf_block_info"]=infeasible_blocks
                 
                 st.session_state["initial_num_infeasible_blocks"]=initial_num_infeasible_blocks
                 st.session_state["final_number_infeasible_blocks"]=final_number_infeasible_blocks
@@ -1532,13 +1535,13 @@ def main():
         "total_blocks": st.session_state["blocks_count"],
         "electrifiable_blocks": st.session_state["feasible_blocks_count"],
         "non_electrifiable_blocks": st.session_state["infeasible_blocks_count"],
-        "infeasible_block_ids": infeasible_blocks,
+        "infeasible_block_ids": st.session_state["inf_block_info"],
         "num_stationary_chargers": st.session_state["num_locs"],
         "dynamic_lane_length": st.session_state["wirelesslength"],
-        "block_general":block_general,
+        "block_general":st.session_state["block_info"],
         "categories":categories,
-        "additional_fleet_cost_no_ivc":additional_fleet_cost_no_ivc,
-        "additinal_fleet_cost":additinal_fleet_cost,
+        "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
+        "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
     }
 
     generate_transit_report(
@@ -1554,6 +1557,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
