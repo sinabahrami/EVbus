@@ -1516,47 +1516,49 @@ def main():
         ax.legend()
         st.pyplot(fig)
 
-    report_inputs = {"transit_agency_name": selected_agency,
-        "bus_range": bus_range,
-        "stationary_power": charging_power,
-        "stationary_setup_time_hr": min_stoppage_time,
-        "dynamic_power": dynamic_wireless_charging_power,
-    }
-    if toggle_value_cost==True:
-        report_inputs = {"bus_price": bus_cost,
-            "stationary_charger_cost": stationary_charger_cost,
-            "coil_install_cost": bus_coil_cost,
-            "dynamic_track_cost": dynamic_charger_cost,
-            "energy_usage":energy_usage,
+    if flag_done==1:
+        report_inputs = {"transit_agency_name": selected_agency,
+            "bus_range": bus_range,
+            "stationary_power": charging_power,
+            "stationary_setup_time_hr": min_stoppage_time,
+            "dynamic_power": dynamic_wireless_charging_power,
         }
-    report_outputs = {
-        "total_routes": st.session_state["routes_count"],
-        "total_stops": st.session_state["stops_count"],
-        "total_blocks": st.session_state["blocks_count"],
-        "electrifiable_blocks": st.session_state["feasible_blocks_count"],
-        "non_electrifiable_blocks": st.session_state["infeasible_blocks_count"],
-        "infeasible_block_ids": st.session_state["inf_block_info"],
-        "num_stationary_chargers": st.session_state["num_locs"],
-        "dynamic_lane_length": st.session_state["wirelesslength"],
-        "block_general":st.session_state["block_info"],
-        "categories":categories,
-        "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
-        "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
-    }
-
-    generate_transit_report(
-        filename="Report.pdf",
-        inputs=report_inputs,
-        outputs=report_outputs,
-        map_image_path=None,
-        econ_toggle=toggle_value_cost,
-        econ_figure_path=None,
-        agency_name=inputs["transit_agency_name"],
-        title_image_path="bus_title_image.png"
-    )
+        if toggle_value_cost==True:
+            report_inputs = {"bus_price": bus_cost,
+                "stationary_charger_cost": stationary_charger_cost,
+                "coil_install_cost": bus_coil_cost,
+                "dynamic_track_cost": dynamic_charger_cost,
+                "energy_usage":energy_usage,
+            }
+        report_outputs = {
+            "total_routes": st.session_state["routes_count"],
+            "total_stops": st.session_state["stops_count"],
+            "total_blocks": st.session_state["blocks_count"],
+            "electrifiable_blocks": st.session_state["feasible_blocks_count"],
+            "non_electrifiable_blocks": st.session_state["infeasible_blocks_count"],
+            "infeasible_block_ids": st.session_state["inf_block_info"],
+            "num_stationary_chargers": st.session_state["num_locs"],
+            "dynamic_lane_length": st.session_state["wirelesslength"],
+            "block_general":st.session_state["block_info"],
+            "categories":categories,
+            "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
+            "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
+        }
+    
+        generate_transit_report(
+            filename="Report.pdf",
+            inputs=report_inputs,
+            outputs=report_outputs,
+            map_image_path=None,
+            econ_toggle=toggle_value_cost,
+            econ_figure_path=None,
+            agency_name=inputs["transit_agency_name"],
+            title_image_path="bus_title_image.png"
+        )
 
 if __name__ == "__main__":
     main()
+
 
 
 
