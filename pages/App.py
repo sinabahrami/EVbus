@@ -385,7 +385,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
-            gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='o', label='Stationary Charger')
+            gdf_chargers.plot(ax=ax, color='blue', markersize=25, marker='x', label='Stationary Charger')
             legend_handles.append(mpatches.Patch(color='blue', label='Stationary Charger'))
 
         # Wireless tracks
@@ -405,14 +405,14 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
         # Add discrete legend
         if legend_handles:
-            ax.legend(handles=legend_handles, loc='upper right', fontsize=8)
+            ax.legend(handles=legend_handles, loc='upper right', fontsize=9)
 
         # Tight layout
         plt.tight_layout()
 
         # Save to BytesIO
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+        plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
         plt.close(fig)
         buf.seek(0)
         return buf
@@ -1698,6 +1698,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
