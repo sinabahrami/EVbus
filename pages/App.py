@@ -1570,8 +1570,9 @@ def main():
             charger_image_path=gen_chargers_image_path,
             routencharger_image_path=gen_full_image_path
         )
+        st.write(f"You can download a PDF report for your analysis by clicking on: ")
         st.download_button(
-            label="📥 Download Report",
+            label="📥 Report",
             data=pdf_buffer,
             file_name="transit_report.pdf",
             mime="application/pdf"
@@ -1579,6 +1580,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
