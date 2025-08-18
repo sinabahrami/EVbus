@@ -405,7 +405,8 @@ class FullPageImage(Flowable):
         subtitle_font_size=18,
         max_title_width=40,
         max_subtitle_width=60,
-        bottom_margin=1.5*inch  # distance from bottom for first line
+        bottom_margin=1.5*inch,  # distance from bottom for first line
+        top_margin=1.5*inch
     ):
         super().__init__()
         self.image_path = image_path
@@ -418,6 +419,7 @@ class FullPageImage(Flowable):
         self.max_title_width = max_title_width
         self.max_subtitle_width = max_subtitle_width
         self.bottom_margin = bottom_margin
+        self.top_margin=top_margin
 
     def wrap(self, availWidth, availHeight):
         return self.width, self.height
@@ -438,26 +440,27 @@ class FullPageImage(Flowable):
                 subtitle_lines.extend(wrapped)
                 
         # Starting Y position from bottom
-        y = self.bottom_margin+80
+        yt=self.top_margin+600
+        yb = self.bottom_margin-20
 
         
         # Draw title above subtitle
         if title_lines:
             self.canv.setFont("Times-Bold", self.title_font_size)
-            self.canv.setFillColorRGB(1, 1, 1)
-            y += 0.1*inch  # small gap above subtitle
+            self.canv.setFillColorRGB(0, 0, 0)
+            yt += 0.1*inch  # small gap above subtitle
             for line in title_lines:
-                self.canv.drawCentredString(self.width / 2, y, line)
-                y -= self.title_font_size + 4  # line spacing
+                self.canv.drawCentredString(self.width / 2, yt, line)
+                yt -= self.title_font_size + 4  # line spacing
 
         # Draw subtitle first (closest to bottom)
         if subtitle_lines:
             self.canv.setFont("Times-Bold", self.subtitle_font_size)
-            self.canv.setFillColorRGB(1, 1, 1)  # white
-            y-=40
+            self.canv.setFillColorRGB(0, 0, 0)  # white
             for line in subtitle_lines:  # draw from bottom up
-                self.canv.drawCentredString(self.width / 2, y, line)
-                y -= self.subtitle_font_size + 3  # spacing between lines
+                self.canv.drawCentredString(self.width / 2, yb, line)
+                yb -= self.subtitle_font_size + 3  # spacing between lines
+
 def generate_transit_report(
     filename,
     inputs,
@@ -1512,6 +1515,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
