@@ -15,6 +15,18 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import textwrap
 
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak, Frame, PageTemplate, NextPageTemplate, KeepTogether, FrameBreak)
+from reportlab.platypus.tableofcontents import TableOfContents
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.platypus import Flowable
+from textwrap import wrap
+from reportlab.lib.enums import TA_CENTER
+from reportlab.platypus import Table, TableStyle
+from reportlab.pdfgen import canvas as pdfcanvas
+
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -1119,6 +1131,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
