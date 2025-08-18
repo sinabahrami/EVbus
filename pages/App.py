@@ -353,6 +353,387 @@ def reset_toggle():
     st.session_state.toggle_state = False  # Turn off toggle
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
+###
+class NumberedCanvas(pdfcanvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        # Save state of the just-completed page
+        self._saved_page_states.append(dict(self.__dict__))
+        # Start a fresh page state
+        self._startPage()
+
+    def save(self):
+        # Save state for the last page as well
+        self._saved_page_states.append(dict(self.__dict__))
+
+        # Restore and write each saved page, adding page numbers as needed
+        for i, state in enumerate(self._saved_page_states):
+            self.__dict__.update(state)
+            if i >= 1:  # skip cover
+                logical_page = i
+                self.saveState()
+                try:
+                    self.setStrokeColorRGB(0, 0, 0)  # black line
+                    self.setLineWidth(1.0)  # thin line
+                    # Draw line across bottom margin
+                    self.line(1.0*inch, 0.75*inch, letter[0] - 1.0*inch, 0.75*inch)
+                    self.setFont('Times-Italic', 9)
+                    self.setFillColorRGB(0, 0, 0)
+                    self.drawRightString(letter[0] - 1.0*inch, 0.5*inch, f"Page {logical_page}")
+                finally:
+                    self.restoreState()
+
+            # Write the page
+            if i < len(self._saved_page_states) - 1:  # not the last page
+                pdfcanvas.Canvas.showPage(self)
+
+        # finish
+        pdfcanvas.Canvas.save(self)
+
+class FullPageImage(Flowable):
+    def __init__(
+        self,
+        image_path,
+        width,
+        height,
+        title=None,
+        subtitle=None,
+        title_font_size=28,
+        subtitle_font_size=18,
+        max_title_width=40,
+        max_subtitle_width=60,
+        bottom_margin=1.5*inch  # distance from bottom for first line
+    ):
+        super().__init__()
+        self.image_path = image_path
+        self.width = width
+        self.height = height
+        self.title = title
+        self.subtitle = subtitle
+        self.title_font_size = title_font_size
+        self.subtitle_font_size = subtitle_font_size
+        self.max_title_width = max_title_width
+        self.max_subtitle_width = max_subtitle_width
+        self.bottom_margin = bottom_margin
+
+    def wrap(self, availWidth, availHeight):
+        return self.width, self.height
+
+    def draw(self):
+        # Draw full-page image
+        self.canv.drawImage(self.image_path, 0, 0, width=self.width, height=self.height)
+
+        # Wrap title and subtitle
+        title_lines = wrap(self.title, self.max_title_width) if self.title else []
+        #subtitle_lines = wrap(self.subtitle, self.max_subtitle_width) if self.subtitle else []
+
+        # Handle subtitle: first split by \n, then wrap each segment
+        subtitle_lines = []
+        if self.subtitle:
+            for part in self.subtitle.split("\n"):
+                wrapped = wrap(part, self.max_subtitle_width)
+                subtitle_lines.extend(wrapped)
+                
+        # Starting Y position from bottom
+        y = self.bottom_margin+80
+
+        
+        # Draw title above subtitle
+        if title_lines:
+            self.canv.setFont("Times-Bold", self.title_font_size)
+            self.canv.setFillColorRGB(1, 1, 1)
+            y += 0.1*inch  # small gap above subtitle
+            for line in title_lines:
+                self.canv.drawCentredString(self.width / 2, y, line)
+                y -= self.title_font_size + 4  # line spacing
+
+        # Draw subtitle first (closest to bottom)
+        if subtitle_lines:
+            self.canv.setFont("Times-Bold", self.subtitle_font_size)
+            self.canv.setFillColorRGB(1, 1, 1)  # white
+            y-=40
+            for line in subtitle_lines:  # draw from bottom up
+                self.canv.drawCentredString(self.width / 2, y, line)
+                y -= self.subtitle_font_size + 3  # spacing between lines
+def generate_transit_report(
+    filename,
+    inputs,
+    outputs,
+    map_image_path,
+    econ_toggle=False,
+    econ_figure_path=None,
+    agency_name="Transit Agency",
+    title_image_path=None
+):
+   # Figure counter
+    figure_counter = 1
+    table_counter =1 
+    # Styles
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name="Heading1Center", parent=styles["Heading1"], alignment=1))
+    styles.add(ParagraphStyle(name="BodyTextCustom", parent=styles["BodyText"], fontSize=11, leading=14))
+    styles.add(ParagraphStyle(name='Caption',parent=styles["Normal"],alignment=TA_CENTER,fontSize=10,leading=12))
+    
+    page_width, page_height = letter
+
+    # --- Define Frames & Templates ---
+    # Full-page front page
+    front_frame = Frame(
+        x1=0, y1=0, width=page_width, height=page_height,
+        leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0, id='front'
+    )
+    front_template = PageTemplate(id='front', frames=[front_frame])
+
+    # Main content frame
+    main_frame = Frame(
+        x1=1.0*inch, y1=1.0*inch,
+        width=page_width - 2*inch,
+        height=page_height - 2*inch,
+        leftPadding=0.2, rightPadding=0.2, topPadding=0.2, bottomPadding=0.2,
+        id='normal'
+    )
+    main_template = PageTemplate(id='normal', frames=[main_frame])#, onPageEnd=add_page_number)
+
+
+
+    def add_figure(img_path, caption_text):
+        global figure_counter
+        # Wrap image and caption in KeepTogether to avoid missing page numbers
+        story.append(KeepTogether([
+            Image(img_path, width=letter[0]-4*inch, height=4*inch),
+            Spacer(1, 6),
+            Paragraph(f"<b>Figure {figure_counter}:</b> {caption_text}", styles["Caption"]),
+            Spacer(1, 1),  # tiny spacer ensures onPage triggers
+        ]))
+        figure_counter += 1
+
+    def add_table_from_dataframe(df, caption_text, styles, col_widths=None):
+        global table_counter
+        """
+        Add a table from a dataframe with the first three columns:
+        block id, total block distance, routes included.
+        Automatically breaks across pages and repeats header.
+        """
+        # Select the first three columns
+        df_table = df.iloc[:, :3].copy()
+        df_table.columns = ["Block ID", "Total Distance (miles)", "Routes Included"]  # nice headers
+
+        
+
+        # Round the second column to 1 decimal
+        df_table["Total Distance (miles)"] = df_table["Total Distance (miles)"].astype(float).round(1)
+
+        # Convert third column (list/array) to comma-separated string
+        def format_routes(x):
+            if isinstance(x, (list, tuple, pd.Series, np.ndarray)):
+                return ", ".join(str(i) for i in x)
+            else:
+                return str(x)
+        df_table["Routes Included"] = df_table["Routes Included"].apply(format_routes)
+
+        # Convert DataFrame to list of lists
+        data = [df_table.columns.tolist()] + df_table.values.tolist()
+        
+        # Determine column widths (optional: scale to text width)
+        if col_widths is None:
+            # Approximate: evenly divide available text width
+            from reportlab.lib.pagesizes import letter
+            from reportlab.lib.units import inch
+            page_width, page_height = letter
+            text_width = page_width - 3*inch  # assuming main_frame has 1-inch margins
+            col_widths = [text_width * 0.2, text_width * 0.3, text_width * 0.5]
+        
+        # Create the table
+        tbl = Table(data, colWidths=col_widths, repeatRows=1)
+        
+        # Style the table
+        tbl.setStyle(TableStyle([
+            ('FONTNAME', (0,0), (-1,0), 'Times-Bold'),    # header bold
+            ('ALIGN', (0,0), (-1,0), 'CENTER'),
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ('ALIGN', (0,1), (1,-1), 'CENTER'),          # first two columns values centered
+            ('ALIGN', (2,1), (2,-1), 'LEFT'),            # third column values left-aligned
+            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('LEFTPADDING', (0,0), (-1,-1), 4),
+            ('RIGHTPADDING', (0,0), (-1,-1), 4),
+        ]))
+
+        # Add table and caption to story
+        caption_html = f"<b>Table {table_counter}:</b> {caption_text}"
+        story.append(Paragraph(caption_html, styles["Caption"]))
+        story.append(Spacer(1,6))
+        story.append(tbl)
+        story.append(Spacer(1,12))
+        
+        table_counter+=1
+
+    # Document  
+    doc = SimpleDocTemplate(filename, pagesize=letter)
+    doc.addPageTemplates([front_template, main_template])
+
+    story = []
+
+    # --- Front Page ---
+    if title_image_path:
+        story.append(FullPageImage(
+            title_image_path,
+            width=letter[0],
+            height=letter[1],
+            title=f"Transit Electrification Report for {agency_name} Transit System",
+            subtitle="Produced by \n https://transit-electrification.streamlit.app/" # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
+        ))
+        #story.append(PageBreak())
+        
+    story.append(NextPageTemplate('normal'))
+    story.append(FrameBreak)
+    story.append(NextPageTemplate('normal'))
+
+    # --- Introduction ---
+    story.append(Paragraph("Introduction", styles["Heading1"]))
+    intro_text = (
+        f"This report provides a detailed summary of the transit electrification study for the {agency_name} transit system. "
+        f"The system includes {outputs.get('total_routes', 'N/A')} routes, and "
+        f"{outputs.get('total_stops', 'N/A')} stops. " 
+        f"Figure {figure_counter} shows the map of the service."
+    )
+    story.append(Paragraph(intro_text, styles["BodyTextCustom"]))
+    story.append(Spacer(1, 12))
+
+    if map_image_path:
+        add_figure(map_image_path, "Map of the transit service.")
+
+    
+    intro_text2 = (
+        f"The agency operates {outputs.get('total_blocks', 'N/A')} blocks, each defined as a sequence of consecutive routes assigned to a single vehicle for daily operations. "
+        f"Table {table_counter} provides a detailed overview of these blocks, including their total driving distances and the routes serviced within each block."
+    )    
+    story.append(Paragraph(intro_text2, styles["BodyTextCustom"]))
+    story.append(Spacer(1, 12))
+    add_table_from_dataframe(
+        outputs.get('block_general'), 
+        caption_text="Summary of blocks.",
+        styles=styles
+    )
+
+    # --- Inputs & Outputs ---
+    story.append(Paragraph("Selected Electrification Characteristics", styles["Heading1"]))
+    inputs_text = (
+        f"The selected electric bus range is {inputs.get('bus_range', 'N/A')} miles, "
+        f"and buses consume {inputs.get('energy_usage', 'N/A') / 60:.2f} kWh per mile of travel. "
+    )
+
+    if econ_toggle:
+        inputs_text += f"Each bus costs ${inputs.get('bus_price', 'N/A'):,}. "
+
+    if inputs.get('stationary_setup_time_hr', 0) >= 1:
+        inputs_text += (
+            f"The selected stationary charging system is plug-in, with a power output of {inputs.get('stationary_power', 'N/A')} kW. "
+            f"Buses require {inputs.get('stationary_setup_time_hr', 0)} minutes to plug in and start charging after stopping. "
+        )
+    elif inputs.get('stationary_setup_time_hr', 0) > 0:
+        inputs_text += (
+            f"The selected stationary charging system is wireless, with a power output of {inputs.get('stationary_power', 'N/A')} kW. "
+            f"Buses require {inputs.get('stationary_setup_time_hr', 0) * 60:.0f} seconds to start charging after stopping. "
+        )
+    else:
+        inputs_text += (
+            f"The selected stationary charging system is wireless, with a power output of {inputs.get('stationary_power', 'N/A')} kW, "
+            f"and buses can begin charging immediately after stopping. "
+        )
+
+    if econ_toggle:
+        inputs_text += (
+            f"The average cost to build a stationary charging station is ${inputs.get('stationary_charger_cost', 'N/A'):,}. "
+        )
+        if inputs.get('stationary_setup_time_hr', 0) < 1:
+            inputs_text += (
+                f"Installing a receiver coil on each bus for wireless charging costs ${inputs.get('coil_install_cost', 'N/A'):,}. "
+            )
+
+    if inputs.get('dynamic_power', 0) > 0:
+        inputs_text += (
+            f"In addition, dynamic in-motion wireless charging is available, providing {inputs.get('dynamic_power', 0)} kW of charging power. "
+        )
+        if econ_toggle:
+            inputs_text += (
+                f"Constructing dynamic wireless charging track costs ${inputs.get('dynamic_track_cost', 'N/A'):,} per mile."
+            )
+
+    story.append(Paragraph(inputs_text, styles["BodyTextCustom"]))
+    story.append(Spacer(1,12))
+
+
+    # --- Results ---
+    story.append(Paragraph("Results", styles["Heading1"]))
+
+    # Start with electrifiable blocks
+    outputs_text = f"With the selected bus and charger configuration, a total of {outputs.get('electrifiable_blocks','N/A')} blocks can be successfully electrified. "
+
+    # Add infeasible blocks if any
+    if outputs.get('non_electrifiable_blocks', 0) > 0:
+        outputs_text += (f"However, {outputs.get('non_electrifiable_blocks','N/A')} blocks remain infeasible under the current configuration. ")
+
+        report_infeasible_blocks = outputs.get('infeasible_block_ids', [])
+        if report_infeasible_blocks and report_infeasible_blocks != 'N/A':
+            if len(report_infeasible_blocks) == 1:
+                blocks_str = report_infeasible_blocks[0]
+            else:
+                blocks_str = ", ".join(report_infeasible_blocks[:-1]) + ", and " + report_infeasible_blocks[-1]
+            outputs_text += f"The specific block IDs corresponding to these infeasible cases are: {blocks_str}. "
+
+    # Add stationary chargers if any
+    if outputs.get('num_stationary_chargers', 0) > 0:
+        outputs_text += f"To achieve the electrification of the feasible blocks, it will be necessary to install {outputs.get('num_stationary_chargers','N/A')} stationary charging stations. "
+
+    # Add dynamic wireless charging if applicable
+    if outputs.get('dynamic_lane_length', 0) > 0:
+        outputs_text += f"In addition to the stationary chargers, {outputs.get('dynamic_lane_length','N/A')} miles of dynamic wireless charging track will be required. "
+
+    # Reference figure if applicable
+    outputs_text += f"The spatial distribution of these chargers is presented in Figure {figure_counter}. Furthermore, Figure {figure_counter+1} illustrates the arrangement of chargers along the transit routes."
+
+    # Append paragraph
+    story.append(Paragraph(outputs_text, styles["BodyTextCustom"]))
+    story.append(Spacer(1,12))
+    
+    if map_image_path:
+        add_figure(map_image_path, "Spatial distribution of chargers.")
+    
+    if map_image_path:
+        add_figure(map_image_path, "Arrangement of chargers along transit routes.")
+    
+    
+    if econ_toggle and econ_figure_path:
+        if len(outputs.get('categories'))==2:
+            econ_text = (
+                f"Under the selected configuration, one alternative approach to electrifying all blocks is to expand the fleet size by purchasing "
+                f"{outputs.get('additional_fleet_cost_no_ivc')/inputs.get('bus_price'):.0f} additional buses instead of installing chargers. "
+                f"Figure {figure_counter} compares the cost of acquiring additional buses with the cost of charger installation."
+            )
+            story.append(Paragraph(econ_text, styles["BodyTextCustom"]))
+            story.append(Spacer(1,12))
+            add_figure(econ_figure_path, "Cost comparison.")
+        elif len(outputs.get('categories'))==3:    
+            econ_text = (
+                f"Under the selected configuration, there are two possible approaches to electrifying all blocks: "
+                f"(i) expanding the fleet size by purchasing {outputs.get('additional_fleet_cost_no_ivc')/inputs.get('bus_price'):.0f} additional buses "
+                f"instead of installing chargers, or (ii) installing chargers while also purchasing "
+                f"{outputs.get('additinal_fleet_cost')/inputs.get('bus_price'):.0f} additional buses. "
+                f"Figure {figure_counter} compares the costs associated with these scenarios."
+            )
+            story.append(Paragraph(econ_text, styles["BodyTextCustom"]))
+            story.append(Spacer(1,12))
+            add_figure(econ_figure_path, "Cost comparison.")
+        
+    
+
+    # --- Build PDF ---
+    doc.build(story, canvasmaker=NumberedCanvas)
+###
 def main():
     flag_done=0
 
@@ -1131,6 +1512,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
