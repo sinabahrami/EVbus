@@ -500,14 +500,35 @@ def generate_transit_report(
 
     def add_figure(img_path, caption_text):
         nonlocal figure_counter
-        # Wrap image and caption in KeepTogether to avoid missing page numbers
-        story.append(KeepTogether([
-            Image(img_path, width=letter[0]-4*inch, height=4*inch),
-            Spacer(1, 6),
-            Paragraph(f"<b>Figure {figure_counter}:</b> {caption_text}", styles["Caption"]),
-            Spacer(1, 1),  # tiny spacer ensures onPage triggers
-        ]))
+        if not os.path.exists(img_path) or os.path.getsize(img_path) == 0:
+            story.append(Paragraph(f"<b>Figure {figure_counter}:</b> [Missing image] {caption_text}", styles["Caption"]))
+        else:
+            # Open image with PIL to make sure it's valid
+            with open(img_path, "rb") as f:
+                img_bytes = f.read()
+            try:
+                PILImage.open(io.BytesIO(img_bytes))  # will raise error if corrupt
+                fig = Image(io.BytesIO(img_bytes), width=letter[0]-4*inch, height=4*inch)
+            except Exception as e:
+                fig = Paragraph(f"[Error loading image: {e}]", styles["Normal"])
+            
+            story.append(KeepTogether([
+                fig,
+                Spacer(1, 6),
+                Paragraph(f"<b>Figure {figure_counter}:</b> {caption_text}", styles["Caption"]),
+                Spacer(1, 1),
+            ]))
         figure_counter += 1
+    # def add_figure(img_path, caption_text):
+    #     nonlocal figure_counter
+    #     # Wrap image and caption in KeepTogether to avoid missing page numbers
+    #     story.append(KeepTogether([
+    #         Image(img_path, width=letter[0]-4*inch, height=4*inch),
+    #         Spacer(1, 6),
+    #         Paragraph(f"<b>Figure {figure_counter}:</b> {caption_text}", styles["Caption"]),
+    #         Spacer(1, 1),  # tiny spacer ensures onPage triggers
+    #     ]))
+    #     figure_counter += 1
 
     def add_table_from_dataframe(df, caption_text, styles, col_widths=None):
         nonlocal table_counter
@@ -1580,6 +1601,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
