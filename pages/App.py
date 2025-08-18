@@ -339,8 +339,8 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
             lambda p: shapely.affinity.translate(
                 p,
-                xoff=np.random.uniform(-5, 5),
-                yoff=np.random.uniform(-5, 5)
+                xoff=np.random.uniform(-500, 500),
+                yoff=np.random.uniform(-500, 500)
             )
         )
     else:
@@ -386,7 +386,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
-            gdf_chargers.plot(ax=ax, color='blue', markersize=25, marker='x', label='Stationary Charger')
+            gdf_chargers.plot(ax=ax, color='blue', markersize=25, marker='*', label='Stationary Charger')
             legend_handles.append(Line2D([0], [0], marker='x', color='b', label='Stationary Charger',markerfacecolor='blue', markersize=10))
 
         # Wireless tracks
@@ -1699,6 +1699,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
