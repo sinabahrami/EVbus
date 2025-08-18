@@ -500,27 +500,48 @@ def generate_transit_report(
     )
     main_template = PageTemplate(id='normal', frames=[main_frame])#, onPageEnd=add_page_number)
 
-    def add_figure(img_path, caption_text):
+    def add_figure(img_bytes, caption_text):
         nonlocal figure_counter
-        if not os.path.exists(img_path) or os.path.getsize(img_path) == 0:
-            story.append(Paragraph(f"<b>Figure {figure_counter}:</b> [Missing image] {caption_text}", styles["Caption"]))
-        else:
-            # Open image with PIL to make sure it's valid
-            with open(img_path, "rb") as f:
-                img_bytes = f.read()
-            try:
-                PILImage.open(io.BytesIO(img_bytes))  # will raise error if corrupt
-                fig = Image(io.BytesIO(img_bytes), width=letter[0]-4*inch, height=4*inch)
-            except Exception as e:
-                fig = Paragraph(f"[Error loading image: {e}]", styles["Normal"])
-            
-            story.append(KeepTogether([
-                fig,
-                Spacer(1, 6),
-                Paragraph(f"<b>Figure {figure_counter}:</b> {caption_text}", styles["Caption"]),
-                Spacer(1, 1),
-            ]))
+        try:
+            # Open with PIL to validate
+            pil_img = PILImage.open(io.BytesIO(img_bytes) if isinstance(img_bytes, bytes) else img_bytes)
+            pil_img.verify()  # raises if invalid
+    
+            # Use BytesIO to feed ReportLab Image
+            img_stream = io.BytesIO(img_bytes) if isinstance(img_bytes, bytes) else img_bytes
+            reportlab_img = Image(img_stream, width=letter[0]-4*inch, height=4*inch)
+    
+        except Exception as e:
+            reportlab_img = Paragraph(f"[Error loading image: {e}]", styles["Normal"])
+    
+        story.append(KeepTogether([
+            reportlab_img,
+            Spacer(1, 6),
+            Paragraph(f"<b>Figure {figure_counter}:</b> {caption_text}", styles["Caption"]),
+            Spacer(1, 1)
+        ]))
         figure_counter += 1
+    # def add_figure(img_path, caption_text):
+    #     nonlocal figure_counter
+    #     if not os.path.exists(img_path) or os.path.getsize(img_path) == 0:
+    #         story.append(Paragraph(f"<b>Figure {figure_counter}:</b> [Missing image] {caption_text}", styles["Caption"]))
+    #     else:
+    #         # Open image with PIL to make sure it's valid
+    #         with open(img_path, "rb") as f:
+    #             img_bytes = f.read()
+    #         try:
+    #             PILImage.open(io.BytesIO(img_bytes))  # will raise error if corrupt
+    #             fig = Image(io.BytesIO(img_bytes), width=letter[0]-4*inch, height=4*inch)
+    #         except Exception as e:
+    #             fig = Paragraph(f"[Error loading image: {e}]", styles["Normal"])
+            
+    #         story.append(KeepTogether([
+    #             fig,
+    #             Spacer(1, 6),
+    #             Paragraph(f"<b>Figure {figure_counter}:</b> {caption_text}", styles["Caption"]),
+    #             Spacer(1, 1),
+    #         ]))
+    #     figure_counter += 1
     # def add_figure(img_path, caption_text):
     #     nonlocal figure_counter
     #     # Wrap image and caption in KeepTogether to avoid missing page numbers
@@ -1427,14 +1448,18 @@ def main():
 
                 # 1. Routes only
                 map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
-                st.session_state["routes_image_path"] = save_folium_map_as_png(map_routes, "routes.png",wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
+                map_routes_html = map_routes.get_root().render()
+                buf_routes = io.BytesIO(imgkit.from_string(map_routes_html, False))  # False returns bytes
+                st.session_state["routes_image_bytes"] = buf_routes
                 if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
                     # 2. Chargers only
                     map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
-                    st.session_state["gen_chargers_image_path"] = save_folium_map_as_png(map_chargers, "chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
+                    map_chargers_html = map_chargers.get_root().render()
+                    st.session_state["gen_chargers_image_bytes"] = io.BytesIO(imgkit.from_string(map_chargers_html, False))
                     # 3. Routes + chargers
                     map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
-                    st.session_state["gen_full_image_path"] = save_folium_map_as_png(map_full, "routes_chargers.png", wkhtmltoimage_path="/usr/bin/wkhtmltoimage")
+                    map_full_html = map_full.get_root().render()
+                    st.session_state["gen_full_image_bytes"] = io.BytesIO(imgkit.from_string(map_full_html, False))
                 else:
                     st.session_state["gen_chargers_image_path"] =None
                     st.session_state["gen_full_image_path"] =None
@@ -1582,16 +1607,16 @@ def main():
                 "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
         })
     
-        pdf_buffer=generate_transit_report(
+        pdf_buffer = generate_transit_report(
             inputs=report_inputs,
             outputs=report_outputs,
-            map_image_path=st.session_state['routes_image_path'],
+            map_image_path=st.session_state['routes_image_bytes'],          # use BytesIO
             econ_toggle=toggle_value_cost,
-            econ_figure_path=econ_figure_gen,
+            econ_figure_path=econ_figure_gen,                                # keep as before if already BytesIO or file path
             agency_name=st.session_state['Agency_name'],
             title_image_path="bus_title_image.png",
-            charger_image_path=st.session_state['gen_chargers_image_path'],
-            routencharger_image_path=st.session_state.get("gen_full_image_path")
+            charger_image_path=st.session_state['gen_chargers_image_bytes'], # use BytesIO
+            routencharger_image_path=st.session_state.get("gen_full_image_bytes") # use BytesIO
         )
         st.write(f"You can download a PDF report for your analysis by clicking on: ")
         st.download_button(
@@ -1603,6 +1628,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
