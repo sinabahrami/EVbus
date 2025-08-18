@@ -1527,14 +1527,14 @@ def main():
             "energy_usage":energy_usage,
         }
     report_outputs = {
-        "total_routes": len(trips['route_id'].unique()),
-        "total_stops": stops['stop_id'].nunique(),
-        "total_blocks": num_blocks_total,
-        "electrifiable_blocks": len(block_general) - len(infeasible_blocks),
-        "non_electrifiable_blocks": len(infeasible_blocks),
+        "total_routes": st.session_state["routes_count"],
+        "total_stops": st.session_state["stops_count"],
+        "total_blocks": st.session_state["blocks_count"],
+        "electrifiable_blocks": st.session_state["feasible_blocks_count"],
+        "non_electrifiable_blocks": st.session_state["infeasible_blocks_count"],
         "infeasible_block_ids": infeasible_blocks,
-        "num_stationary_chargers": len(proposed_locations),
-        "dynamic_lane_length": round(wireless_track_length, 1),
+        "num_stationary_chargers": st.session_state["num_locs"],
+        "dynamic_lane_length": st.session_state["wirelesslength"],
         "block_general":block_general,
         "categories":categories,
         "additional_fleet_cost_no_ivc":additional_fleet_cost_no_ivc,
@@ -1542,7 +1542,7 @@ def main():
     }
 
     generate_transit_report(
-        filename="transit_report.pdf",
+        filename="Report.pdf",
         inputs=report_inputs,
         outputs=report_outputs,
         map_image_path=None,
@@ -1554,6 +1554,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
