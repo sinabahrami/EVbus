@@ -693,7 +693,7 @@ def generate_transit_report(
     story.append(Paragraph(outputs_text, styles["BodyTextCustom"]))
     story.append(Spacer(1,12))
     
-    if outputs.get('num_stationary_chargers', 0) > 0 or outputs.get('dynamic_lane_length', 0) > 0:
+    if charger_image_path:
         add_figure(charger_image_path, "Spatial distribution of chargers.")
         add_figure(routencharger_image_path, "Arrangement of chargers along transit routes.")
     
@@ -1580,6 +1580,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
