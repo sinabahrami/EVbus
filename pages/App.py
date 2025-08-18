@@ -29,7 +29,6 @@ from reportlab.pdfgen import canvas as pdfcanvas
 import tempfile
 
 import imgkit
-from PIL import Image
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -1592,6 +1591,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
