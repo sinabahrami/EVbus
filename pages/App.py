@@ -32,6 +32,7 @@ from io import BytesIO
 import geopandas as gpd
 import contextily as ctx
 from shapely.geometry import LineString, Point
+import shapely.affinity
 from PIL import Image as PILImage
 
 
@@ -333,6 +334,14 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
             geometry=gpd.points_from_xy(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat']),
             crs="EPSG:4326"
         ).to_crs(epsg=3857)
+        # Apply small jitter to separate overlapping points
+        gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
+            lambda p: shapely.affinity.translate(
+                p,
+                xoff=np.random.uniform(-jitter_meters, jitter_meters),
+                yoff=np.random.uniform(-jitter_meters, jitter_meters)
+            )
+        )
     else:
         gdf_chargers = gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
 
@@ -414,226 +423,6 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
     routes_plus_chargers = plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True)
 
     return routes_only, chargers_only, routes_plus_chargers
-# def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
-#     # Convert routes to GeoDataFrame
-#     route_lines = []
-#     for route_id in trips_df['route_id'].unique():
-#         route_shapes = trips_df[trips_df['route_id'] == route_id]['shape_id'].unique()
-#         for shape_id in route_shapes:
-#             shape_points = shapes_df[shapes_df['shape_id'] == shape_id].sort_values('shape_pt_sequence')
-#             coords = list(zip(shape_points['shape_pt_lon'], shape_points['shape_pt_lat']))
-#             if len(coords) > 1:
-#                 route_lines.append({'route_id': route_id, 'geometry': LineString(coords)})
-
-#     gdf_routes = gpd.GeoDataFrame(route_lines, crs="EPSG:4326").to_crs(epsg=3857)
-
-#     # Convert chargers to GeoDataFrame
-#     if not proposed_locations_df.empty:
-#         gdf_chargers = gpd.GeoDataFrame(
-#             proposed_locations_df.copy(),
-#             geometry=gpd.points_from_xy(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat']),
-#             crs="EPSG:4326"
-#         ).to_crs(epsg=3857)
-#     else:
-#         gdf_chargers = gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
-
-#     # Convert wireless tracks to GeoDataFrame
-#     wireless_lines = []
-#     if not wireless_track_shape_df.empty:
-#         for track in wireless_track_shape_df['counter'].unique():
-#             track_data = wireless_track_shape_df[wireless_track_shape_df['counter']==track].sort_values('target_shape_pt_sequence')
-#             coords = list(zip(track_data['shape_pt_lon'], track_data['shape_pt_lat']))
-#             if len(coords) > 1:
-#                 wireless_lines.append({'geometry': LineString(coords)})
-#     gdf_wireless = gpd.GeoDataFrame(wireless_lines, crs="EPSG:4326").to_crs(epsg=3857) if wireless_lines else gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
-
-#     # Determine map extent
-#     all_points = gdf_routes.geometry.unary_union
-#     if not gdf_chargers.empty:
-#         all_points = all_points.union(gdf_chargers.geometry.unary_union)
-#     if not gdf_wireless.empty:
-#         all_points = all_points.union(gdf_wireless.geometry.unary_union)
-
-#     minx, miny, maxx, maxy = all_points.bounds
-#     buffer = 2000  # meters
-#     extent = [minx-buffer, maxx+buffer, miny-buffer, maxy+buffer]
-
-#     # Function to plot and return PNG bytes
-#     def plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True):
-#         fig, ax = plt.subplots(figsize=(10,10))
-#         # Routes
-#         if plot_routes and not gdf_routes.empty:
-#             gdf_routes.plot(ax=ax, column='route_id', legend=True, linewidth=3, cmap='tab20b')
-#         # Chargers
-#         if plot_chargers and not gdf_chargers.empty:
-#             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='o', label='Stationary Charger')
-#         # Wireless tracks
-#         if plot_wireless and not gdf_wireless.empty:
-#             gdf_wireless.plot(ax=ax, color='green', linewidth=3, label='Wireless Track')
-#         # Set extent
-#         ax.set_xlim(extent[0], extent[1])
-#         ax.set_ylim(extent[2], extent[3])
-#         # Add basemap
-#         ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
-#         # Remove axes
-#         ax.axis('off')
-#         # Tight layout
-#         plt.tight_layout()
-#         # Save to BytesIO
-#         buf = io.BytesIO()
-#         plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-#         plt.close(fig)
-#         buf.seek(0)
-#         return buf
-
-#     # Generate three maps
-#     routes_only = plot_map(plot_routes=True, plot_chargers=False, plot_wireless=False)
-#     chargers_only = plot_map(plot_routes=False, plot_chargers=True, plot_wireless=True)
-#     routes_plus_chargers = plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True)
-
-#     return routes_only, chargers_only, routes_plus_chargers
-
-    
-    # map_images = {}
-
-    # # --- Prepare route colors ---
-    # unique_routes = trips_df['route_id'].unique()
-    # num_routes = len(unique_routes)
-    # colormap = plt.cm.get_cmap('tab20b')
-    # route_colors = {r: colormap(i/max(1, num_routes-1)) for i,r in enumerate(unique_routes)}
-
-    # # --- Function to plot routes ---
-    # def plot_routes(ax):
-    #     for route_id in unique_routes:
-    #         route_shapes = trips_df[trips_df['route_id']==route_id]['shape_id'].unique()
-    #         first = True
-    #         for shape_id in route_shapes:
-    #             shape_points = shapes_df[shapes_df['shape_id']==shape_id].sort_values('shape_pt_sequence')
-    #             lats = shape_points['shape_pt_lat'].values
-    #             lons = shape_points['shape_pt_lon'].values
-    #             if len(lats) > 1:
-    #                 ax.plot(lons, lats, color=route_colors[route_id], linewidth=2, label=f"Route {route_id}" if first else None)
-    #                 first = False
-    #     # Optional: legend
-    #     ax.legend(fontsize=6, loc='upper right')
-
-    # # --- Function to plot chargers ---
-    # def plot_chargers(ax):
-    #     if not proposed_locations_df.empty:
-    #         ax.scatter(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat'], 
-    #                    c='blue', marker='x', s=10, label='Stationary Charger')
-    #     if not wireless_track_shape_df.empty:
-    #         for track in wireless_track_shape_df['counter'].unique():
-    #             track_data = wireless_track_shape_df[wireless_track_shape_df['counter']==track].sort_values('target_shape_pt_sequence')
-    #             ax.plot(track_data['shape_pt_lon'], track_data['shape_pt_lat'], color='green', linewidth=2, label='Wireless Track')
-
-    # # --- 1. Routes only ---
-    # fig, ax = plt.subplots(figsize=(8,8))
-    # plot_routes(ax)
-    # ax.set_xlabel("Longitude")
-    # ax.set_ylabel("Latitude")
-    # ax.set_aspect('equal')
-    # buf_routes = io.BytesIO()
-    # plt.savefig(buf_routes, format='png', bbox_inches='tight')
-    # buf_routes.seek(0)
-    # plt.close(fig)
-    # map_images['routes'] = buf_routes
-
-    # # --- 2. Chargers only ---
-    # fig, ax = plt.subplots(figsize=(8,8))
-    # plot_chargers(ax)
-    # ax.set_xlabel("Longitude")
-    # ax.set_ylabel("Latitude")
-    # ax.set_aspect('equal')
-    # buf_chargers = io.BytesIO()
-    # plt.savefig(buf_chargers, format='png', bbox_inches='tight')
-    # buf_chargers.seek(0)
-    # plt.close(fig)
-    # map_images['chargers'] = buf_chargers
-
-    # # --- 3. Routes + Chargers ---
-    # fig, ax = plt.subplots(figsize=(8,8))
-    # plot_routes(ax)
-    # plot_chargers(ax)
-    # ax.set_xlabel("Longitude")
-    # ax.set_ylabel("Latitude")
-    # ax.set_aspect('equal')
-    # buf_full = io.BytesIO()
-    # plt.savefig(buf_full, format='png', bbox_inches='tight')
-    # buf_full.seek(0)
-    # plt.close(fig)
-    # map_images['full'] = buf_full
-
-    # return map_images
-
-
-# def folium_map_to_png_bytes(folium_map, width=1200, height=800, delay=2):
-#     """Render a Folium map to PNG bytes using Selenium."""
-#     # Render map HTML
-#     map_html = folium_map.get_root().render()
-
-#     # Configure headless Chrome
-#     chrome_options = Options()
-#     chrome_options.add_argument("--headless=new")
-#     chrome_options.add_argument("--no-sandbox")
-#     chrome_options.add_argument("--disable-dev-shm-usage")
-#     chrome_options.add_argument(f"--window-size={width},{height}")
-
-#     driver = webdriver.Chrome(options=chrome_options)
-    
-#     # Load map HTML using data URI
-#     driver.get("data:text/html;charset=utf-8," + map_html)
-    
-#     # Wait for tiles and JS to load
-#     import time
-#     time.sleep(delay)
-    
-#     # Take screenshot as PNG
-#     png_bytes = driver.get_screenshot_as_png()
-#     driver.quit()
-    
-#     return io.BytesIO(png_bytes)  # Return as BytesIO for PDF
-    
-# def save_folium_map_as_png(
-#     folium_map,
-#     output_png_path,
-#     wkhtmltoimage_path=None,  
-#     width=1200,
-#     height=800,
-#     delay_ms=1500              # wait a bit for tiles/JS to load
-# ):
-#     """
-#     Save a Folium map to PNG using imgkit (wkhtmltoimage).
-#     """
-#     # Save map HTML to a temp file
-#     with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as tmp:
-#         tmp_html = tmp.name
-#     folium_map.save(tmp_html)
-
-#     # imgkit options → wkhtmltoimage flags
-#     options = {
-#         "format": "png",
-#         "width":  str(width),
-#         "height": str(height),
-#         "quality": "95",
-#         "quiet": "",
-#         "enable-local-file-access": "",  # needed if you ever load local assets
-#         "javascript-delay": str(delay_ms)
-#     }
-
-#     # Config (set wkhtmltoimage path if provided)
-#     config = imgkit.config(wkhtmltoimage=wkhtmltoimage_path) if wkhtmltoimage_path else None
-
-#     # Render HTML → PNG
-#     imgkit.from_file(tmp_html, output_png_path, options=options, config=config)
-
-#     # Clean up temp html
-#     try:
-#         os.remove(tmp_html)
-#     except OSError:
-#         pass
-
-#     return output_png_path
 
 class NumberedCanvas(pdfcanvas.Canvas):
     def __init__(self, *args, **kwargs):
@@ -1909,6 +1698,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
