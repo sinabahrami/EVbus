@@ -1513,7 +1513,7 @@ def main():
         ax.legend()
         st.pyplot(fig)
 
-    inputs = {"transit_agency_name": selected_agency,
+    report_inputs = {"transit_agency_name": selected_agency,
         "bus_range": bus_range,
         "stationary_power": charging_power,
         "stationary_setup_time_hr": min_stoppage_time,
@@ -1524,7 +1524,7 @@ def main():
         "dynamic_track_cost": dynamic_charger_cost,
         "energy_usage":energy_usage,
     }
-    outputs = {
+    report_outputs = {
         "total_routes": len(trips['route_id'].unique()),
         "total_stops": stops['stop_id'].nunique(),
         "total_blocks": num_blocks_total,
@@ -1541,8 +1541,8 @@ def main():
 
     generate_transit_report(
         filename="transit_report.pdf",
-        inputs=inputs,
-        outputs=outputs,
+        inputs=report_inputs,
+        outputs=report_outputs,
         map_image_path=None,
         econ_toggle=toggle_value_cost,
         econ_figure_path=None,
@@ -1552,6 +1552,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
