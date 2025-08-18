@@ -1562,13 +1562,13 @@ def main():
         pdf_buffer=generate_transit_report(
             inputs=report_inputs,
             outputs=report_outputs,
-            map_image_path=st.session_state["routes_image_path"],
+            map_image_path=st.session_state['routes_image_path'],
             econ_toggle=toggle_value_cost,
             econ_figure_path=econ_figure_gen,
-            agency_name=st.session_state["Agency_name"],
+            agency_name=st.session_state['Agency_name'],
             title_image_path="bus_title_image.png",
-            charger_image_path=st.session_state["gen_chargers_image_path"],
-            routencharger_image_path=st.session_state["gen_full_image_path"]
+            charger_image_path=st.session_state['gen_chargers_image_path'],
+            routencharger_image_path=st.session_state.get("gen_full_image_path")
         )
         st.write(f"You can download a PDF report for your analysis by clicking on: ")
         st.download_button(
@@ -1580,6 +1580,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
