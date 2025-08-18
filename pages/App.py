@@ -33,6 +33,10 @@ import io
 from io import BytesIO
 from PIL import Image as PILImage
 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+
 # Cache the data processing to improve performance
 @st.cache_data
 def load_gtfs_data(zip_file_path):
@@ -311,46 +315,73 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 ###
-def save_folium_map_as_png(
-    folium_map,
-    output_png_path,
-    wkhtmltoimage_path=None,   # e.g. r"C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe" on Windows
-    width=1200,
-    height=800,
-    delay_ms=1500              # wait a bit for tiles/JS to load
-):
-    """
-    Save a Folium map to PNG using imgkit (wkhtmltoimage).
-    """
-    # Save map HTML to a temp file
-    with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as tmp:
-        tmp_html = tmp.name
-    folium_map.save(tmp_html)
+def folium_map_to_png_bytes(folium_map, width=1200, height=800, delay=2):
+    """Render a Folium map to PNG bytes using Selenium."""
+    # Render map HTML
+    map_html = folium_map.get_root().render()
 
-    # imgkit options → wkhtmltoimage flags
-    options = {
-        "format": "png",
-        "width":  str(width),
-        "height": str(height),
-        "quality": "95",
-        "quiet": "",
-        "enable-local-file-access": "",  # needed if you ever load local assets
-        "javascript-delay": str(delay_ms)
-    }
+    # Configure headless Chrome
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument(f"--window-size={width},{height}")
 
-    # Config (set wkhtmltoimage path if provided)
-    config = imgkit.config(wkhtmltoimage=wkhtmltoimage_path) if wkhtmltoimage_path else None
+    driver = webdriver.Chrome(options=chrome_options)
+    
+    # Load map HTML using data URI
+    driver.get("data:text/html;charset=utf-8," + map_html)
+    
+    # Wait for tiles and JS to load
+    import time
+    time.sleep(delay)
+    
+    # Take screenshot as PNG
+    png_bytes = driver.get_screenshot_as_png()
+    driver.quit()
+    
+    return io.BytesIO(png_bytes)  # Return as BytesIO for PDF
+    
+# def save_folium_map_as_png(
+#     folium_map,
+#     output_png_path,
+#     wkhtmltoimage_path=None,  
+#     width=1200,
+#     height=800,
+#     delay_ms=1500              # wait a bit for tiles/JS to load
+# ):
+#     """
+#     Save a Folium map to PNG using imgkit (wkhtmltoimage).
+#     """
+#     # Save map HTML to a temp file
+#     with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as tmp:
+#         tmp_html = tmp.name
+#     folium_map.save(tmp_html)
 
-    # Render HTML → PNG
-    imgkit.from_file(tmp_html, output_png_path, options=options, config=config)
+#     # imgkit options → wkhtmltoimage flags
+#     options = {
+#         "format": "png",
+#         "width":  str(width),
+#         "height": str(height),
+#         "quality": "95",
+#         "quiet": "",
+#         "enable-local-file-access": "",  # needed if you ever load local assets
+#         "javascript-delay": str(delay_ms)
+#     }
 
-    # Clean up temp html
-    try:
-        os.remove(tmp_html)
-    except OSError:
-        pass
+#     # Config (set wkhtmltoimage path if provided)
+#     config = imgkit.config(wkhtmltoimage=wkhtmltoimage_path) if wkhtmltoimage_path else None
 
-    return output_png_path
+#     # Render HTML → PNG
+#     imgkit.from_file(tmp_html, output_png_path, options=options, config=config)
+
+#     # Clean up temp html
+#     try:
+#         os.remove(tmp_html)
+#     except OSError:
+#         pass
+
+#     return output_png_path
 
 class NumberedCanvas(pdfcanvas.Canvas):
     def __init__(self, *args, **kwargs):
@@ -1448,18 +1479,14 @@ def main():
 
                 # 1. Routes only
                 map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
-                map_routes_html = map_routes.get_root().render()
-                buf_routes = io.BytesIO(imgkit.from_string(map_routes_html, False))  # False returns bytes
-                st.session_state["routes_image_bytes"] = buf_routes
+                st.session_state["routes_image_bytes"] = folium_map_to_png_bytes(map_routes)
                 if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
                     # 2. Chargers only
                     map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
-                    map_chargers_html = map_chargers.get_root().render()
-                    st.session_state["gen_chargers_image_bytes"] = io.BytesIO(imgkit.from_string(map_chargers_html, False))
+                    st.session_state["gen_chargers_image_bytes"] = folium_map_to_png_bytes(map_chargers)
                     # 3. Routes + chargers
                     map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
-                    map_full_html = map_full.get_root().render()
-                    st.session_state["gen_full_image_bytes"] = io.BytesIO(imgkit.from_string(map_full_html, False))
+                    st.session_state["gen_full_image_bytes"] = folium_map_to_png_bytes(map_full)
                 else:
                     st.session_state["gen_chargers_image_path"] =None
                     st.session_state["gen_full_image_path"] =None
@@ -1628,6 +1655,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
