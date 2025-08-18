@@ -500,8 +500,6 @@ def generate_transit_report(
     )
     main_template = PageTemplate(id='normal', frames=[main_frame])#, onPageEnd=add_page_number)
 
-
-
     def add_figure(img_path, caption_text):
         global figure_counter
         # Wrap image and caption in KeepTogether to avoid missing page numbers
@@ -515,16 +513,9 @@ def generate_transit_report(
 
     def add_table_from_dataframe(df, caption_text, styles, col_widths=None):
         global table_counter
-        """
-        Add a table from a dataframe with the first three columns:
-        block id, total block distance, routes included.
-        Automatically breaks across pages and repeats header.
-        """
         # Select the first three columns
         df_table = df.iloc[:, :3].copy()
         df_table.columns = ["Block ID", "Total Distance (miles)", "Routes Included"]  # nice headers
-
-        
 
         # Round the second column to 1 decimal
         df_table["Total Distance (miles)"] = df_table["Total Distance (miles)"].astype(float).round(1)
@@ -1562,6 +1553,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
