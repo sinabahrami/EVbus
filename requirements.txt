@@ -9,5 +9,6 @@ scikit-learn
 fpdf
 reportlab
 geopandas
+contextily
 #selenium
 #imgkit
