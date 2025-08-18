@@ -30,6 +30,7 @@ import tempfile
 
 import imgkit
 from io import BytesIO
+from PIL import Image as PILImage
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -1601,6 +1602,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
