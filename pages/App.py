@@ -1517,11 +1517,11 @@ def main():
             "energy_usage":energy_usage,
         }
         if toggle_value_cost==True:
-            report_inputs += {"bus_price": bus_cost,
+            report_inputs.update({"bus_price": bus_cost,
                 "stationary_charger_cost": stationary_charger_cost,
                 "coil_install_cost": bus_coil_cost,
                 "dynamic_track_cost": dynamic_charger_cost,
-            }
+            })
         report_outputs = {
             "total_routes": st.session_state["routes_count"],
             "total_stops": st.session_state["stops_count"],
@@ -1534,11 +1534,11 @@ def main():
             "block_general":st.session_state["block_info"],
         }
         if toggle_value_cost==True:
-            report_outputs += {
+            report_outputs.update({
                 "categories":categories,
                 "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
                 "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
-        }
+        })
     
         generate_transit_report(
             filename="Report.pdf",
@@ -1553,6 +1553,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
