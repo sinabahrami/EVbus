@@ -27,18 +27,12 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.platypus import Table, TableStyle
 from reportlab.pdfgen import canvas as pdfcanvas
 import tempfile
-
-
 import io
 from io import BytesIO
 import geopandas as gpd
 import contextily as ctx
 from shapely.geometry import LineString, Point
-
 from PIL import Image as PILImage
-# import imgkit
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
 
 
 # Cache the data processing to improve performance
@@ -319,8 +313,6 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-#
-
 def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
     # Convert routes to GeoDataFrame
     route_lines = []
@@ -365,27 +357,50 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
     buffer = 2000  # meters
     extent = [minx-buffer, maxx+buffer, miny-buffer, maxy+buffer]
 
+    # Generate discrete colors for routes
+    import matplotlib.patches as mpatches
+    unique_routes = gdf_routes['route_id'].unique()
+    colormap = matplotlib.cm.get_cmap('tab20b', len(unique_routes))
+    route_colors = {rid: colormap(i) for i, rid in enumerate(unique_routes)}
+
     # Function to plot and return PNG bytes
     def plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True):
         fig, ax = plt.subplots(figsize=(10,10))
-        # Routes
+
+        # Plot routes individually to create discrete legend
+        legend_handles = []
         if plot_routes and not gdf_routes.empty:
-            gdf_routes.plot(ax=ax, column='route_id', legend=True, linewidth=3, cmap='tab20b')
+            for route_id in unique_routes:
+                gdf_routes[gdf_routes['route_id']==route_id].plot(ax=ax, color=route_colors[route_id], linewidth=3)
+                legend_handles.append(mpatches.Patch(color=route_colors[route_id], label=f"Route {route_id}"))
+
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='o', label='Stationary Charger')
+            legend_handles.append(mpatches.Patch(color='blue', label='Stationary Charger'))
+
         # Wireless tracks
         if plot_wireless and not gdf_wireless.empty:
             gdf_wireless.plot(ax=ax, color='green', linewidth=3, label='Wireless Track')
+            legend_handles.append(mpatches.Patch(color='green', label='Wireless Track'))
+
         # Set extent
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
+
         # Add basemap
         ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
+
         # Remove axes
         ax.axis('off')
+
+        # Add discrete legend
+        if legend_handles:
+            ax.legend(handles=legend_handles, loc='upper right', fontsize=8)
+
         # Tight layout
         plt.tight_layout()
+
         # Save to BytesIO
         buf = io.BytesIO()
         plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
@@ -399,6 +414,84 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
     routes_plus_chargers = plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True)
 
     return routes_only, chargers_only, routes_plus_chargers
+# def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
+#     # Convert routes to GeoDataFrame
+#     route_lines = []
+#     for route_id in trips_df['route_id'].unique():
+#         route_shapes = trips_df[trips_df['route_id'] == route_id]['shape_id'].unique()
+#         for shape_id in route_shapes:
+#             shape_points = shapes_df[shapes_df['shape_id'] == shape_id].sort_values('shape_pt_sequence')
+#             coords = list(zip(shape_points['shape_pt_lon'], shape_points['shape_pt_lat']))
+#             if len(coords) > 1:
+#                 route_lines.append({'route_id': route_id, 'geometry': LineString(coords)})
+
+#     gdf_routes = gpd.GeoDataFrame(route_lines, crs="EPSG:4326").to_crs(epsg=3857)
+
+#     # Convert chargers to GeoDataFrame
+#     if not proposed_locations_df.empty:
+#         gdf_chargers = gpd.GeoDataFrame(
+#             proposed_locations_df.copy(),
+#             geometry=gpd.points_from_xy(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat']),
+#             crs="EPSG:4326"
+#         ).to_crs(epsg=3857)
+#     else:
+#         gdf_chargers = gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
+
+#     # Convert wireless tracks to GeoDataFrame
+#     wireless_lines = []
+#     if not wireless_track_shape_df.empty:
+#         for track in wireless_track_shape_df['counter'].unique():
+#             track_data = wireless_track_shape_df[wireless_track_shape_df['counter']==track].sort_values('target_shape_pt_sequence')
+#             coords = list(zip(track_data['shape_pt_lon'], track_data['shape_pt_lat']))
+#             if len(coords) > 1:
+#                 wireless_lines.append({'geometry': LineString(coords)})
+#     gdf_wireless = gpd.GeoDataFrame(wireless_lines, crs="EPSG:4326").to_crs(epsg=3857) if wireless_lines else gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
+
+#     # Determine map extent
+#     all_points = gdf_routes.geometry.unary_union
+#     if not gdf_chargers.empty:
+#         all_points = all_points.union(gdf_chargers.geometry.unary_union)
+#     if not gdf_wireless.empty:
+#         all_points = all_points.union(gdf_wireless.geometry.unary_union)
+
+#     minx, miny, maxx, maxy = all_points.bounds
+#     buffer = 2000  # meters
+#     extent = [minx-buffer, maxx+buffer, miny-buffer, maxy+buffer]
+
+#     # Function to plot and return PNG bytes
+#     def plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True):
+#         fig, ax = plt.subplots(figsize=(10,10))
+#         # Routes
+#         if plot_routes and not gdf_routes.empty:
+#             gdf_routes.plot(ax=ax, column='route_id', legend=True, linewidth=3, cmap='tab20b')
+#         # Chargers
+#         if plot_chargers and not gdf_chargers.empty:
+#             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='o', label='Stationary Charger')
+#         # Wireless tracks
+#         if plot_wireless and not gdf_wireless.empty:
+#             gdf_wireless.plot(ax=ax, color='green', linewidth=3, label='Wireless Track')
+#         # Set extent
+#         ax.set_xlim(extent[0], extent[1])
+#         ax.set_ylim(extent[2], extent[3])
+#         # Add basemap
+#         ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
+#         # Remove axes
+#         ax.axis('off')
+#         # Tight layout
+#         plt.tight_layout()
+#         # Save to BytesIO
+#         buf = io.BytesIO()
+#         plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+#         plt.close(fig)
+#         buf.seek(0)
+#         return buf
+
+#     # Generate three maps
+#     routes_only = plot_map(plot_routes=True, plot_chargers=False, plot_wireless=False)
+#     chargers_only = plot_map(plot_routes=False, plot_chargers=True, plot_wireless=True)
+#     routes_plus_chargers = plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True)
+
+#     return routes_only, chargers_only, routes_plus_chargers
 
     
     # map_images = {}
@@ -1816,6 +1909,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
