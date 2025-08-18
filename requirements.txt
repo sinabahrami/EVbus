@@ -8,5 +8,6 @@ matplotlib
 scikit-learn
 fpdf
 reportlab
-selenium
-imgkit
+geopandas
+#selenium
+#imgkit
