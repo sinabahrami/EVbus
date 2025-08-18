@@ -13,6 +13,7 @@ from sklearn.cluster import AgglomerativeClustering
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from matplotlib.lines import Line2D
 import textwrap
 
 from reportlab.lib.pagesizes import letter
@@ -338,8 +339,8 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
             lambda p: shapely.affinity.translate(
                 p,
-                xoff=np.random.uniform(-20, 20),
-                yoff=np.random.uniform(-20, 20)
+                xoff=np.random.uniform(-50, 50),
+                yoff=np.random.uniform(-50, 50)
             )
         )
     else:
@@ -386,7 +387,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
             gdf_chargers.plot(ax=ax, color='blue', markersize=25, marker='x', label='Stationary Charger')
-            legend_handles.append(mpatches.Patch(color='blue', label='Stationary Charger'))
+            legend_handles.append(Line2D([0], [0], marker='x', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=10))
 
         # Wireless tracks
         if plot_wireless and not gdf_wireless.empty:
@@ -1698,6 +1699,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
