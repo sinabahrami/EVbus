@@ -1514,13 +1514,13 @@ def main():
             "stationary_power": charging_power,
             "stationary_setup_time_hr": min_stoppage_time,
             "dynamic_power": dynamic_wireless_charging_power,
+            "energy_usage":energy_usage,
         }
         if toggle_value_cost==True:
             report_inputs += {"bus_price": bus_cost,
                 "stationary_charger_cost": stationary_charger_cost,
                 "coil_install_cost": bus_coil_cost,
                 "dynamic_track_cost": dynamic_charger_cost,
-                "energy_usage":energy_usage,
             }
         report_outputs = {
             "total_routes": st.session_state["routes_count"],
@@ -1553,6 +1553,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
