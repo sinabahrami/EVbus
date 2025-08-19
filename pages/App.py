@@ -676,8 +676,12 @@ def generate_transit_report(
     intro_text = (
         f"This report provides a detailed summary of the transit electrification study for the {agency_name} transit system. "
         f"The system includes {outputs.get('total_routes', 'N/A')} routes, and "
-        f"{outputs.get('total_stops', 'N/A')} stops. " 
-        f"Figure {figure_counter} shows the map of the service."
+        f"{outputs.get('total_stops', 'N/A')} stops. "
+    )
+    if inputs.get('specific_rorb')==1:
+        intro_text +=(f"The application of filter resulted {len(inputs.get('maptrips'))} routes. ")
+    intro_text +=(    
+        f"Figure {figure_counter} shows the map of the routes."
     )
     story.append(Paragraph(intro_text, styles["BodyTextCustom"]))
     story.append(Spacer(1, 12))
@@ -688,6 +692,11 @@ def generate_transit_report(
     
     intro_text2 = (
         f"The agency operates {outputs.get('total_blocks', 'N/A')} blocks, each defined as a sequence of consecutive routes assigned to a single vehicle for daily operations. "
+    )
+    if inputs.get('specific_rorb')==1:
+        intro_text2 +=(f"The application of filter resulted {len(outputs.get('block_general'))} blocks. ")
+    
+    intro_text2 +=(    
         f"Table {table_counter} provides a detailed overview of these blocks, including their total driving distances and the routes serviced within each block."
     )    
     story.append(Paragraph(intro_text2, styles["BodyTextCustom"]))
@@ -781,7 +790,7 @@ def generate_transit_report(
     story.append(Paragraph(outputs_text, styles["BodyTextCustom"]))
     story.append(Spacer(1,12))
     
-    if charger_image_path:
+    if outputs.get('num_stationary_chargers', 0) > 0 or outputs.get('dynamic_lane_length', 0) > 0:
         add_figure(charger_image_path, "Spatial distribution of chargers.")
         add_figure(routencharger_image_path, "Arrangement of chargers along transit routes.")
     
@@ -1546,6 +1555,8 @@ def main():
                         "stationary_setup_time_hr": min_stoppage_time,
                         "dynamic_power": dynamic_wireless_charging_power,
                         "energy_usage":energy_usage,
+                        "specific_rorb":add_flag,
+                        "maptrips":maptrips
                     }
                     if toggle_value_cost==True:
                         report_inputs.update({"bus_price": bus_cost,
@@ -1657,6 +1668,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
