@@ -680,9 +680,9 @@ def generate_transit_report(
         for idx, row in df.iterrows():
             block_id = row["block_id"]
             details = [
-                ("Distances", row.get("distances_list", [])),
-                ("Time gaps", row.get("time_gaps", [])),
-                ("Range tracking", row.get("range_tracking", [])),
+                ("Route Travel Distances [mile]", row.get("distances_list", [])),
+                ("Stop time [min]", row.get("time_gaps", [])),
+                ("Bus Remaining Range [mile]", row.get("range_tracking", [])),
             ]
             start_row = len(data)
             for title, val in details:
@@ -698,7 +698,7 @@ def generate_transit_report(
         page_width, _ = letter
         if col_widths is None:
             text_width = page_width - 3*inch
-            col_widths = [inch, 1.5*inch, text_width - 2.5*inch]
+            col_widths = [0.7*inch, 1.5*inch, text_width - 2.2*inch]
     
         # Create table
         tbl = Table(data, colWidths=col_widths, repeatRows=1)
@@ -1774,6 +1774,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
