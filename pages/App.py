@@ -1537,23 +1537,26 @@ def main():
                         dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost'),st.session_state.get('total_dynamic_cost')])/1e6
             
                     # X positions for bars
-                    # x = np.arange(len(categories))
-                    bar_width = 0.5    
+                    bar_width = 0.5
+                    x = np.arange(len(categories))* (bar_width + 1)
+                        
             
                     # Create the stacked bars
                     fig, ax = plt.subplots(figsize=(8,6))
             
-                    ax.bar(categories, Additional_fleet, width=bar_width, label='Additional Fleet', color='orange')
-                    ax.bar(categories, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='blue')
+                    ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='orange')
+                    ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='blue')
                     if min_stoppage_time<1:
-                        ax.bar(categories, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='cyan')
+                        ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='cyan')
                     if dynamic_wireless_charging_power>0:
-                        ax.bar(categories, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='green')
+                        ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='green')
             
                     # Labels & legend
+                    total_width = x[-1] + bar_width if len(categories) > 0 else 1
+                    ax.set_xlim(-bar_width, total_width + 1.0)
                     plt.tight_layout()
                     ax.set_ylabel('Total Cost (million $)')
-                    ax.set_xticks(categories)
+                    ax.set_xticks(x)
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
                     ax.legend()
                     st.session_state["econ_fig"] = fig
@@ -1686,6 +1689,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
