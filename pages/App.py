@@ -648,6 +648,8 @@ def generate_transit_report(
             ('FONTNAME', (0,0), (-1,0), 'Times-Bold'),
             ('ALIGN', (0,0), (-1,0), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ('ALIGN', (1,1), (1,-1), 'CENTER')
+            ('ALIGN', (2,1), (2,-1), 'CENTER')
             ('GRID', (0,0), (-1,-1), 0.5, colors.black),
             ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
             ('LEFTPADDING', (0,0), (-1,-1), 4),
@@ -680,9 +682,9 @@ def generate_transit_report(
         for idx, row in df.iterrows():
             block_id = row["block_id"]
             details = [
-                ("Route Travel Distances [mile]", row.get("distances_list", [])),
+                ("Route travel distances [mile]", row.get("distances_list", [])),
                 ("Stop time [min]", row.get("time_gaps", [])),
-                ("Bus Remaining Range [mile]", row.get("range_tracking", [])),
+                ("Bus remaining range [mile]", row.get("range_tracking", [])),
             ]
             start_row = len(data)
             for title, val in details:
@@ -708,7 +710,7 @@ def generate_transit_report(
             ('FONTNAME', (0,0), (-1,0), 'Times-Bold'),
             ('ALIGN', (0,0), (-1,0), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('ALIGN', (1,1), (1,-1), 'LEFT'),
+            ('ALIGN', (1,1), (1,-1), 'CENTER'),
             ('ALIGN', (2,1), (2,-1), 'LEFT'),
             ('GRID', (0,0), (-1,-1), 0.5, colors.black),
             ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
@@ -1774,6 +1776,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
