@@ -1458,16 +1458,7 @@ def main():
                     center_lat,
                     center_lon
                 )
-                
-                # Store results
-                # st.session_state["shapes"]=shapes
-                # st.session_state["routes"]=routes
-                # st.session_state["maptrips"]=maptrips
-                # st.session_state["proposed_locations"]=proposed_locations
-                # st.session_state["wireless_track_shape"]=wireless_track_shape
-                # st.session_state["center_lat"]=center_lat
-                # st.session_state["center_lon"]=center_lon
-                
+                                
                 st.session_state["map"] = bus_map
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
                 st.session_state["stops_count"] = stops['stop_id'].nunique()
@@ -1603,7 +1594,7 @@ def main():
                 return
     
     # Display results if available
-    if "shapes" in st.session_state:
+    if "map" in st.session_state:
         # Create metrics display
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -1666,6 +1657,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
