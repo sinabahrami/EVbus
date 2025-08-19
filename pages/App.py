@@ -1529,7 +1529,7 @@ def main():
                     ax.set_xticks(x)
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
                     ax.legend()
-                    st.session_state["econ_fig"] = make_figure(fig)
+                    st.session_state["econ_fig"] = st.pyplot(fig)
             
                 if flag_done==1 and toggle_value_cost==True:    
                     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
@@ -1650,12 +1650,13 @@ def main():
 
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
-        st_folium(st.session_state["map"], width=1200, height=800, returned_objects=[])
+        st_folium(st.session_state["map"], width=1200, height=800)
         if flag_done==1 and toggle_value_cost==True:
             st.pyplot(st.session_state["econ_fig"])
         
 if __name__ == "__main__":
     main()
+
 
 
 
