@@ -1485,7 +1485,10 @@ def main():
                     center_lat,
                     center_lon
                 )
-                                
+                block_general['total_distance_miles'] = block_general['total_distance_miles'].round(1) 
+                block_general['distances_list'] = block_general['distances_list'].round(1) 
+                block_general['range_tracking'] = block_general['range_tracking'].round(1) 
+
                 st.session_state["map"] = bus_map
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
                 st.session_state["stops_count"] = stops['stop_id'].nunique()
@@ -1699,6 +1702,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
