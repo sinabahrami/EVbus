@@ -615,59 +615,53 @@ def generate_transit_report(
         ]))
         figure_counter += 1
 
-    def add_table_from_dataframe(df, caption_text, styles, col_widths=None):
+    def add_table_from_dataframe(df, caption_text, styles, col_widths=None, columns=None, headers=None):
         nonlocal table_counter
-        # Select the first three columns
-        df_table = df.iloc[:, :3].copy()
-        df_table.columns = ["Block ID", "Total Distance (miles)", "Routes Included"]  # nice headers
-
-        # Round the second column to 1 decimal
-        df_table["Total Distance (miles)"] = df_table["Total Distance (miles)"].astype(float).round(1)
-
-        # Convert third column (list/array) to comma-separated string
-        def format_routes(x):
-            if isinstance(x, (list, tuple, pd.Series, np.ndarray)):
-                return ", ".join(str(i) for i in x)
-            else:
-                return str(x)
-        df_table["Routes Included"] = df_table["Routes Included"].apply(format_routes)
-
-        # Convert DataFrame to list of lists
-        data = [df_table.columns.tolist()] + df_table.values.tolist()
         
-        # Determine column widths (optional: scale to text width)
+        # If specific columns are passed, select them
+        if columns:
+            df_table = df[columns].copy()
+        else:
+            df_table = df.copy()
+    
+        # If headers are provided, replace them
+        if headers:
+            df_table.columns = headers
+    
+        # Convert any list/array columns into comma-separated strings
+        df_table = df_table.applymap(lambda x: ", ".join(map(str, x)) if isinstance(x, (list, tuple, np.ndarray)) else x)
+    
+        # Convert to list of lists for ReportLab
+        data = [df_table.columns.tolist()] + df_table.values.tolist()
+    
+        # Auto-calculate col widths if not provided
         if col_widths is None:
-            # Approximate: evenly divide available text width
             from reportlab.lib.pagesizes import letter
             from reportlab.lib.units import inch
-            page_width, page_height = letter
-            text_width = page_width - 3*inch  # assuming main_frame has 1-inch margins
-            col_widths = [text_width * 0.2, text_width * 0.3, text_width * 0.5]
-        
-        # Create the table
+            page_width, _ = letter
+            text_width = page_width - 3 * inch
+            col_widths = [text_width / len(df_table.columns)] * len(df_table.columns)
+    
+        # Create and style the table
         tbl = Table(data, colWidths=col_widths, repeatRows=1)
-        
-        # Style the table
         tbl.setStyle(TableStyle([
-            ('FONTNAME', (0,0), (-1,0), 'Times-Bold'),    # header bold
+            ('FONTNAME', (0,0), (-1,0), 'Times-Bold'),
             ('ALIGN', (0,0), (-1,0), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('ALIGN', (0,1), (1,-1), 'CENTER'),          # first two columns values centered
-            ('ALIGN', (2,1), (2,-1), 'LEFT'),            # third column values left-aligned
             ('GRID', (0,0), (-1,-1), 0.5, colors.black),
             ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
             ('LEFTPADDING', (0,0), (-1,-1), 4),
             ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
-
-        # Add table and caption to story
+    
+        # Add caption + table to story
         caption_html = f"<b>Table {table_counter}:</b> {caption_text}"
         story.append(Paragraph(caption_html, styles["Caption"]))
         story.append(Spacer(1,6))
         story.append(tbl)
         story.append(Spacer(1,12))
-        
-        table_counter+=1
+    
+        table_counter += 1
 
     # Document  
     doc = SimpleDocTemplate(buffer, pagesize=letter)
@@ -720,11 +714,7 @@ def generate_transit_report(
     )    
     story.append(Paragraph(intro_text2, styles["BodyTextCustom"]))
     story.append(Spacer(1, 12))
-    add_table_from_dataframe(
-        outputs.get('block_general'), 
-        caption_text="Summary of blocks.",
-        styles=styles
-    )
+    add_table_from_dataframe(outputs.get('block_general'), caption_text="Summary of blocks.", styles=styles, columns=["block_id", "total_distance_miles", "routes_included"], headers=["Block ID", "Total Distance (miles)", "Routes Included"])
 
     # --- Inputs & Outputs ---
     story.append(Paragraph("Selected Electrification Characteristics", styles["Heading1"]))
@@ -1709,6 +1699,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
