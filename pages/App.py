@@ -964,7 +964,7 @@ def main():
     
     # Main content
     if analyze_button:
-        st.session_state.clear()
+        # st.session_state.clear()
         msg1 = st.empty()
         msg2 = st.empty()
         msg3 = st.empty()
@@ -1656,6 +1656,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
