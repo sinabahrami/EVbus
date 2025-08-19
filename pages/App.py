@@ -406,7 +406,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
         # Add discrete legend
         if legend_handles:
-            ax.legend(handles=legend_handles, loc='upper left', bbox_to_anchor=(1, 0.5), fontsize=9)
+            ax.legend(handles=legend_handles, loc='upper left', bbox_to_anchor=(1, 1), fontsize=9)
 
         # Tight layout
         plt.tight_layout(rect=[0, 0, 0.85, 1])
@@ -1656,6 +1656,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
