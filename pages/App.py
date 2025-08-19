@@ -315,6 +315,18 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
+def assign_labels(gdf, threshold=150):  # threshold in map units
+    labels = []
+    for i, row in gdf.iterrows():
+        # Count how many previous points are close
+        nearby_count = sum(
+            row.geometry.distance(prev_row.geometry) < threshold
+            for j, prev_row in gdf.iterrows() if j < i
+        )
+        labels.append(str(nearby_count + 1))
+    gdf['label_number'] = labels
+    return gdf
+    
 def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
     # Convert routes to GeoDataFrame
     route_lines = []
@@ -335,14 +347,14 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
             geometry=gpd.points_from_xy(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat']),
             crs="EPSG:4326"
         ).to_crs(epsg=3857)
-        # Apply small jitter to separate overlapping points
-        gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
-            lambda p: shapely.affinity.translate(
-                p,
-                xoff=np.random.uniform(-50, 50),
-                yoff=np.random.uniform(-50, 50)
-            )
-        )
+        # # Apply small jitter to separate overlapping points
+        # gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
+        #     lambda p: shapely.affinity.translate(
+        #         p,
+        #         xoff=np.random.uniform(-50, 50),
+        #         yoff=np.random.uniform(-50, 50)
+        #     )
+        # )
     else:
         gdf_chargers = gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
 
@@ -387,6 +399,14 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger', zorder=3)
+            for idx, row in gdf_chargers.iterrows():
+                ax.text(
+                    row.geometry.x + 10,  # small x offset
+                    row.geometry.y + 10,  # small y offset
+                    row['label_number'],
+                    fontsize=9,
+                    color='black'
+                )
             legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
@@ -1689,6 +1709,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
