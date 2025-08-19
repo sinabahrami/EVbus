@@ -782,7 +782,7 @@ def generate_transit_report(
     )    
     story.append(Paragraph(intro_text2, styles["BodyTextCustom"]))
     story.append(Spacer(1, 12))
-    add_table_from_dataframe(outputs.get('block_general'), caption_text="Summary of blocks.", styles=styles, columns=["block_id", "total_distance_miles", "routes_in_block_id"], headers=["Block ID", "Total Distance (miles)", "Included Routes"])
+    add_table_from_dataframe(outputs.get('block_general'), caption_text="Summary of blocks.", styles=styles, columns=["block_id", "total_distance_miles", "routes_in_block_id"], headers=["Block ID", "Total Distance (miles)", "Routes in the Block"])
 
     # --- Inputs & Outputs ---
     story.append(Paragraph("Selected Electrification Characteristics", styles["Heading1"]))
@@ -1774,6 +1774,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
