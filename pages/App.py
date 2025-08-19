@@ -1542,7 +1542,6 @@ def main():
             
         st.write(f"- The total length of the dynamic wireless track is {st.session_state['wirelesslength']} miles.")
 
-        st.write(f"{st.session_state['inf_block_info']}")
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
         st_folium(st.session_state["map"], width=1200, height=800, returned_objects=[])
@@ -1647,7 +1646,7 @@ def main():
             charger_image_path=charger_image_bytes,
             routencharger_image_path=full_image_bytes
         )
-        st.write(f"You can download a PDF report for your analysis by clicking on: ")
+        st.write(f"Click the button below to download the PDF report of your analysis.")
         st.download_button(
             label="📥 Report",
             data=pdf_buffer,
@@ -1657,6 +1656,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
