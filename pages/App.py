@@ -351,15 +351,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
             geometry=gpd.points_from_xy(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat']),
             crs="EPSG:4326"
         ).to_crs(epsg=3857)
-        #gdf_chargers = assign_labels(gdf_chargers)
-        # # Apply small jitter to separate overlapping points
-        # gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
-        #     lambda p: shapely.affinity.translate(
-        #         p,
-        #         xoff=np.random.uniform(-50, 50),
-        #         yoff=np.random.uniform(-50, 50)
-        #     )
-        # )
+        gdf_chargers = assign_cluster_labels(gdf_chargers, threshold=100)
     else:
         gdf_chargers = gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
 
@@ -404,7 +396,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger', zorder=3)
-            gdf_chargers = assign_cluster_labels(gdf_chargers, threshold=100)
+
             cluster_counts = gdf_chargers.groupby('cluster_label').size()
             for cluster_label, count in cluster_counts.items():
                 cluster_points = gdf_chargers[gdf_chargers['cluster_label'] == cluster_label]
@@ -1716,6 +1708,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
