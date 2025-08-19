@@ -1489,21 +1489,7 @@ def main():
                 flag_done=1
 
                 routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
-                
-                # # 1. Routes only
-                # map_routes = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=False)
-                # st.session_state["routes_image_bytes"] = folium_map_to_png_bytes(map_routes)
-                # if len(proposed_locations)>0 or round(wireless_track_length,1)>0:
-                #     # 2. Chargers only
-                #     map_chargers = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=False, show_chargers=True)
-                #     st.session_state["gen_chargers_image_bytes"] = folium_map_to_png_bytes(map_chargers)
-                #     # 3. Routes + chargers
-                #     map_full = create_bus_electrification_map(shapes, routes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon, show_routes=True, show_chargers=True)
-                #     st.session_state["gen_full_image_bytes"] = folium_map_to_png_bytes(map_full)
-                # else:
-                #     st.session_state["gen_chargers_image_path"] =None
-                #     st.session_state["gen_full_image_path"] =None
-                
+                               
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
                 return
@@ -1554,7 +1540,8 @@ def main():
             st.write(f"- No stationary charging location is needed.")
             
         st.write(f"- The total length of the dynamic wireless track is {st.session_state['wirelesslength']} miles.")
-        
+
+        st.write(f"{st.session_state['inf_block_info']}")
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
         st_folium(st.session_state["map"], width=1200, height=800, returned_objects=[])
@@ -1669,6 +1656,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
