@@ -390,26 +390,27 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         legend_handles = []
         if plot_routes and not gdf_routes.empty:
             for route_id in unique_routes:
-                gdf_routes[gdf_routes['route_id']==route_id].plot(ax=ax, color=route_colors[route_id], linewidth=2, zorder=1)
+                gdf_routes[gdf_routes['route_id']==route_id].plot(ax=ax, color=route_colors[route_id], linewidth=3, zorder=1)
                 legend_handles.append(mpatches.Patch(color=route_colors[route_id], label=f"Route {route_id}"))
 
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
-            gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger', zorder=3)
+            gdf_chargers.plot(ax=ax, color='blue', markersize=70, marker='*', label='Stationary Charger', zorder=3)
 
             cluster_counts = gdf_chargers.groupby('cluster_label').size()
             for cluster_label, count in cluster_counts.items():
                 cluster_points = gdf_chargers[gdf_chargers['cluster_label'] == cluster_label]
                 # Compute cluster center
-                x_mean = cluster_points.geometry.x.mean()
-                y_mean = cluster_points.geometry.y.mean()
+                x_mean = cluster_points.geometry.x.mean()+10
+                y_mean = cluster_points.geometry.y.mean()+10
                 # Add text showing number of points
-                ax.text(x_mean, y_mean, str(count), color='black', fontsize=10, fontweight='bold',ha='center', va='center', zorder=4)
+                if count>1:
+                    ax.text(x_mean, y_mean, str(count), color='black', fontsize=10, fontweight='bold',ha='center', va='center', zorder=4)
             legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
         if plot_wireless and not gdf_wireless.empty:
-            gdf_wireless.plot(ax=ax, color='green', linewidth=3, label='Wireless Track', zorder=2)
+            gdf_wireless.plot(ax=ax, color='green', linewidth=4, label='Wireless Track', zorder=2)
             legend_handles.append(mpatches.Patch(color='green', label='Wireless Track'))
 
         # Set extent
@@ -1708,6 +1709,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
