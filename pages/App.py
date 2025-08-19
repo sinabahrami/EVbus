@@ -648,8 +648,8 @@ def generate_transit_report(
             ('FONTNAME', (0,0), (-1,0), 'Times-Bold'),
             ('ALIGN', (0,0), (-1,0), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('ALIGN', (0,1), (1,-1), 'CENTER')
-            ('ALIGN', (2,1), (2,-1), 'LEFT')
+            ('ALIGN', (0,1), (1,-1), 'CENTER'),
+            ('ALIGN', (2,1), (2,-1), 'LEFT'),
             ('GRID', (0,0), (-1,-1), 0.5, colors.black),
             ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
             ('LEFTPADDING', (0,0), (-1,-1), 4),
@@ -1776,6 +1776,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
