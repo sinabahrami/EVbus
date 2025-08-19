@@ -401,7 +401,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         if plot_chargers and not gdf_chargers.empty:
             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger', zorder=3)
             for idx, row in gdf_chargers.iterrows():
-                if row['label_number']>1:
+                if int(row['label_number'])>1:
                     ax.text(
                         row.geometry.x + 10,  # small x offset
                         row.geometry.y + 10,  # small y offset
@@ -1711,6 +1711,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
