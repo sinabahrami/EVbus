@@ -1513,6 +1513,12 @@ def main():
                         Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost')])/1e6
                         dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost')])/1e6
             
+                    elif st.session_state["num_locs"]==0:
+                        categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc')/bus_cost} Additional Buses & No Chargers", f"All Blocks Feasible with {st.session_state.get('additinal_fleet_cost')/bus_cost} Additional Buses & Selected Chargers"]
+                        Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc'),st.session_state.get('additinal_fleet_cost')])/1e6
+                        Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost')])/1e6
+                        Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost')])/1e6
+                        dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost')])/1e6
                     else:
                         categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc')/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state.get('final_number_infeasible_blocks')} Infeasible Blocks", f"All Blocks Feasible with {st.session_state.get('additinal_fleet_cost')/bus_cost} Additional Buses & Selected Chargers"]
                         Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc'),0,st.session_state.get('additinal_fleet_cost')])/1e6
@@ -1527,11 +1533,12 @@ def main():
                     # Create the stacked bars
                     fig, ax = plt.subplots(figsize=(8,6))
             
-                    ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
-                    ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
-                    ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='blue')
+                    ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='orange')
+                    ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='blue')
+                    if min_stoppage_time<1:
+                        ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='cyan')
                     if dynamic_wireless_charging_power>0:
-                        ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
+                        ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='green')
             
                     # Labels & legend
                     ax.set_ylabel('Total Cost (million $)')
@@ -1668,6 +1675,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
