@@ -1484,9 +1484,7 @@ def main():
                 st.session_state["bus_reciever_cost"]=bus_reciever_cost
                 st.session_state["total_dynamic_cost"]=total_dynamic_cost
 
-                msg1.empty()
-                msg2.empty()
-                msg3.empty()
+
                 flag_done=1
 
                 routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
@@ -1586,6 +1584,10 @@ def main():
                     )
                     
                     st.session_state["report"]=pdf_buffer
+
+                msg1.empty()
+                msg2.empty()
+                msg3.empty()
                                
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
@@ -1638,11 +1640,6 @@ def main():
             
         st.write(f"- The total length of the dynamic wireless track is {st.session_state['wirelesslength']} miles.")
 
-        
-
-
-
-
         st.write(f"Click the button below to download the PDF report of your analysis.")
         st.download_button(
             label="📥 Report",
@@ -1658,6 +1655,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
