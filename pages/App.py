@@ -1649,13 +1649,14 @@ def main():
         )
 
         # Display map
-        st.subheader("Route Map with Proposed Charging Locations")
-        st_folium(st.session_state["map"], width=1200, height=800)
+        st.subheader("Map of Routes and Proposed Charging Locations")
+        st_folium(st.session_state['map'], width=1200, height=800, returned_objects=[])
         if flag_done==1 and toggle_value_cost==True:
             st.pyplot(st.session_state["econ_fig"])
         
 if __name__ == "__main__":
     main()
+
 
 
 
