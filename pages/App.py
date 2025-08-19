@@ -375,7 +375,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
     # Function to plot and return PNG bytes
     def plot_map(plot_routes=True, plot_chargers=True, plot_wireless=True):
-        fig, ax = plt.subplots(figsize=(10,10))
+        fig, ax = plt.subplots(figsize=(12,12))
 
         # Plot routes individually to create discrete legend
         legend_handles = []
@@ -1460,13 +1460,13 @@ def main():
                 )
                 
                 # Store results
-                st.session_state["shapes"]=shapes
-                st.session_state["routes"]=routes
-                st.session_state["maptrips"]=maptrips
-                st.session_state["proposed_locations"]=proposed_locations
-                st.session_state["wireless_track_shape"]=wireless_track_shape
-                st.session_state["center_lat"]=center_lat
-                st.session_state["center_lon"]=center_lon
+                # st.session_state["shapes"]=shapes
+                # st.session_state["routes"]=routes
+                # st.session_state["maptrips"]=maptrips
+                # st.session_state["proposed_locations"]=proposed_locations
+                # st.session_state["wireless_track_shape"]=wireless_track_shape
+                # st.session_state["center_lat"]=center_lat
+                # st.session_state["center_lon"]=center_lon
                 
                 st.session_state["map"] = bus_map
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
@@ -1538,7 +1538,7 @@ def main():
                     ax.set_xticks(x)
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
                     ax.legend()
-                    st.session_state["econ_fig"] = st.pyplot(fig)
+                    st.session_state["econ_fig"] = fig
             
                 if flag_done==1 and toggle_value_cost==True:    
                     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
@@ -1658,14 +1658,15 @@ def main():
         )
 
         # Display map
-        bus_map = create_bus_electrification_map(st.session_state["shapes"],st.session_state["routes"],st.session_state["maptrips"],st.session_state["proposed_locations"], st.session_state["wireless_track_shape"],st.session_state["center_lat"],st.session_state["center_lon"])
+        # bus_map = create_bus_electrification_map(st.session_state["shapes"],st.session_state["routes"],st.session_state["maptrips"],st.session_state["proposed_locations"], st.session_state["wireless_track_shape"],st.session_state["center_lat"],st.session_state["center_lon"])
         st.subheader("Map of Routes and Proposed Charging Locations")
-        st_folium(bus_map, width=1200, height=800, returned_objects=[])
+        st_folium(st.session_state["bus_map"], width=1200, height=800, returned_objects=[])
         if flag_done==1 and toggle_value_cost==True:
             st.session_state["econ_fig"]
         
 if __name__ == "__main__":
     main()
+
 
 
 
