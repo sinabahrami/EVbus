@@ -366,11 +366,11 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
     gdf_wireless = gpd.GeoDataFrame(wireless_lines, crs="EPSG:4326").to_crs(epsg=3857) if wireless_lines else gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
 
     # Determine map extent
-    all_points = gdf_routes.geometry.array.union_all()
+    all_points = gdf_routes.geometry.unary_union
     if not gdf_chargers.empty:
-        all_points = all_points.union_all(gdf_chargers.geometry.array)
+        all_points = all_points.unary_union(gdf_chargers.geometry)
     if not gdf_wireless.empty:
-        all_points = all_points.union_all(gdf_wireless.geometry.array)
+        all_points = all_points.unary_union(gdf_wireless.geometry)
 
     minx, miny, maxx, maxy = all_points.bounds
     buffer = 2000  # meters
