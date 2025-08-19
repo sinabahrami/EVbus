@@ -691,7 +691,7 @@ def generate_transit_report(
                 else:
                     val_str = str(val)
                 # Wrap values in a Paragraph
-                data.append([block_id, title, Paragraph(val_str, wrap_style)])
+                data.append([block_id, Paragraph(title, wrap_style), Paragraph(val_str, wrap_style)])
             merge_info.append((start_row, start_row + 2, 0))  # block_id column merge
     
         # Determine column widths if not provided
@@ -1774,6 +1774,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
