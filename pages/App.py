@@ -339,8 +339,8 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
             lambda p: shapely.affinity.translate(
                 p,
-                xoff=np.random.uniform(-300, 300),
-                yoff=np.random.uniform(-300, 300)
+                xoff=np.random.uniform(-350, 350),
+                yoff=np.random.uniform(-350, 350)
             )
         )
     else:
@@ -381,17 +381,17 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         legend_handles = []
         if plot_routes and not gdf_routes.empty:
             for route_id in unique_routes:
-                gdf_routes[gdf_routes['route_id']==route_id].plot(ax=ax, color=route_colors[route_id], linewidth=3)
+                gdf_routes[gdf_routes['route_id']==route_id].plot(ax=ax, color=route_colors[route_id], linewidth=2, zorder=1)
                 legend_handles.append(mpatches.Patch(color=route_colors[route_id], label=f"Route {route_id}"))
 
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
-            gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger')
+            gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger', zorder=3)
             legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
         if plot_wireless and not gdf_wireless.empty:
-            gdf_wireless.plot(ax=ax, color='green', linewidth=3, label='Wireless Track')
+            gdf_wireless.plot(ax=ax, color='green', linewidth=3, label='Wireless Track', zorder=2)
             legend_handles.append(mpatches.Patch(color='green', label='Wireless Track'))
 
         # Set extent
@@ -406,10 +406,10 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
         # Add discrete legend
         if legend_handles:
-            ax.legend(handles=legend_handles, loc='upper right', fontsize=9)
+            ax.legend(handles=legend_handles, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=9)
 
         # Tight layout
-        plt.tight_layout()
+        plt.tight_layout(rect=[0, 0, 0.85, 1])
 
         # Save to BytesIO
         buf = io.BytesIO()
@@ -1656,6 +1656,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
