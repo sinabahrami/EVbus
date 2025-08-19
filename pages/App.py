@@ -401,11 +401,11 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
             for cluster_label, count in cluster_counts.items():
                 cluster_points = gdf_chargers[gdf_chargers['cluster_label'] == cluster_label]
                 # Compute cluster center
-                x_mean = cluster_points.geometry.x.mean()+500
-                y_mean = cluster_points.geometry.y.mean()+500
+                x_mean = cluster_points.geometry.x.mean()+50
+                y_mean = cluster_points.geometry.y.mean()+50
                 # Add text showing number of points
                 if count>1:
-                    ax.text(x_mean, y_mean, f"{count}", color='black', fontsize=9, fontweight='bold',ha='center', va='center', zorder=4)
+                    ax.text(x_mean, y_mean, f"{count}", color='white', fontsize=12, fontweight='bold',ha='center', va='center', zorder=4)
             legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
@@ -1642,7 +1642,7 @@ def main():
                     ax.set_ylabel('Total Cost (million $)')
                     ax.set_xticks(x)
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
-                    ax.legend()
+                    ax.legend(loc='upper center')
                     st.session_state["econ_fig"] = fig
             
                 if flag_done==1 and toggle_value_cost==True:    
@@ -1774,6 +1774,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
