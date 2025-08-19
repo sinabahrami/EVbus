@@ -1459,7 +1459,7 @@ def main():
                 )
                 
                 # Store results
-                st.session_state["map"] = make_figure(bus_map)
+                st.session_state["map"] = bus_map
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
                 st.session_state["stops_count"] = stops['stop_id'].nunique()
                 st.session_state["blocks_count"] = num_blocks_total
@@ -1656,6 +1656,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
