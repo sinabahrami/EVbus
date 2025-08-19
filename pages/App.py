@@ -315,7 +315,7 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_labels(gdf, threshold=100):
+def assign_cluster_labels(gdf, threshold=100):
     coords = np.array([[pt.x, pt.y] for pt in gdf.geometry])
     tree = cKDTree(coords)
     clusters = -np.ones(len(coords), dtype=int)  # initialize all as unassigned
@@ -328,7 +328,7 @@ def assign_labels(gdf, threshold=100):
             clusters[neighbors] = cluster_id
             cluster_id += 1
 
-    gdf['label_number'] = clusters + 1  # start labeling from 1
+    gdf['cluster_label'] = clusters + 1  # start labeling from 1
     return gdf
     
 def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
@@ -404,15 +404,15 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger', zorder=3)
-            for idx, row in gdf_chargers.iterrows():
-                if int(row['label_number'])>1:
-                    ax.text(
-                        row.geometry.x + 10,  # small x offset
-                        row.geometry.y + 10,  # small y offset
-                        row['label_number'],
-                        fontsize=9,
-                        color='black'
-                    )
+            gdf_chargers = assign_cluster_labels(gdf_chargers, threshold=100)
+            cluster_counts = gdf_chargers.groupby('cluster_label').size()
+            for cluster_label, count in cluster_counts.items():
+                cluster_points = gdf_chargers[gdf_chargers['cluster_label'] == cluster_label]
+                # Compute cluster center
+                x_mean = cluster_points.geometry.x.mean()
+                y_mean = cluster_points.geometry.y.mean()
+                # Add text showing number of points
+                ax.text(x_mean, y_mean, str(count), color='black', fontsize=10, fontweight='bold',ha='center', va='center', zorder=4)
             legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
@@ -1716,6 +1716,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
