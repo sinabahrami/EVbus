@@ -401,8 +401,8 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
             for cluster_label, count in cluster_counts.items():
                 cluster_points = gdf_chargers[gdf_chargers['cluster_label'] == cluster_label]
                 # Compute cluster center
-                x_mean = cluster_points.geometry.x.mean()+10
-                y_mean = cluster_points.geometry.y.mean()+10
+                x_mean = cluster_points.geometry.x.mean()+50
+                y_mean = cluster_points.geometry.y.mean()+50
                 # Add text showing number of points
                 if count>1:
                     ax.text(x_mean, y_mean, str(count), color='black', fontsize=10, fontweight='bold',ha='center', va='center', zorder=4)
@@ -1709,6 +1709,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
