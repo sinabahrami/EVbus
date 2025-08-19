@@ -663,6 +663,74 @@ def generate_transit_report(
     
         table_counter += 1
 
+    def add_block_details_table(df, caption_text, styles, col_widths=None):
+        nonlocal table_counter
+        # Define a paragraph style for wrapping in the Values column
+        wrap_style = ParagraphStyle(
+            name="Wrap",
+            parent=styles["Normal"],
+            fontSize=9,
+            leading=11
+        )
+    
+        # Prepare table data
+        data = [["Block ID", "Information", "Values"]]
+        merge_info = []  # to store which cells to merge vertically
+    
+        for idx, row in df.iterrows():
+            block_id = row["block_id"]
+            details = [
+                ("Distances", row.get("distances_list", [])),
+                ("Time gaps", row.get("time_gaps", [])),
+                ("Range tracking", row.get("range_tracking", [])),
+            ]
+            start_row = len(data)
+            for title, val in details:
+                if isinstance(val, (list, tuple, np.ndarray)):
+                    val_str = ", ".join(f"{float(x):.1f}" for x in val)
+                else:
+                    val_str = str(val)
+                # Wrap values in a Paragraph
+                data.append([block_id, title, Paragraph(val_str, wrap_style)])
+            merge_info.append((start_row, start_row + 2, 0))  # block_id column merge
+    
+        # Determine column widths if not provided
+        page_width, _ = letter
+        if col_widths is None:
+            text_width = page_width - 3*inch
+            col_widths = [inch, 1.5*inch, text_width - 2.5*inch]
+    
+        # Create table
+        tbl = Table(data, colWidths=col_widths, repeatRows=1)
+    
+        # Apply style
+        style_list = [
+            ('FONTNAME', (0,0), (-1,0), 'Times-Bold'),
+            ('ALIGN', (0,0), (-1,0), 'CENTER'),
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ('ALIGN', (1,1), (1,-1), 'LEFT'),
+            ('ALIGN', (2,1), (2,-1), 'LEFT'),
+            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('LEFTPADDING', (0,0), (-1,-1), 4),
+            ('RIGHTPADDING', (0,0), (-1,-1), 4),
+        ]
+    
+        # Merge block_id cells vertically
+        for start, end, col in merge_info:
+            style_list.append(('SPAN', (col, start), (col, end)))
+    
+        tbl.setStyle(TableStyle(style_list))
+    
+        # Add caption + table to story
+        caption_html = f"<b>Table {table_counter}:</b> {caption_text}"
+        story.append(Paragraph(caption_html, styles["Caption"]))
+        story.append(Spacer(1,6))
+        story.append(tbl)
+        story.append(Spacer(1,12))
+    
+        table_counter += 1
+    
     # Document  
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     doc.addPageTemplates([front_template, main_template])
@@ -802,7 +870,11 @@ def generate_transit_report(
     if outputs.get('num_stationary_chargers', 0) > 0 or outputs.get('dynamic_lane_length', 0) > 0:
         add_figure(charger_image_path, "Spatial distribution of chargers.")
         add_figure(routencharger_image_path, "Arrangement of chargers along transit routes.")
-    
+    if outputs.get('num_stationary_chargers', 0) > 0 or outputs.get('dynamic_lane_length', 0) > 0:
+        outputs_text2 =f"For each block, Table {table_counter} presents the sequential travel distances of its routes, the time gaps between consecutive routes, and the bus range both before and after traversing each route." 
+        story.append(Paragraph(outputs_text2, styles["BodyTextCustom"]))
+        story.append(Spacer(1,12))
+        add_block_details_table(outputs.get("block_general"),caption_text="Detailed block information.",styles=styles)
     
     if econ_toggle and econ_figure_path:
         if len(outputs.get('categories'))==1:
@@ -1702,6 +1774,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
