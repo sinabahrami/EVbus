@@ -583,7 +583,7 @@ def generate_transit_report(
     
             # Use BytesIO to feed ReportLab Image
             img_stream = io.BytesIO(img_bytes) if isinstance(img_bytes, bytes) else img_bytes
-            reportlab_img = Image(img_stream, width=letter[0]-3*inch)
+            reportlab_img = Image(img_stream, width=letter[0]-2*inch, height=4*inch)
     
         except Exception as e:
             reportlab_img = Paragraph(f"[Error loading image: {e}]", styles["Normal"])
@@ -1657,6 +1657,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
