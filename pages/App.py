@@ -315,7 +315,7 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_labels(gdf, threshold=150):  # threshold in map units
+def assign_labels(gdf, threshold=500):  # threshold in map units
     labels = []
     for i, row in gdf.iterrows():
         # Count how many previous points are close
@@ -401,13 +401,14 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         if plot_chargers and not gdf_chargers.empty:
             gdf_chargers.plot(ax=ax, color='blue', markersize=50, marker='*', label='Stationary Charger', zorder=3)
             for idx, row in gdf_chargers.iterrows():
-                ax.text(
-                    row.geometry.x + 10,  # small x offset
-                    row.geometry.y + 10,  # small y offset
-                    row['label_number'],
-                    fontsize=9,
-                    color='black'
-                )
+                if row['label_number']>1:
+                    ax.text(
+                        row.geometry.x + 10,  # small x offset
+                        row.geometry.y + 10,  # small y offset
+                        row['label_number'],
+                        fontsize=9,
+                        color='black'
+                    )
             legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
@@ -1710,6 +1711,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
