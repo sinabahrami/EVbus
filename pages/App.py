@@ -679,7 +679,7 @@ def generate_transit_report(
         f"{outputs.get('total_stops', 'N/A')} stops. "
     )
     if inputs.get('specific_rorb')==1:
-        intro_text +=(f"The application of filter resulted {len(inputs.get('maptrips').unique())} routes. ")
+        intro_text +=(f"The application of filter resulted {len(inputs.get('maptrips').nunique())} routes. ")
     intro_text +=(    
         f"Figure {figure_counter} shows the map of the routes."
     )
@@ -1668,6 +1668,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
