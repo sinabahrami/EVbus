@@ -347,6 +347,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
             geometry=gpd.points_from_xy(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat']),
             crs="EPSG:4326"
         ).to_crs(epsg=3857)
+        gdf_chargers = assign_labels(gdf_chargers)
         # # Apply small jitter to separate overlapping points
         # gdf_chargers['geometry'] = gdf_chargers['geometry'].apply(
         #     lambda p: shapely.affinity.translate(
@@ -1709,6 +1710,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
