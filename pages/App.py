@@ -964,7 +964,7 @@ def main():
     
     # Main content
     if analyze_button:
-        # st.session_state.clear()
+        st.session_state.clear()
         msg1 = st.empty()
         msg2 = st.empty()
         msg3 = st.empty()
@@ -1459,7 +1459,7 @@ def main():
                 )
                 
                 # Store results
-                st.session_state["map"] = bus_map
+                st.session_state["map"] = make_figure(bus_map)
                 st.session_state["routes_count"] = len(trips['route_id'].unique())
                 st.session_state["stops_count"] = stops['stop_id'].nunique()
                 st.session_state["blocks_count"] = num_blocks_total
@@ -1529,7 +1529,7 @@ def main():
                     ax.set_xticks(x)
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
                     ax.legend()
-                    st.session_state["econ_fig"] = fig
+                    st.session_state["econ_fig"] = make_figure(fig)
             
                 if flag_done==1 and toggle_value_cost==True:    
                     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
@@ -1656,6 +1656,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
