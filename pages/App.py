@@ -1275,7 +1275,7 @@ def main():
                             for new_id in sorted_missing_ids:
                                 if new_id in row:
                                     added_ids.add(new_id)
-                                    break
+                                    # break
                     
                     # Update charging locations
                     top_end_stop_ids = list(set(top_end_stop_ids).union(added_ids))
@@ -1551,6 +1551,7 @@ def main():
                         ax.bar(categories, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='green')
             
                     # Labels & legend
+                    plt.tight_layout()
                     ax.set_ylabel('Total Cost (million $)')
                     ax.set_xticks(categories)
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
@@ -1685,6 +1686,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
