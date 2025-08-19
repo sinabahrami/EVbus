@@ -405,7 +405,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
                 y_mean = cluster_points.geometry.y.mean()+50
                 # Add text showing number of points
                 if count>1:
-                    ax.text(x_mean, y_mean, f"{count}", color='white', fontsize=12, fontweight='bold',ha='center', va='center', zorder=4)
+                    ax.text(x_mean, y_mean, f"{count}", color='black', fontsize=12, fontweight='bold',ha='center', va='center', zorder=4, bbox=dict(facecolor='white', edgecolor='none', alpha=0.7, pad=1))
             legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
@@ -1637,7 +1637,7 @@ def main():
             
                     # Labels & legend
                     total_width = x[-1] + bar_width if len(categories) > 0 else 1
-                    ax.set_xlim(-bar_width, total_width + 1.0)
+                    ax.set_xlim(-1, total_width + 1.0)
                     plt.tight_layout()
                     ax.set_ylabel('Total Cost (million $)')
                     ax.set_xticks(x)
@@ -1774,6 +1774,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
