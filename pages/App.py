@@ -1542,18 +1542,7 @@ def main():
             
         st.write(f"- The total length of the dynamic wireless track is {st.session_state['wirelesslength']} miles.")
 
-        # Display map
-        st.subheader("Route Map with Proposed Charging Locations")
-        st_folium(st.session_state["map"], width=1200, height=800, returned_objects=[])
-
-       
-        # if st.session_state["output"] is not None:
-        #     st.download_button(
-        #         label="Download CSV",
-        #         data=st.session_state["output"],
-        #         file_name="output.csv",
-        #         mime="text/csv"
-        #     )
+        
 
     if flag_done==1 and toggle_value_cost==True:
         if st.session_state.get("initial_num_infeasible_blocks") == 0:
@@ -1595,7 +1584,7 @@ def main():
         ax.set_xticks(x)
         ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
         ax.legend()
-        st.pyplot(fig)
+
     if flag_done==1 and toggle_value_cost==True:    
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
             fig.savefig(tmpfile.name, bbox_inches='tight')
@@ -1654,8 +1643,14 @@ def main():
             mime="application/pdf"
         )
 
+        # Display map
+        st.subheader("Route Map with Proposed Charging Locations")
+        st_folium(st.session_state["map"], width=1200, height=800, returned_objects=[])
+        st.pyplot(fig)
+        
 if __name__ == "__main__":
     main()
+
 
 
 
