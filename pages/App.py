@@ -1657,7 +1657,7 @@ def main():
         )
 
         # Display map
-        bus_map = create_bus_electrification_map(st.session_state["shapes,st.session_state["routes"],st.session_state["maptrips"],st.session_state["proposed_locations"], st.session_state["wireless_track_shape"],st.session_state["center_lat"],st.session_state["center_lon"])
+        bus_map = create_bus_electrification_map(st.session_state["shapes"],st.session_state["routes"],st.session_state["maptrips"],st.session_state["proposed_locations"], st.session_state["wireless_track_shape"],st.session_state["center_lat"],st.session_state["center_lon"])
         st.subheader("Map of Routes and Proposed Charging Locations")
         st_folium(bus_map, width=1200, height=800, returned_objects=[])
         if flag_done==1 and toggle_value_cost==True:
@@ -1665,6 +1665,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
