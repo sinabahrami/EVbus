@@ -35,7 +35,7 @@ import contextily as ctx
 from shapely.geometry import LineString, Point
 import shapely.affinity
 from PIL import Image as PILImage
-
+from scipy.spatial import cKDTree
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -315,16 +315,20 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_labels(gdf, threshold=500):  # threshold in map units
-    labels = []
-    for i, row in gdf.iterrows():
-        # Count how many previous points are close
-        nearby_count = sum(
-            row.geometry.distance(prev_row.geometry) < threshold
-            for j, prev_row in gdf.iterrows() if j < i
-        )
-        labels.append(str(nearby_count + 1))
-    gdf['label_number'] = labels
+def assign_labels(gdf, threshold=100):
+    coords = np.array([[pt.x, pt.y] for pt in gdf.geometry])
+    tree = cKDTree(coords)
+    clusters = -np.ones(len(coords), dtype=int)  # initialize all as unassigned
+    cluster_id = 0
+
+    for i in range(len(coords)):
+        if clusters[i] == -1:
+            # Find all points within threshold of this point
+            neighbors = tree.query_ball_point(coords[i], threshold)
+            clusters[neighbors] = cluster_id
+            cluster_id += 1
+
+    gdf['label_number'] = clusters + 1  # start labeling from 1
     return gdf
     
 def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wireless_track_shape_df, center_lat, center_lon):
@@ -1712,6 +1716,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
