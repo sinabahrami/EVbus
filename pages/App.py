@@ -757,6 +757,7 @@ def generate_transit_report(
 
         report_infeasible_blocks = outputs.get('infeasible_block_ids', [])
         if report_infeasible_blocks and report_infeasible_blocks != 'N/A':
+            report_infeasible_blocks = [str(b) for b in report_infeasible_blocks]
             if len(report_infeasible_blocks) == 1:
                 blocks_str = report_infeasible_blocks[0]
             else:
@@ -1656,6 +1657,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
