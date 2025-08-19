@@ -1490,6 +1490,102 @@ def main():
                 flag_done=1
 
                 routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
+                
+                if flag_done==1 and toggle_value_cost==True:
+                    if st.session_state.get("initial_num_infeasible_blocks") == 0:
+                        categories = ["All Blocks Feasible with No Chargers"]
+                        Additional_fleet=np.array([st.session_state.get("additional_fleet_cost_no_ivc")])/1e6
+                        Stationary_charger=np.array([0])/1e6
+                        Bus_reciever=np.array([0])/1e6
+                        dynamic_charger=np.array([0])/1e6
+            
+                    elif st.session_state['final_number_infeasible_blocks']==0:
+                        categories = [f"All Blocks Feasible with {st.session_state.get("additional_fleet_cost_no_ivc")/bus_cost} Additional Buses & No Chargers","All Blocks Feasible with Selected Chargers"]
+                        Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc'),st.session_state.get('additinal_fleet_cost')])/1e6
+                        Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost')])/1e6
+                        Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost')])/1e6
+                        dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost')])/1e6
+            
+                    else:
+                        categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc')/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state.get('final_number_infeasible_blocks')} Infeasible Blocks", f"All Blocks Feasible with {st.session_state.get('additinal_fleet_cost')/bus_cost} Buses & Selected Chargers"]
+                        Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc'),0,st.session_state.get('additinal_fleet_cost')])/1e6
+                        Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost'),st.session_state.get('total_stationary_cost')])/1e6
+                        Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost'),st.session_state.get('bus_reciever_cost')])/1e6
+                        dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost'),st.session_state.get('total_dynamic_cost')])/1e6
+            
+                    # X positions for bars
+                    x = np.arange(len(categories))
+                    bar_width = 0.5    
+            
+                    # Create the stacked bars
+                    fig, ax = plt.subplots(figsize=(8,6))
+            
+                    ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
+                    ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
+                    ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='blue')
+                    if dynamic_wireless_charging_power>0:
+                        ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
+            
+                    # Labels & legend
+                    ax.set_ylabel('Total Cost (million $)')
+                    ax.set_xticks(x)
+                    ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
+                    ax.legend()
+                    st.session_state["econ_fig"] = fig
+            
+                if flag_done==1 and toggle_value_cost==True:    
+                    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+                        fig.savefig(tmpfile.name, bbox_inches='tight')
+                        econ_figure_gen = tmpfile.name
+                else:
+                    econ_figure_gen = None
+
+
+                if flag_done==1:
+                    report_inputs = {"transit_agency_name": st.session_state["Agency_name"],
+                        "bus_range": bus_range,
+                        "stationary_power": charging_power,
+                        "stationary_setup_time_hr": min_stoppage_time,
+                        "dynamic_power": dynamic_wireless_charging_power,
+                        "energy_usage":energy_usage,
+                    }
+                    if toggle_value_cost==True:
+                        report_inputs.update({"bus_price": bus_cost,
+                            "stationary_charger_cost": stationary_charger_cost,
+                            "coil_install_cost": bus_coil_cost,
+                            "dynamic_track_cost": dynamic_charger_cost,
+                        })
+                    report_outputs = {
+                        "total_routes": st.session_state["routes_count"],
+                        "total_stops": st.session_state["stops_count"],
+                        "total_blocks": st.session_state["blocks_count"],
+                        "electrifiable_blocks": st.session_state["feasible_blocks_count"],
+                        "non_electrifiable_blocks": st.session_state["infeasible_blocks_count"],
+                        "infeasible_block_ids": st.session_state["inf_block_info"],
+                        "num_stationary_chargers": st.session_state["num_locs"],
+                        "dynamic_lane_length": st.session_state["wirelesslength"],
+                        "block_general":st.session_state["block_info"],
+                    }
+                    if toggle_value_cost==True:
+                        report_outputs.update({
+                            "categories":categories,
+                            "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
+                            "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
+                    })
+                
+                    pdf_buffer = generate_transit_report(
+                        inputs=report_inputs,
+                        outputs=report_outputs,
+                        map_image_path=routes_image_bytes,
+                        econ_toggle=toggle_value_cost,
+                        econ_figure_path=econ_figure_gen,
+                        agency_name=st.session_state['Agency_name'],
+                        title_image_path="bus_title_image.png",
+                        charger_image_path=charger_image_bytes,
+                        routencharger_image_path=full_image_bytes
+                    )
+                    
+                    st.session_state["report"]=pdf_buffer
                                
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
@@ -1544,112 +1640,25 @@ def main():
 
         
 
-    if flag_done==1 and toggle_value_cost==True:
-        if st.session_state.get("initial_num_infeasible_blocks") == 0:
-            categories = ["All Blocks Feasible with No Chargers"]
-            Additional_fleet=np.array([st.session_state.get("additional_fleet_cost_no_ivc")])/1e6
-            Stationary_charger=np.array([0])/1e6
-            Bus_reciever=np.array([0])/1e6
-            dynamic_charger=np.array([0])/1e6
 
-        elif st.session_state['final_number_infeasible_blocks']==0:
-            categories = [f"All Blocks Feasible with {st.session_state.get("additional_fleet_cost_no_ivc")/bus_cost} Additional Buses & No Chargers","All Blocks Feasible with Selected Chargers"]
-            Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc'),st.session_state.get('additinal_fleet_cost')])/1e6
-            Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost')])/1e6
-            Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost')])/1e6
-            dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost')])/1e6
 
-        else:
-            categories = [f"All Blocks Feasible with {st.session_state.get('additional_fleet_cost_no_ivc')/bus_cost} Additional Buses & No Chargers",f"Existing Fleet & Selected Chargers with {st.session_state.get('final_number_infeasible_blocks')} Infeasible Blocks", f"All Blocks Feasible with {st.session_state.get('additinal_fleet_cost')/bus_cost} Buses & Selected Chargers"]
-            Additional_fleet=np.array([st.session_state.get('additional_fleet_cost_no_ivc'),0,st.session_state.get('additinal_fleet_cost')])/1e6
-            Stationary_charger=np.array([0,st.session_state.get('total_stationary_cost'),st.session_state.get('total_stationary_cost')])/1e6
-            Bus_reciever=np.array([0,st.session_state.get('bus_reciever_cost'),st.session_state.get('bus_reciever_cost')])/1e6
-            dynamic_charger=np.array([0,st.session_state.get('total_dynamic_cost'),st.session_state.get('total_dynamic_cost')])/1e6
 
-        # X positions for bars
-        x = np.arange(len(categories))
-        bar_width = 0.5    
-
-        # Create the stacked bars
-        fig, ax = plt.subplots(figsize=(8,6))
-
-        ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='green')
-        ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='orange')
-        ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='blue')
-        if dynamic_wireless_charging_power>0:
-            ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='cyan')
-
-        # Labels & legend
-        ax.set_ylabel('Total Cost (million $)')
-        ax.set_xticks(x)
-        ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
-        ax.legend()
-
-    if flag_done==1 and toggle_value_cost==True:    
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-            fig.savefig(tmpfile.name, bbox_inches='tight')
-            econ_figure_gen = tmpfile.name
-    else:
-        econ_figure_gen = None
-
-    if flag_done==1:
-        report_inputs = {"transit_agency_name": st.session_state["Agency_name"],
-            "bus_range": bus_range,
-            "stationary_power": charging_power,
-            "stationary_setup_time_hr": min_stoppage_time,
-            "dynamic_power": dynamic_wireless_charging_power,
-            "energy_usage":energy_usage,
-        }
-        if toggle_value_cost==True:
-            report_inputs.update({"bus_price": bus_cost,
-                "stationary_charger_cost": stationary_charger_cost,
-                "coil_install_cost": bus_coil_cost,
-                "dynamic_track_cost": dynamic_charger_cost,
-            })
-        report_outputs = {
-            "total_routes": st.session_state["routes_count"],
-            "total_stops": st.session_state["stops_count"],
-            "total_blocks": st.session_state["blocks_count"],
-            "electrifiable_blocks": st.session_state["feasible_blocks_count"],
-            "non_electrifiable_blocks": st.session_state["infeasible_blocks_count"],
-            "infeasible_block_ids": st.session_state["inf_block_info"],
-            "num_stationary_chargers": st.session_state["num_locs"],
-            "dynamic_lane_length": st.session_state["wirelesslength"],
-            "block_general":st.session_state["block_info"],
-        }
-        if toggle_value_cost==True:
-            report_outputs.update({
-                "categories":categories,
-                "additional_fleet_cost_no_ivc":st.session_state["additional_fleet_cost_no_ivc"],
-                "additinal_fleet_cost":st.session_state["additinal_fleet_cost"],
-        })
-    
-        pdf_buffer = generate_transit_report(
-            inputs=report_inputs,
-            outputs=report_outputs,
-            map_image_path=routes_image_bytes,
-            econ_toggle=toggle_value_cost,
-            econ_figure_path=econ_figure_gen,
-            agency_name=st.session_state['Agency_name'],
-            title_image_path="bus_title_image.png",
-            charger_image_path=charger_image_bytes,
-            routencharger_image_path=full_image_bytes
-        )
         st.write(f"Click the button below to download the PDF report of your analysis.")
         st.download_button(
             label="📥 Report",
-            data=pdf_buffer,
-            file_name="transit_report.pdf",
+            data=st.session_state["report"],
+            file_name="Report.pdf",
             mime="application/pdf"
         )
 
         # Display map
         st.subheader("Route Map with Proposed Charging Locations")
         st_folium(st.session_state["map"], width=1200, height=800, returned_objects=[])
-        st.pyplot(fig)
+        st.pyplot(st.session_state["econ_fig"])
         
 if __name__ == "__main__":
     main()
+
 
 
 
