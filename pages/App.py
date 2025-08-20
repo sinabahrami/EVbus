@@ -539,7 +539,7 @@ class FullPageImage(Flowable):
                 
         # Starting Y position from bottom
         yt=self.top_margin+600
-        yb = self.bottom_margin-30
+        yb = self.bottom_margin-10
 
         
         # Draw title above subtitle
@@ -1796,6 +1796,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
