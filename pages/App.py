@@ -14,6 +14,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
+import matplotlib.patches as mpatches
 import textwrap
 
 from reportlab.lib.pagesizes import letter
@@ -315,7 +316,7 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_cluster_labels(gdf, threshold=100):
+def assign_cluster_labels(gdf, threshold=250):
     coords = np.array([[pt.x, pt.y] for pt in gdf.geometry])
     tree = cKDTree(coords)
     clusters = -np.ones(len(coords), dtype=int)  # initialize all as unassigned
@@ -378,7 +379,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
     extent = [minx-buffer, maxx+buffer, miny-buffer, maxy+buffer]
 
     # Generate discrete colors for routes
-    import matplotlib.patches as mpatches
+
     unique_routes = gdf_routes['route_id'].unique()
     colormap = matplotlib.cm.get_cmap('tab20b', len(unique_routes))
     route_colors = {rid: colormap(i) for i, rid in enumerate(unique_routes)}
@@ -1784,6 +1785,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
