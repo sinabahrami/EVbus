@@ -479,7 +479,7 @@ class NumberedCanvas(pdfcanvas.Canvas):
                     self.setFont('Times-Italic', 9)
                     self.setFillColorRGB(0, 0, 0)
                     self.drawRightString(letter[0] - 1.0*inch, 0.5*inch, f"Page {logical_page}")
-                    self.drawString(1.0*inch, 0.5*inch, f"transit-electrification.streamlit.app/")
+                    self.drawString(1.0*inch, 0.5*inch, f"{'https://transit-electrification.streamlit.app'.replace('https://', '')}")
                 finally:
                     self.restoreState()
 
@@ -759,7 +759,7 @@ def generate_transit_report(
             width=letter[0],
             height=letter[1],
             title=f"Transit Electrification Report for {agency_name} Transit System",
-            subtitle="Produced by \n transit-electrification.streamlit.app/", # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
+            subtitle="Produced by \n https://transit-electrification.streamlit.app", # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
             licence="Copyright (c) 2025 Sina Bahrami"
         ))
         #story.append(PageBreak())
@@ -1797,6 +1797,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
