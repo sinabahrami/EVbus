@@ -426,7 +426,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         ax.axis('off')
 
         # Add discrete legend
-        if plot_routes=False:
+        if plot_routes==False:
             num_cols=1
         else:
             num_cols=min(2,max(1,int(len(unique_routes)/24)+1)) 
@@ -1788,6 +1788,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
