@@ -419,7 +419,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         ax.set_ylim(extent[2], extent[3])
 
         # Add basemap
-        ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik)
+        ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik, alpha=0.6)
 
         # Remove axes
         ax.axis('off')
@@ -1777,6 +1777,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
