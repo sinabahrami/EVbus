@@ -37,7 +37,7 @@ ul.med-font {
         <li>Stationary charging setup time (inductive/wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging).</li>
     </ul>
     </p>
-    <p class="big-font"> The app determines the number and optimal location of stationary chargers, the required length and optimal location of dynamic chargers, and maps the results. You can use the map layer to switch different routes or chargers on and off to focus on specific areas of interest.
+    <p class="big-font"> The app determines the number and optimal locations of stationary chargers, as well as the required length and optimal placement of dynamic chargers. It displays an interactive map with layers that allow you to toggle different routes or chargers on and off to focus on specific areas of interest. In addition, the app generates a PDF report that provides more detailed information.
 </p>
 """, unsafe_allow_html=True)
 
@@ -68,9 +68,10 @@ st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
 st.markdown("""
 <style>
 .small-font {
-    font-size: 10px !important;
+    font-size: 11px !important;
     line-height: 1; /* Adjusts line spacing */
     }
 </style>
 <p class="small-font"><strong>Disclaimer:</strong> This web app provides general information and is not intended to serve as professional advice. The information and content are provided "as is" without warranties of any kind, either express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We assume no liability for any errors or omissions in the information presented or for any damages or losses that may arise from reliance on or use of this tool. Use of this web app is solely at your own risk.</p>
 """, unsafe_allow_html=True)
+
