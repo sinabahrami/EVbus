@@ -316,7 +316,7 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_cluster_labels(gdf, threshold=1000):
+def assign_cluster_labels(gdf, threshold=5000):
     coords = np.array([[pt.x, pt.y] for pt in gdf.geometry])
     tree = cKDTree(coords)
     clusters = -np.ones(len(coords), dtype=int)  # initialize all as unassigned
@@ -1785,6 +1785,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
