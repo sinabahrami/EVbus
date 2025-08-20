@@ -63,7 +63,7 @@ if st.button("Take me to the app"):
     st.switch_page("pages/App.py")  
 
 
-st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True) 
+st.markdown("<br><br><br><br>", unsafe_allow_html=True) 
 
 st.markdown("""
 <style>
@@ -74,4 +74,5 @@ st.markdown("""
 </style>
 <p class="small-font"><strong>Disclaimer:</strong> This web app provides general information and is not intended to serve as professional advice. The information and content are provided "as is" without warranties of any kind, either express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We assume no liability for any errors or omissions in the information presented or for any damages or losses that may arise from reliance on or use of this tool. Use of this web app is solely at your own risk.</p>
 """, unsafe_allow_html=True)
+
 
