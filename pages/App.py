@@ -397,7 +397,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
-            gdf_chargers.plot(ax=ax, color='blue', markersize=70, marker='*', label='Stationary Charger', zorder=3)
+            gdf_chargers.plot(ax=ax, color='blue', markersize=10, marker='x', label='Stationary Charger', zorder=3)
 
             cluster_counts = gdf_chargers.groupby('cluster_label').size()
             for cluster_label, count in cluster_counts.items():
@@ -1785,6 +1785,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
