@@ -316,7 +316,7 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_cluster_labels(gdf, threshold=500):
+def assign_cluster_labels(gdf, threshold=1000):
     coords = np.array([[pt.x, pt.y] for pt in gdf.geometry])
     tree = cKDTree(coords)
     clusters = -np.ones(len(coords), dtype=int)  # initialize all as unassigned
@@ -426,7 +426,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
         ax.axis('off')
 
         # Add discrete legend
-        num_cols=max(1,min(2,int(len(unique_routes)/24)+1)) 
+        num_cols=max(1,max(1,int(len(unique_routes)/24)+1)) 
         if legend_handles:
             ax.legend(handles=legend_handles, loc='upper left', bbox_to_anchor=(1, 1), fontsize=9, ncol=num_cols)
 
@@ -1785,6 +1785,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
