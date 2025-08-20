@@ -1067,10 +1067,11 @@ def main():
     
     # Main content
     if analyze_button:
-        st.session_state.clear()
+        # st.session_state.clear()
         msg1 = st.empty()
         msg2 = st.empty()
         msg3 = st.empty()
+        msg4 = st.empty()
         with st.spinner("Processing GTFS data and analyzing bus routes..."):
             # Load data
             zip_file_path = f"{selected_agency}_GTFS.zip"
@@ -1489,7 +1490,7 @@ def main():
                 return
         
         msg3.success("✅ Dynamic track locations are optimized.")
-        with st.spinner("Checking for further improvments & preparing results..."):  
+        with st.spinner("Checking for further improvments"):  
             try:
                 
                 for id in top_end_stop_ids[:]:  # Iterate over a copy
@@ -1560,6 +1561,12 @@ def main():
                     center_lat,
                     center_lon
                 )
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {str(e)}")
+                return
+        msg3.success("✅ Analysis completed successfully.")
+        with st.spinner("Preparing results ..."):    
+            try:
                 block_general['total_distance_miles'] = block_general['total_distance_miles'].round(1) 
                 # block_general['distances_list'] = block_general['distances_list'].round(1) 
                 # block_general['range_tracking'] = block_general['range_tracking'].round(1) 
@@ -1707,9 +1714,9 @@ def main():
                 msg1.empty()
                 msg2.empty()
                 msg3.empty()
-                               
+                msg4.empty()              
             except Exception as e:
-                st.error(f"An error occurred during analysis: {str(e)}")
+                st.error(f"An error occurred during preperation of results: {str(e)}")
                 return
     
     # Display results if available
@@ -1777,3 +1784,4 @@ def main():
         
 if __name__ == "__main__":
     main()
+
