@@ -751,7 +751,7 @@ def generate_transit_report(
             width=letter[0],
             height=letter[1],
             title=f"Transit Electrification Report for {agency_name} Transit System",
-            subtitle="Produced by \n https://transit-electrification.streamlit.app/" # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
+            subtitle="Produced by \n https://transit-electrification.streamlit.app/ \n \n Copyright (c) 2025 Sina Bahrami" # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
         ))
         #story.append(PageBreak())
         
@@ -1788,6 +1788,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
