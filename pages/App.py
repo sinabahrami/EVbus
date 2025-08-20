@@ -802,7 +802,7 @@ def generate_transit_report(
     # --- Inputs & Outputs ---
     story.append(Paragraph("Selected Electrification Characteristics", styles["Heading1"]))
     inputs_text = (
-        f"The selected electric bus range is {inputs.get('bus_range', 'N/A')} miles, "
+        f"The selected electric bus range is {inputs.get('bus_range', 'N/A'):.1f} miles, "
         f"and buses consume {inputs.get('energy_usage', 'N/A') / 60:.2f} kWh per mile of travel. "
     )
 
@@ -811,8 +811,8 @@ def generate_transit_report(
 
     if inputs.get('stationary_setup_time_hr', 0) >= 1:
         inputs_text += (
-            f"The selected stationary charging system is plug-in, with a power output of {inputs.get('stationary_power', 'N/A')} kW. "
-            f"Buses require {inputs.get('stationary_setup_time_hr', 0)} minutes to plug in and start charging after stopping. "
+            f"The selected stationary charging system is plug-in, with a power output of {inputs.get('stationary_power', 'N/A'):.1f} kW. "
+            f"Buses require {inputs.get('stationary_setup_time_hr', 0):.1f} minutes to plug in and start charging after stopping. "
         )
     elif inputs.get('stationary_setup_time_hr', 0) > 0:
         inputs_text += (
@@ -836,7 +836,7 @@ def generate_transit_report(
 
     if inputs.get('dynamic_power', 0) > 0:
         inputs_text += (
-            f"In addition, dynamic in-motion wireless charging is available, providing {inputs.get('dynamic_power', 0)} kW of charging power. "
+            f"In addition, dynamic in-motion wireless charging is available, providing {inputs.get('dynamic_power', 0):.1f} kW of charging power. "
         )
         if econ_toggle:
             inputs_text += (
@@ -872,7 +872,7 @@ def generate_transit_report(
 
     # Add dynamic wireless charging if applicable
     if outputs.get('dynamic_lane_length', 0) > 0:
-        outputs_text += f"In addition to the stationary chargers, {outputs.get('dynamic_lane_length','N/A')} miles of dynamic wireless charging track will be required. "
+        outputs_text += f"In addition to the stationary chargers, {outputs.get('dynamic_lane_length','N/A'):.2f} miles of dynamic wireless charging track will be required. "
 
     # Reference figure if applicable
     if outputs.get('num_stationary_chargers', 0) > 0 or outputs.get('dynamic_lane_length', 0) > 0:
@@ -1796,6 +1796,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
