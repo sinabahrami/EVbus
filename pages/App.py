@@ -560,7 +560,7 @@ class FullPageImage(Flowable):
                 yb -= self.subtitle_font_size + 3  # spacing between lines
         if self.licence:
             yb-=40
-            self.canv.setFont("Times-Roman", 10)
+            self.canv.setFont("Times-Roman", 6)
             self.canv.setFillColorRGB(0, 0, 0)
             self.canv.drawCentredString(self.width / 2, yb, self.licence)
             
@@ -1796,6 +1796,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
