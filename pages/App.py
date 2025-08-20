@@ -516,6 +516,7 @@ class FullPageImage(Flowable):
         self.max_subtitle_width = max_subtitle_width
         self.bottom_margin = bottom_margin
         self.top_margin=top_margin
+        self.licence=licence
 
     def wrap(self, availWidth, availHeight):
         return self.width, self.height
@@ -1794,6 +1795,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
