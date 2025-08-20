@@ -479,7 +479,7 @@ class NumberedCanvas(pdfcanvas.Canvas):
                     self.setFont('Times-Italic', 9)
                     self.setFillColorRGB(0, 0, 0)
                     self.drawRightString(letter[0] - 1.0*inch, 0.5*inch, f"Page {logical_page}")
-                    self.drawLeftString(letter[0] - 1.0*inch, 0.5*inch, f"transit-electrification.streamlit.app/")
+                    self.drawString(1.0*inch, 0.5*inch, f"transit-electrification.streamlit.app/")
                 finally:
                     self.restoreState()
 
@@ -1797,6 +1797,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
