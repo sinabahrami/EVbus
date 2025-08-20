@@ -316,7 +316,7 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_cluster_labels(gdf, threshold=5000):
+def assign_cluster_labels(gdf, threshold=100):
     coords = np.array([[pt.x, pt.y] for pt in gdf.geometry])
     tree = cKDTree(coords)
     clusters = -np.ones(len(coords), dtype=int)  # initialize all as unassigned
@@ -352,7 +352,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
             geometry=gpd.points_from_xy(proposed_locations_df['stop_lon'], proposed_locations_df['stop_lat']),
             crs="EPSG:4326"
         ).to_crs(epsg=3857)
-        gdf_chargers = assign_cluster_labels(gdf_chargers, threshold=100)
+        gdf_chargers = assign_cluster_labels(gdf_chargers, threshold=500)
     else:
         gdf_chargers = gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
 
@@ -1785,6 +1785,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
