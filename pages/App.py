@@ -397,7 +397,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
 
         # Chargers
         if plot_chargers and not gdf_chargers.empty:
-            gdf_chargers.plot(ax=ax, color='blue', markersize=10, marker='x', label='Stationary Charger', zorder=3)
+            gdf_chargers.plot(ax=ax, color='blue', markersize=15, marker='x', label='Stationary Charger', zorder=3)
 
             cluster_counts = gdf_chargers.groupby('cluster_label').size()
             for cluster_label, count in cluster_counts.items():
@@ -408,7 +408,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
                 # Add text showing number of points
                 if count>1:
                     ax.text(x_mean, y_mean, f"{count}", color='black', fontsize=8, fontweight='bold',ha='center', va='center', zorder=4, bbox=dict(facecolor='white', edgecolor='none', alpha=0.7, pad=1))
-            legend_handles.append(Line2D([0], [0], marker='x', color='blue', label='Stationary Charger',markerfacecolor='blue', markersize=8))
+            legend_handles.append(Line2D([0], [0], marker='x', color='blue', label='Stationary Charger',markerfacecolor='w', markersize=8))
 
         # Wireless tracks
         if plot_wireless and not gdf_wireless.empty:
@@ -1785,6 +1785,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
