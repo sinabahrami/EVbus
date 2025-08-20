@@ -1640,9 +1640,9 @@ def main():
             
                     ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='orange')
                     ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='blue')
-                    if min_stoppage_time<1:
+                    if (min_stoppage_time<1 and len(proposed_locations)>0) or wireless_track_length>0:
                         ax.bar(x, Bus_reciever, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger), label='Bus Reciever Coil', color='cyan')
-                    if dynamic_wireless_charging_power>0:
+                    if wireless_track_length>0:
                         ax.bar(x, dynamic_charger, width=bar_width, bottom=np.array(Additional_fleet) + np.array(Stationary_charger)+np.array(Bus_reciever), label='Dyanmic Charger Track', color='green')
             
                     # Labels & legend
@@ -1784,6 +1784,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
