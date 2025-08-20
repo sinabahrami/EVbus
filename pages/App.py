@@ -316,7 +316,7 @@ def reset_toggle():
     st.session_state.toggle_state_cost = False  # Turn off toggle
 
 #####################################################
-def assign_cluster_labels(gdf, threshold=250):
+def assign_cluster_labels(gdf, threshold=50):
     coords = np.array([[pt.x, pt.y] for pt in gdf.geometry])
     tree = cKDTree(coords)
     clusters = -np.ones(len(coords), dtype=int)  # initialize all as unassigned
@@ -408,7 +408,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
                 # Add text showing number of points
                 if count>1:
                     ax.text(x_mean, y_mean, f"{count}", color='black', fontsize=12, fontweight='bold',ha='center', va='center', zorder=4, bbox=dict(facecolor='white', edgecolor='none', alpha=0.7, pad=1))
-            legend_handles.append(Line2D([0], [0], marker='*', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
+            legend_handles.append(Line2D([0], [0], marker='x', color='w', label='Stationary Charger',markerfacecolor='blue', markersize=8))
 
         # Wireless tracks
         if plot_wireless and not gdf_wireless.empty:
@@ -1785,6 +1785,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
