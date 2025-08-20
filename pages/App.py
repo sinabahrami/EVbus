@@ -552,11 +552,16 @@ class FullPageImage(Flowable):
         # Draw subtitle first (closest to bottom)
         if subtitle_lines:
             self.canv.setFont("Times-Bold", self.subtitle_font_size)
-            self.canv.setFillColorRGB(0, 0, 0)  # white
+            self.canv.setFillColorRGB(0, 0, 0)
             for line in subtitle_lines:  # draw from bottom up
                 self.canv.drawCentredString(self.width / 2, yb, line)
                 yb -= self.subtitle_font_size + 3  # spacing between lines
-
+        if self.licence:
+            yb=yb+20
+            self.canv.setFont("Times", 10)
+            self.canv.setFillColorRGB(0, 0, 0)
+            self.canv.drawCentredString(self.width / 2, yb, self.licence)
+            
 def generate_transit_report(
     inputs,
     outputs,
@@ -751,7 +756,8 @@ def generate_transit_report(
             width=letter[0],
             height=letter[1],
             title=f"Transit Electrification Report for {agency_name} Transit System",
-            subtitle="Produced by \n https://transit-electrification.streamlit.app/ \n \n Copyright (c) 2025 Sina Bahrami" # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
+            subtitle="Produced by \n https://transit-electrification.streamlit.app/", # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
+            licence="Copyright (c) 2025 Sina Bahrami"
         ))
         #story.append(PageBreak())
         
@@ -1788,6 +1794,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
