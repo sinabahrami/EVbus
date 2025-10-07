@@ -1520,13 +1520,13 @@ def main():
                     if len(infeasible_blocks_copy) > len(infeasible_blocks):
                         top_end_stop_ids.append(id)  # Add back if necessary
 
-                # Apply function to blocks with total_distance_miles > Bus_range
-                block_general["range_tracking"] = block_general.apply(
-                    lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"],bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape,shapes),
-                    axis=1
-                )
-
-                block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
+                    # Apply function to blocks with total_distance_miles > Bus_range
+                    block_general["range_tracking"] = block_general.apply(
+                        lambda row: compute_range_tracking_lane(row["distances_list"], row["time_gaps"], row["end_id_list"], row["trips_by_route"], row["avg_speed_list"],bus_range, charging_power,dynamic_wireless_charging_power, energy_usage, min_stoppage_time, top_end_stop_ids, wireless_track_shapeids,wireless_track_shape,shapes),
+                        axis=1
+                    )
+    
+                    block_general['additional_buses'] = block_general.apply(calculate_additional_buses, axis=1, args=(bus_range,))
                 
                 # Identify infeasible block_ids where any range_tracking value is negative
                 infeasible_blocks = block_general[block_general["range_tracking"].apply(lambda rt: any(x < 0 for x in rt) if rt else False)]["block_id"].tolist()
@@ -1796,6 +1796,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
