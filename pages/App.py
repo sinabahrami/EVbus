@@ -1668,7 +1668,7 @@ def main():
                     plt.tight_layout()
                     ax.set_ylabel('Total Cost (million $)')
                     ax.set_xticks(x)
-                    ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 30)) for label in categories])
+                    ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 10)) for label in categories])
                     ax.legend(loc='upper center')
                     st.session_state["econ_fig"] = fig
             
@@ -1801,6 +1801,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
