@@ -1668,8 +1668,8 @@ def main():
                     plt.tight_layout()
                     ax.set_ylabel('Total Cost (million $)')
                     ax.set_xticks(x)
-                    ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 15)) for label in categories], fontsize=12)
-                    ax.legend(loc='upper center', fontsize=10)
+                    ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 20)) for label in categories], fontsize=10)
+                    ax.legend(loc='upper center', fontsize=8)
                     st.session_state["econ_fig"] = fig
             
                 if flag_done==1 and toggle_value_cost==True:    
@@ -1801,6 +1801,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
