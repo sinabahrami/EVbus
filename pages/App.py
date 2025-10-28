@@ -1653,7 +1653,7 @@ def main():
                         
             
                     # Create the stacked bars
-                    fig, ax = plt.subplots(figsize=(8,6))
+                    fig, ax = plt.subplots(figsize=(6,4))
             
                     ax.bar(x, Additional_fleet, width=bar_width, label='Additional Fleet', color='orange')
                     ax.bar(x, Stationary_charger, width=bar_width, bottom=Additional_fleet, label='Stationary Charging Stations', color='blue')
@@ -1801,6 +1801,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
