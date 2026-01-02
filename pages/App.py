@@ -945,7 +945,7 @@ def main():
     )
     
     # List of allowed agency zip files
-    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
+    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MATA (Memphis)", "MAX (Holland)", "METRO (Kalamazoo)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
@@ -1006,6 +1006,9 @@ def main():
         elif selected_agency=="UMich":
             feasible_block_options =['BB200', 'BB201', 'BB202', 'BB203', 'BB204', 'BB205', 'BB206', 'BB207', 'BB208', 'BB209', 'BB210', 'BB211', 'BB212', 'BB213', 'BB214', 'BB215', 'BB216', 'BB217', 'BB218', 'CN100', 'CN101', 'CN102', 'CN103', 'CN104', 'CN105', 'CN106', 'CN107', 'CN108', 'CN109', 'CN110', 'CS100', 'CS101', 'CS102', 'CS103', 'CS104', 'CSX550', 'CSX551', 'CSX552', 'DD250', 'DD251', 'MX500', 'MX501', 'MX502', 'MX503', 'MX504', 'MX505', 'MX506', 'MX507', 'MX508', 'NES700', 'NES701', 'NES702', 'NES703', 'NW300', 'NW301', 'NW302', 'NW303', 'NW304', 'NW305', 'NW306', 'NW307', 'NW308', 'NW309', 'NW310', 'NW311', 'NX250', 'NX251', 'NX252', 'NX253', 'NX254', 'NX255', 'NX256', 'NX257', 'WS600', 'WS601', 'WS602', 'WS603', 'WX600', 'WX601']
             feasible_route_options=['BB', 'CN', 'CS', 'CSX', 'DD', 'MX', 'NES', 'NW', 'NX', 'OS', 'WS', 'WX']
+        elif selected_agency=="MATA (Memphis)":
+            feasible_block_options =[101, 102, 201, 202, 203, 401, 402, 701, 702, 801, 802, 803, 1101, 1102, 1201, 1202, 1601, 1901, 1902, 1903, 2801, 3001, 3002, 3201, 3202, 3203, 3401, 3601, 3602, 3603, 3604, 3701, 3901, 3902, 3903, 4001, 4002, 4201, 4202, 4204, 4206, 5001, 5002, 5003, 5004, 5201, 5202, 5301, 5302, 5701, 5702, 6901, 6902, 6903]
+            feasible_route_options=[1, 2, 4, 7, 8, 11, 12, 16, 19, 28, 30, 32, 34, 36, 37, 39, 40, 42, 50, 52, 53, 57, 69]
         
         # Toggle button
         toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="Toggle to focus the analysis on specific routes or blocks. When analyzing specific routes, the model automatically includes other routes located on the same blocks as the chosen route(s).")
@@ -1801,6 +1804,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
