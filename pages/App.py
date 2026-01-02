@@ -1191,44 +1191,48 @@ def main():
                 trip_distances = trip_distances.merge(routes[['route_id', 'route_short_name']], on='route_id', how='left')
                 weekday_trips = weekday_trips.merge(trip_distances[["trip_id", "shape_distance_miles"]], on="trip_id", how="left")
                 
-                # Get start and end points
-                start_points = shapes[shapes["shape_pt_sequence"] == 1][["shape_id", "shape_pt_lat", "shape_pt_lon"]]
-                start_points = start_points.rename(columns={"shape_pt_lat": "start_lat", "shape_pt_lon": "start_lon"})
-
-                start_points = start_points.merge(
-                    stops[['stop_id', 'stop_lat', 'stop_lon']],
-                    left_on=['start_lat', 'start_lon'],
-                    right_on=['stop_lat', 'stop_lon'],
-                    how='left'
-                ).rename(columns={'stop_id': 'start_stop_id'})
-                
-                # Find closest stop if no exact match
-                missing_stops = start_points['start_stop_id'].isna()
-                start_points.loc[missing_stops, 'start_stop_id'] = start_points[missing_stops].apply(
-                    lambda row: find_nearest_stop(row['start_lat'], row['start_lon'], stops) if pd.isna(row['start_stop_id']) else row['start_stop_id'], axis=1
-                )
-                
-                # # Drop redundant stop_lat and stop_lon
-                start_points.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
-                
-                end_points = shapes.loc[shapes.groupby("shape_id")["shape_pt_sequence"].idxmax(), ["shape_id", "shape_pt_lat", "shape_pt_lon"]]
-                end_points = end_points.rename(columns={"shape_pt_lat": "end_lat", "shape_pt_lon": "end_lon"})
-
-                end_points = end_points.merge(
-                    stops[['stop_id', 'stop_lat', 'stop_lon']],
-                    left_on=['end_lat', 'end_lon'],
-                    right_on=['stop_lat', 'stop_lon'],
-                    how='left'
-                ).rename(columns={'stop_id': 'end_stop_id'})
-                
-                # Find closest stop if no exact match
-                missing_stops = end_points['end_stop_id'].isna()
-                end_points.loc[missing_stops, 'end_stop_id'] = end_points[missing_stops].apply(
-                    lambda row: find_nearest_stop(row['end_lat'], row['end_lon'], stops) if pd.isna(row['end_stop_id']) else row['end_stop_id'], axis=1
-                )
-                
-                # Drop redundant stop_lat and stop_lon
-                end_points.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
+                if selected_agency=="MATA (Memphis)":
+                    start_points = dataframes.get('start_points')
+                    end_points = dataframes.get('end_points')
+                else: 
+                    # Get start and end points
+                    start_points = shapes[shapes["shape_pt_sequence"] == 1][["shape_id", "shape_pt_lat", "shape_pt_lon"]]
+                    start_points = start_points.rename(columns={"shape_pt_lat": "start_lat", "shape_pt_lon": "start_lon"})
+    
+                    start_points = start_points.merge(
+                        stops[['stop_id', 'stop_lat', 'stop_lon']],
+                        left_on=['start_lat', 'start_lon'],
+                        right_on=['stop_lat', 'stop_lon'],
+                        how='left'
+                    ).rename(columns={'stop_id': 'start_stop_id'})
+                    
+                    # Find closest stop if no exact match
+                    missing_stops = start_points['start_stop_id'].isna()
+                    start_points.loc[missing_stops, 'start_stop_id'] = start_points[missing_stops].apply(
+                        lambda row: find_nearest_stop(row['start_lat'], row['start_lon'], stops) if pd.isna(row['start_stop_id']) else row['start_stop_id'], axis=1
+                    )
+                    
+                    # # Drop redundant stop_lat and stop_lon
+                    start_points.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
+                    
+                    end_points = shapes.loc[shapes.groupby("shape_id")["shape_pt_sequence"].idxmax(), ["shape_id", "shape_pt_lat", "shape_pt_lon"]]
+                    end_points = end_points.rename(columns={"shape_pt_lat": "end_lat", "shape_pt_lon": "end_lon"})
+    
+                    end_points = end_points.merge(
+                        stops[['stop_id', 'stop_lat', 'stop_lon']],
+                        left_on=['end_lat', 'end_lon'],
+                        right_on=['stop_lat', 'stop_lon'],
+                        how='left'
+                    ).rename(columns={'stop_id': 'end_stop_id'})
+                    
+                    # Find closest stop if no exact match
+                    missing_stops = end_points['end_stop_id'].isna()
+                    end_points.loc[missing_stops, 'end_stop_id'] = end_points[missing_stops].apply(
+                        lambda row: find_nearest_stop(row['end_lat'], row['end_lon'], stops) if pd.isna(row['end_stop_id']) else row['end_stop_id'], axis=1
+                    )
+                    
+                    # Drop redundant stop_lat and stop_lon
+                    end_points.drop(columns=['stop_lat', 'stop_lon'], inplace=True)
                 
                 # Merge points with trips
                 weekday_trips = weekday_trips.merge(start_points, on="shape_id", how="left")
@@ -1804,6 +1808,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
