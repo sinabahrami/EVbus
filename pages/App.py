@@ -969,8 +969,8 @@ def main():
         
         # Energy and range parameters
         #st.subheader("Electric Bus Parameters")
-        bus_range = st.number_input("Electric Bus Range [mile]", min_value=5, value=150, step=10, help="The distance a bus can travel with a fully charged battery.")
-        charging_power = st.number_input("Stationary Charging Power [kW]", min_value=0, value=250, step=50, help="Stationary chargers can be either wireless or plug-in types.")
+        bus_range = st.number_input("Electric Bus Range [mile]", min_value=5, value=100, step=10, help="The distance a bus can travel with a fully charged battery.")
+        charging_power = st.number_input("Stationary Charging Power [kW]", min_value=0, value=300, step=50, help="Stationary chargers can be either wireless or plug-in types.")
         min_stoppage_time = st.number_input(label="Stationary Charging Setup Time [min]", min_value=0.0, value=0.0, step=0.1,help="Wireless chargers can start charging immediately, whereas plug-in chargers require a few minutes to connect and begin charging.")
         dynamic_wireless_charging_power = st.number_input("In-motion Charging Power [kW]", min_value=0, value=0, step=10)
 
@@ -1809,6 +1809,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
