@@ -1012,7 +1012,7 @@ def main():
             feasible_route_options=[1, 2, 4, 7, 8, 11, 12, 16, 19, 28, 30, 32, 34, 36, 37, 39, 40, 42, 50, 52, 53, 57, 69]
         elif selected_agency=="COMET (Columbia)":
             feasible_block_options =[18940,18960,18965,18983,19033,19050,19052,19058,19059,19062,19063,19066,19067,19069,19075,19081,19097,19121,19124,19126,19128,19146,19160,19166,19171,19217,19226,19230,19256,19260,19280,19292,19303,19325,19342,19355,19359,19381,19388,19405,19408,19417,19435,19456,19464,19472,19671,19696,19794,19821,19886,19895,20124,20128]
-            feasible_route_options=[1, 2, 4, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 32, 42, 44X, 45, 47, 55, 57L, 61, 75, 76, 77, 83L, 84, 88, 91, 92X, 96L, 101, 301, 401, 501, 701, 801]
+            feasible_route_options=[1, 2, 4, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 32, 42, 44, 45, 47, 55, 57L, 61, 75, 76, 77, 83, 84, 88, 91, 92, 96, 101, 301, 401, 501, 701, 801]
         
         # Toggle button
         toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="Toggle to focus the analysis on specific routes or blocks. When analyzing specific routes, the model automatically includes other routes located on the same blocks as the chosen route(s).")
@@ -1812,6 +1812,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
