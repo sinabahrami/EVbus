@@ -1012,7 +1012,7 @@ def main():
             feasible_route_options=[1, 2, 4, 7, 8, 11, 12, 16, 19, 28, 30, 32, 34, 36, 37, 39, 40, 42, 50, 52, 53, 57, 69]
         elif selected_agency=="COMET (Columbia)":
             feasible_block_options =[18940,18960,18965,18983,19033,19050,19052,19058,19059,19062,19063,19066,19067,19069,19075,19081,19097,19121,19124,19126,19128,19146,19160,19166,19171,19217,19226,19230,19256,19260,19280,19292,19303,19325,19342,19355,19359,19381,19388,19405,19408,19417,19435,19456,19464,19472,19671,19696,19794,19821,19886,19895,20124,20128]
-            feasible_route_options=[2838,2823,83,2818,2845,2852,2851,2813,81,2832,90,2837,2853,87,2826,2831,2842,2821,2834,2816,80,2814,2844,2848,2856,2846,2833,2839,2841,2830,2819,2829,2840,2825,2828,2824,2849,2854,2843,2817,2847,2827,2855,2850]
+            feasible_route_options=[1, 2, 4, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 32, 42, 44, '44X', 45, 47, 55, '57L', 61, 75, 76, 77, '83L', 84, 88, 91, '92X', '96L', 101, 301, 401, 501, 701, 801]
         
         # Toggle button
         toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="Toggle to focus the analysis on specific routes or blocks. When analyzing specific routes, the model automatically includes other routes located on the same blocks as the chosen route(s).")
@@ -1024,16 +1024,32 @@ def main():
             add_flag=1
             if option =="Block":
                 user_block_choice = st.multiselect("Choose desired block(s):", feasible_block_options)
-                user_route_choice=feasible_route_options
+                if selected_agency=="COMET (Columbia)":
+                    user_route_choice=[2846, 2819, 2845, 2824, 2848, 2828, 2831, 2844, 2823, 2852, 80, 81, 83, 2834, 2821, 2826, 2847, 2856, 2833, 87, 90, 2850, 2813, 2840, 2843, 2841, 2817, 2838,2855, 2829, 2849, 2830, 2839, 2818, 2854, 2832, 2816, 2837, 2842, 2827, 2851, 2825, 2853, 2814] 
+                else:
+                    user_route_choice=feasible_route_options
             if option =="Route":
-                user_route_choice = st.multiselect("Choose desired route(s):", feasible_route_options)
                 user_block_choice=feasible_block_options
+                if selected_agency=="COMET (Columbia)":
+                    user_route_choice_in = st.multiselect("Choose desired route(s):", feasible_route_options)
+                    route_names = [1, 2, 4, 6, 11, 12, 13, 13, 14, 14, 15, 16, 17, 18, 19, 20, 20, 21, 22, 24, 25, 32, 42, 44, '44X', 45, 47, 55, '57L', 61, 75, 76, 77, '83L', 84, 88, 91, '92X', '96L', 101, 301, 401, 501, 701, 801]
+                    route_codes = [2846, 2819, 2845, 2824, 2848, 2828, 2831, 2844, 2823, 2852, 80, 81, 83, 2834, 2821, 2826, 2847, 2856, 2833, 87, 90, 2850, 2813, 2840, 2843, 2841, 2817, 2838,2855, 2829, 2849, 2830, 2839, 2818, 2854, 2832, 2816, 2837, 2842, 2827, 2851, 2825, 2853, 2814]
+                    name_to_codes = defaultdict(list)
+                    for name, code in zip(route_names, route_codes):
+                        name_to_codes[name].append(code)
+                    user_route_choice=[]
+                    for name in user_route_choice_in:
+                        user_route_choice.extend(name_to_codes[name])
+                else:
+                    user_route_choice = st.multiselect("Choose desired route(s):", feasible_route_options)   
         else:
             add_flag=0
             user_block_choice=feasible_block_options
-            user_route_choice=feasible_route_options
-            
-        
+            if selected_agency=="COMET (Columbia)":
+                user_route_choice=[2846, 2819, 2845, 2824, 2848, 2828, 2831, 2844, 2823, 2852, 80, 81, 83, 2834, 2821, 2826, 2847, 2856, 2833, 87, 90, 2850, 2813, 2840, 2843, 2841, 2817, 2838,2855, 2829, 2849, 2830, 2839, 2818, 2854, 2832, 2816, 2837, 2842, 2827, 2851, 2825, 2853, 2814] 
+            else:
+                user_route_choice=feasible_route_options
+                  
         critical_range=20
 
         toggle_value_cost = st.toggle(
@@ -1812,6 +1828,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
