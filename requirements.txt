@@ -10,6 +10,6 @@ fpdf
 reportlab
 geopandas
 contextily
-collections
+#collections
 #selenium
 #imgkit
