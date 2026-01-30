@@ -38,6 +38,9 @@ import shapely.affinity
 from PIL import Image as PILImage
 from scipy.spatial import cKDTree
 
+from collections import defaultdict
+
+
 # Cache the data processing to improve performance
 @st.cache_data
 def load_gtfs_data(zip_file_path):
@@ -1828,6 +1831,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
