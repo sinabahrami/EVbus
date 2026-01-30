@@ -944,8 +944,8 @@ def main():
         layout="wide"
     )
     
-    # List of allowed agency zip files # "MATA (Memphis)"
-    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MATA (Memphis)", "MAX (Holland)", "METRO (Kalamazoo)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
+    
+    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "COMET (Columbia)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
     
     
     # Application UI
@@ -1010,6 +1010,9 @@ def main():
         elif selected_agency=="MATA (Memphis)":
             feasible_block_options =[101, 102, 201, 202, 203, 401, 402, 701, 702, 801, 802, 803, 1101, 1102, 1201, 1202, 1601, 1901, 1902, 1903, 2801, 3001, 3002, 3201, 3202, 3203, 3401, 3601, 3602, 3603, 3604, 3701, 3901, 3902, 3903, 4001, 4002, 4201, 4202, 4204, 4206, 5001, 5002, 5003, 5004, 5201, 5202, 5301, 5302, 5701, 5702, 6901, 6902, 6903]
             feasible_route_options=[1, 2, 4, 7, 8, 11, 12, 16, 19, 28, 30, 32, 34, 36, 37, 39, 40, 42, 50, 52, 53, 57, 69]
+        elif selected_agency=="COMET (Columbia)":
+            feasible_block_options =[18940,18960,18965,18983,19033,19050,19052,19058,19059,19062,19063,19066,19067,19069,19075,19081,19097,19121,19124,19126,19128,19146,19160,19166,19171,19217,19226,19230,19256,19260,19280,19292,19303,19325,19342,19355,19359,19381,19388,19405,19408,19417,19435,19456,19464,19472,19671,19696,19794,19821,19886,19895,20124,20128]
+            feasible_route_options=[1, 2, 4, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 32, 42, 44X, 45, 47, 55, 57L, 61, 75, 76, 77, 83L, 84, 88, 91, 92X, 96L, 101, 301, 401, 501, 701, 801]
         
         # Toggle button
         toggle_value = st.toggle("Specific route or block", value=st.session_state.toggle_state,help="Toggle to focus the analysis on specific routes or blocks. When analyzing specific routes, the model automatically includes other routes located on the same blocks as the chosen route(s).")
@@ -1809,6 +1812,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
