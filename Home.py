@@ -10,8 +10,9 @@ st.markdown("""
     line-height: 2; /* Adjusts line spacing */
     }
 </style>
-<p class="big-font">This app has been developed by <a href="https://cee.engin.umich.edu/people/bahrami-sina/"> Dr. Sina Bahrami</a> as part of the deliverables for the MDOT (Michigan Department of Transportation) research project <strong>OR24-003</strong>: \"Inductive Vehicle Charging - Identify Best Practices/Applications and Optimum Locations for Light to Heavy Duty Vehicles\" managed by <a href="https://www.linkedin.com/in/michele-mueller-7a7870118">Michele Mueller</a> and <a href="https://www.linkedin.com/in/caitlinrday/">Caitlin Day.</p> 
+<!-- <p class="big-font">This app has been developed by <a href="https://cee.engin.umich.edu/people/bahrami-sina/"> Dr. Sina Bahrami</a> as part of the deliverables for the MDOT (Michigan Department of Transportation) research project <strong>OR24-003</strong>: \"Inductive Vehicle Charging - Identify Best Practices/Applications and Optimum Locations for Light to Heavy Duty Vehicles\" managed by <a href="https://www.linkedin.com/in/michele-mueller-7a7870118">Michele Mueller</a> and <a href="https://www.linkedin.com/in/caitlinrday/">Caitlin Day.</p> -->
 <!-- <p class="big-font">This app has been developed by a team of researchers from the University of Michigan, including <a href="https://cee.engin.umich.edu/people/yin-yafeng/"> Prof. Yafeng Yin</a>, <a href="https://cee.engin.umich.edu/people/bahrami-sina/"> Dr. Sina Bahrami</a>, and <a href="https://cee.engin.umich.edu/people/li-manzi/">Dr. Manzi Li</a>, as part of the deliverables for the MDOT (Michigan Department of Transportation) research project <strong>OR24-003</strong>: \"Inductive Vehicle Charging - Identify Best Practices/Applications and Optimum Locations for Light to Heavy Duty Vehicles\" managed by <a href="https://www.linkedin.com/in/michele-mueller-7a7870118">Michele Mueller</a> and <a href="https://www.linkedin.com/in/caitlinrday/">Caitlin Day.</p> -->
+<p class="big-font">This app has been developed by a team of researchers from the University of Michigan, including <a href="https://cee.engin.umich.edu/people/yin-yafeng/"> Prof. Yafeng Yin</a>, and <a href="https://cee.engin.umich.edu/people/bahrami-sina/"> Dr. Sina Bahrami</a>, as part of the deliverables for the MDOT (Michigan Department of Transportation) research project <strong>SPR 1768</strong>: \"Inductive Vehicle Charging - Identify Best Practices/Applications and Optimum Locations for Light to Heavy Duty Vehicles\" managed by <a href="https://www.linkedin.com/in/michele-mueller-7a7870118">Michele Mueller</a> and <a href="https://www.linkedin.com/in/caitlinrday/">Caitlin Day.</p>
 """, unsafe_allow_html=True)
 
 st.markdown("""
@@ -75,6 +76,7 @@ st.markdown("""
 </style>
 <p class="small-font"><strong>Disclaimer:</strong> This web app provides general information and is not intended to serve as professional advice. The information and content are provided "as is" without warranties of any kind, either express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We assume no liability for any errors or omissions in the information presented or for any damages or losses that may arise from reliance on or use of this tool. Use of this web app is solely at your own risk.</p>
 """, unsafe_allow_html=True)
+
 
 
 
