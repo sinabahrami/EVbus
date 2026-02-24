@@ -147,7 +147,8 @@ def create_bus_electrification_map(shapes_df, routes_df, trips_df, proposed_loca
 def compute_shape_distances(df):
     df = df.sort_values(by=["shape_id", "shape_pt_sequence"]).reset_index(drop=True)
 
-    df.loc[df["shape_pt_sequence"] == 1, "shape_dist_traveled"] = 0  # First point is 0
+    min_seq = df.groupby("shape_id")["shape_pt_sequence"].transform("min")
+    df.loc[df["shape_pt_sequence"] == min_seq, "shape_dist_traveled"] = 0
 
     # Iterate over rows and calculate distance
     for i in range(1, len(df)):  # Start from the second row
@@ -1838,6 +1839,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
