@@ -1216,6 +1216,8 @@ def main():
                 # Merge with trips
                 trips_with_times = trips.merge(trip_times, on='trip_id', how='left')
                 weekday_trips = trips_with_times[trips_with_times['service_id'] == weekday_service_id].copy()
+
+                weekday_trips["shape_id"] = weekday_trips["shape_id"].str.strip()
                 
                 # Merge with distances
                 trip_distances = weekday_trips.merge(shape_distances, on='shape_id', how='left')
@@ -1839,6 +1841,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
