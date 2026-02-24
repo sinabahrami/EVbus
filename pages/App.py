@@ -1177,7 +1177,9 @@ def main():
                     elif shape_dist_flag==4:
                         shapes["shape_dist_traveled"]*=1609
                 
-                trips["shape_id"] = trips["shape_id"].str.strip()
+                if selected_agency=="RTS (Gainesville)":
+                    trips["shape_id"] = trips["shape_id"].str.strip()
+                    
                 # Clean and prepare data
                 stop_times = stop_times.sort_values(by=['trip_id', 'stop_sequence']).reset_index(drop=True)
                 stop_times['stop_sequence'] = stop_times.groupby('trip_id').cumcount() + 1
@@ -1842,6 +1844,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
