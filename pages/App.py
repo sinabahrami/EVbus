@@ -1177,6 +1177,7 @@ def main():
                     elif shape_dist_flag==4:
                         shapes["shape_dist_traveled"]*=1609
                 
+                trips["shape_id"] = trips["shape_id"].str.strip()
                 # Clean and prepare data
                 stop_times = stop_times.sort_values(by=['trip_id', 'stop_sequence']).reset_index(drop=True)
                 stop_times['stop_sequence'] = stop_times.groupby('trip_id').cumcount() + 1
@@ -1217,7 +1218,7 @@ def main():
                 trips_with_times = trips.merge(trip_times, on='trip_id', how='left')
                 weekday_trips = trips_with_times[trips_with_times['service_id'] == weekday_service_id].copy()
 
-                weekday_trips["shape_id"] = weekday_trips["shape_id"].str.strip()
+                
                 
                 # Merge with distances
                 trip_distances = weekday_trips.merge(shape_distances, on='shape_id', how='left')
@@ -1841,6 +1842,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
