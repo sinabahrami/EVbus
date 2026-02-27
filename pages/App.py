@@ -1227,7 +1227,7 @@ def main():
                 trip_distances = trip_distances.merge(routes[['route_id', 'route_short_name']], on='route_id', how='left')
                 weekday_trips = weekday_trips.merge(trip_distances[["trip_id", "shape_distance_miles"]], on="trip_id", how="left")
                 
-                if selected_agency=="MATA (Memphis)":
+                if selected_agency=="MATA (Memphis)" or selected_agency=="PalmTran (Palm Beach)":
                     start_points = dataframes.get('start_points')
                     end_points = dataframes.get('end_points')
                 else: 
@@ -1844,6 +1844,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
