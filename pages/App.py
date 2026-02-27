@@ -1230,6 +1230,8 @@ def main():
                 if selected_agency=="PalmTran (Palm Beach)":
                     start_points = dataframes.get('start_points')
                     end_points = dataframes.get('end_points')
+                    st.write(type(df2))
+                    st.write(type(df2))
                 else: 
                     # Get start and end points
                     start_points = shapes[shapes["shape_pt_sequence"] == 1][["shape_id", "shape_pt_lat", "shape_pt_lon"]]
@@ -1844,6 +1846,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
