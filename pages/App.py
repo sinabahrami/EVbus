@@ -1228,10 +1228,9 @@ def main():
                 weekday_trips = weekday_trips.merge(trip_distances[["trip_id", "shape_distance_miles"]], on="trip_id", how="left")
                 
                 if selected_agency=="PalmTran (Palm Beach)":
+                    st.write(dataframes.keys())
                     start_points = dataframes.get('start_points')
                     end_points = dataframes.get('end_points')
-                    st.write(type(start_points))
-                    st.write(type(end_points))
                 else: 
                     # Get start and end points
                     start_points = shapes[shapes["shape_pt_sequence"] == 1][["shape_id", "shape_pt_lat", "shape_pt_lon"]]
@@ -1846,6 +1845,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+
 
 
 
