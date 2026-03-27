@@ -950,7 +950,7 @@ def main():
     
     
     # agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "Palm Beach", "RTS (Gainesville)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
-    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "PalmTran (Palm Beach)","Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
+    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
