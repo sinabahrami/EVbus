@@ -370,13 +370,13 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
                 wireless_lines.append({'geometry': LineString(coords)})
     gdf_wireless = gpd.GeoDataFrame(wireless_lines, crs="EPSG:4326").to_crs(epsg=3857) if wireless_lines else gpd.GeoDataFrame(columns=['geometry'], crs="EPSG:3857")
 
-    all_points = gdf_routes.geometry.unary_union
+    all_points = gdf_routes.geometry.union_all()
 
     if not gdf_chargers.empty:
-        all_points = all_points.union(gdf_chargers.geometry.unary_union)
+        all_points = all_points.union(gdf_chargers.geometry.union_all())
 
     if not gdf_wireless.empty:
-        all_points = all_points.union(gdf_wireless.geometry.unary_union)
+        all_points = all_points.union(gdf_wireless.geometry.union_all())
 
     minx, miny, maxx, maxy = all_points.bounds
     buffer = 2000  # meters
@@ -385,7 +385,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
     # Generate discrete colors for routes
 
     unique_routes = gdf_routes['route_id'].unique()
-    colormap = matplotlib.cm.get_cmap('tab20b', len(unique_routes))
+    colormap = matplotlib.colormaps['tab20b', len(unique_routes)]
     route_colors = {rid: colormap(i) for i, rid in enumerate(unique_routes)}
 
     # Function to plot and return PNG bytes
