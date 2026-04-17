@@ -1776,8 +1776,7 @@ def main():
                 msg3.empty()
                 msg4.empty()              
             except Exception as e:
-                st.exception(e)
-                # st.error(f"An error occurred during preperation of results: {str(e)}")
+                st.error(f"An error occurred during preperation of results: {str(e)}")
                 return
     
     # Display results if available
