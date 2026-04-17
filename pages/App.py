@@ -40,6 +40,7 @@ from scipy.spatial import cKDTree
 
 from collections import defaultdict
 
+import traceback
 
 # Cache the data processing to improve performance
 @st.cache_data
@@ -1656,13 +1657,9 @@ def main():
                 st.session_state["bus_reciever_cost"]=bus_reciever_cost
                 st.session_state["total_dynamic_cost"]=total_dynamic_cost
 
-
                 flag_done=1
-
-                              
-                routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
-
-                st.write("check2")  
+                  
+                routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)  
                 
                 if flag_done==1 and toggle_value_cost==True:
                     if st.session_state.get("initial_num_infeasible_blocks") == 0:
@@ -1717,16 +1714,14 @@ def main():
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 20)) for label in categories], fontsize=8)
                     ax.legend(loc='upper center', fontsize=6)
                     st.session_state["econ_fig"] = fig
-
-                st.write("check0")  
+ 
                 if flag_done==1 and toggle_value_cost==True:    
                     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
                         fig.savefig(tmpfile.name, bbox_inches='tight')
                         econ_figure_gen = tmpfile.name
                 else:
                     econ_figure_gen = None
-
-                st.write("check1")  
+ 
                 if flag_done==1:
                     report_inputs = {"transit_agency_name": st.session_state["Agency_name"],
                         "bus_range": bus_range,
@@ -1780,7 +1775,8 @@ def main():
                 msg3.empty()
                 msg4.empty()              
             except Exception as e:
-                st.error(f"An error occurred during preperation of results: {str(e)}")
+                st.exception(e)
+                # st.error(f"An error occurred during preperation of results: {str(e)}")
                 return
     
     # Display results if available
