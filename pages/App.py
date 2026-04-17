@@ -646,7 +646,8 @@ def generate_transit_report(
             df_table.columns = headers
     
         # Convert any list/array columns into comma-separated strings
-        df_table = df_table.applymap(lambda x: ", ".join(map(str, x)) if isinstance(x, (list, tuple, np.ndarray)) else x)
+        df_table = df_table.map(lambda x: ", ".join(map(str, x)) if isinstance(x, (list, tuple, np.ndarray)) else x)
+        #df_table = df_table.applymap(lambda x: ", ".join(map(str, x)) if isinstance(x, (list, tuple, np.ndarray)) else x)
     
         # Convert to list of lists for ReportLab
         data = [df_table.columns.tolist()] + df_table.values.tolist()
