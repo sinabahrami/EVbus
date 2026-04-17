@@ -1661,6 +1661,8 @@ def main():
 
                               
                 routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
+
+                st.write("check2")  
                 
                 if flag_done==1 and toggle_value_cost==True:
                     if st.session_state.get("initial_num_infeasible_blocks") == 0:
