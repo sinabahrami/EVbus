@@ -385,7 +385,7 @@ def generate_route_charger_maps(shapes_df, trips_df, proposed_locations_df, wire
     # Generate discrete colors for routes
 
     unique_routes = gdf_routes['route_id'].unique()
-    colormap = matplotlib.colormaps['tab20b', len(unique_routes)]
+    colormap = matplotlib.colormaps['tab20b'].resampled(len(unique_routes))
     route_colors = {rid: colormap(i) for i, rid in enumerate(unique_routes)}
 
     # Function to plot and return PNG bytes
