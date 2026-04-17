@@ -1659,7 +1659,7 @@ def main():
 
                 flag_done=1
 
-                st.write("okay")                
+                              
                 routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
                 
                 if flag_done==1 and toggle_value_cost==True:
@@ -1715,7 +1715,8 @@ def main():
                     ax.set_xticklabels(['\n'.join(textwrap.wrap(label, 20)) for label in categories], fontsize=8)
                     ax.legend(loc='upper center', fontsize=6)
                     st.session_state["econ_fig"] = fig
-            
+
+                st.write("check0")  
                 if flag_done==1 and toggle_value_cost==True:    
                     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
                         fig.savefig(tmpfile.name, bbox_inches='tight')
@@ -1723,7 +1724,7 @@ def main():
                 else:
                     econ_figure_gen = None
 
-
+                st.write("check1")  
                 if flag_done==1:
                     report_inputs = {"transit_agency_name": st.session_state["Agency_name"],
                         "bus_range": bus_range,
