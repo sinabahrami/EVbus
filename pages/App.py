@@ -762,7 +762,7 @@ def generate_transit_report(
             width=letter[0],
             height=letter[1],
             title=f"Transit Electrification Report for {agency_name} Transit System",
-            subtitle="Produced by \n https://transit-electrification.streamlit.app", # \n developed by \n Yafeng Yin, Sina Bahrami, Manzi Li, Michele Mueller, and Caitlin Day"
+            subtitle="Produced by \n https://transit-electrification.streamlit.app", # \n developed by \n Yafeng Yin, Sina Bahrami, Michele Mueller, and Caitlin Day"
             licence="Copyright (c) 2025 Sina Bahrami"
         ))
         #story.append(PageBreak())
@@ -950,7 +950,7 @@ def main():
     
     
     # agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "Palm Beach", "RTS (Gainesville)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
-    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
+    agencies = ["BATA (Traverse City)", "CATA (Lansing)", "DDOT (Detroit)", "MAX (Holland)", "METRO (Kalamazoo)", "RTS (Gainesville)", "Smart (Detroit)", "The Rapid (Grand Rapids)", "TheRide (Ann Arbor-Ypsilanti)", "UMich"]
     
     # Application UI
     st.title("🚌 Bus System Electrification Analysis")
