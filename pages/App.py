@@ -1659,6 +1659,7 @@ def main():
 
                 flag_done=1
 
+                print("okay")                
                 routes_image_bytes, charger_image_bytes, full_image_bytes = generate_route_charger_maps(shapes, maptrips, proposed_locations, wireless_track_shape, center_lat, center_lon)
                 
                 if flag_done==1 and toggle_value_cost==True:
